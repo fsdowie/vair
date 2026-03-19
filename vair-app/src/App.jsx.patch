@@ -1,0 +1,24 @@
+--- a/src/App.jsx
++++ b/src/App.jsx
+@@ -27,6 +27,8 @@ const SAMPLE_QUESTIONS = [
+   "A substitute enters the field without permission and prevents a goal. What's the ruling?",
+ ];
+ 
++const API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY;
++
+ export default function RefereeLLM() {
+   const [messages, setMessages] = useState([]);
+   const [input, setInput] = useState("");
+@@ -51,7 +53,11 @@ export default function RefereeLLM() {
+     try {
+       const response = await fetch("https://api.anthropic.com/v1/messages", {
+         method: "POST",
+-        headers: { "Content-Type": "application/json" },
++        headers: {
++          "Content-Type": "application/json",
++          "x-api-key": API_KEY,
++          "anthropic-version": "2023-06-01"
++        },
+         body: JSON.stringify({
+           model: "claude-sonnet-4-20250514",
+           max_tokens: 1000,

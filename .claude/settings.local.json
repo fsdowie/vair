@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(src/App.jsx.patch:*)",
+      "Bash(ls:*)",
+      "Bash(src/ApiKeyWrapper.jsx:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run server:*)",
+      "Bash(curl:*)",
+      "Bash(brew install:*)",
+      "Bash(pdftoppm:*)",
+      "Bash(pdftotext \"sources/ECNL Competition Rules 2025-2026 \\(8.12.25\\).docx.pdf\" -)",
+      "Bash(pdftotext:*)",
+      "Bash(node:*)",
+      "Bash(update-ui-text.js:*)",
+      "Bash(python3:*)",
+      "Bash(chmod:*)",
+      "Bash(./deploy.sh:*)",
+      "Bash(export SUPABASE_ACCESS_TOKEN:*)",
+      "Bash(supabase link:*)",
+      "Bash(supabase functions deploy:*)",
+      "Bash(supabase secrets set:*)",
+      "Bash(supabase functions logs:*)",
+      "Bash(supabase secrets:*)",
+      "Bash(supabase functions list:*)",
+      "Bash(\"/Users/federico_samyndowie/Documents/Python Shared/VAIR/check-auth.md\":*)",
+      "WebFetch(domain:x.com)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh repo create:*)",
+      "Bash(gh auth:*)",
+      "Bash(git push:*)",
+      "Bash(git remote add:*)"
+    ]
+  }
+}

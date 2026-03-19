@@ -1,0 +1,16 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Can a goalkeeper score directly from a goal kick?"
+    },
+    {
+      "role": "assistant", 
+      "content": "Yes, a goalkeeper can score directly from a goal kick according to Law 16 (The Goal Kick). A goal may be scored directly from a goal kick, but only against the opposing team. If a goalkeeper kicks the ball directly into their own goal from a goal kick, a corner kick is awarded to the opposing team."
+    },
+    {
+      "role": "user",
+      "content": "Can a player score from a drop ball restart?"
+    }
+  ]
+}

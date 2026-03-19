@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+vair-app/node_modules/
+
+# Build outputs
+dist/
+build/
+vair-app/dist/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+.DS_Store?
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+test-edge-function.js
+add-clickable-links.js
+laws-line.txt
+
+# Supabase local
+.supabase/
+
+# Cache
+.cache/
