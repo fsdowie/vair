@@ -36,7 +36,8 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./vair-app
-          vercel-args: '--prod'
+          vercel-args: '--prod --yes'
+          scope: ${{ secrets.VERCEL_ORG_ID }}
 
   deploy-supabase:
     name: Deploy Supabase Functions
