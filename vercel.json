@@ -1,7 +1,0 @@
-{
-  "buildCommand": "cd vair-app && npm run build",
-  "outputDirectory": "vair-app/dist",
-  "installCommand": "cd vair-app && npm install",
-  "framework": "vite",
-  "rootDirectory": "vair-app"
-}
