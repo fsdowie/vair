@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
+const ADMIN_EMAIL = 'fsdowie@yahoo.com';
+
 const supabase = createClient(
   'https://iunehbdazfzgfclkvvgd.supabase.co',
   'sb_publishable_SU4BJ5e9RLDl-3iSZHo-3g_mbHpD9cn'
@@ -11,13 +13,20 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [session, setSession] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) {
-        fetchUsers();
+        const userIsAdmin = session.user.email === ADMIN_EMAIL;
+        setIsAdmin(userIsAdmin);
+        if (userIsAdmin) {
+          fetchUsers();
+        } else {
+          setLoading(false);
+        }
       } else {
         setLoading(false);
       }
@@ -90,6 +99,24 @@ export default function Admin() {
               Login
             </button>
           </form>
+        </div>
+      </div>
+    );
+  }
+
+  // Show unauthorized message if logged in but not admin
+  if (session && !isAdmin) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.card}>
+          <h1 style={styles.title}>⛔ Access Denied</h1>
+          <div style={{...styles.note, marginTop: 20}}>
+            You do not have administrator privileges.<br/>
+            Only authorized administrators can access this page.
+          </div>
+          <button onClick={() => supabase.auth.signOut()} style={{...styles.button, marginTop: 20}}>
+            Sign Out
+          </button>
         </div>
       </div>
     );
