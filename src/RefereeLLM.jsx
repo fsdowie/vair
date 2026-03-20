@@ -194,7 +194,7 @@ export default function RefereeLLM() {
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
           }}>
-            ⚽ VAIR
+            ⚽ Virtual AI Referee
           </h1>
           <p style={{
             fontSize: 14,
@@ -202,7 +202,7 @@ export default function RefereeLLM() {
             marginBottom: 32,
             textAlign: "center",
           }}>
-            Video Assistant Intelligence Referee
+            AI-Powered Referee Assistant
           </p>
 
           <div style={{
@@ -342,7 +342,7 @@ export default function RefereeLLM() {
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}>
-              ⚽ VAIR — Video Assistant Intelligence Referee
+              ⚽ Virtual AI Referee
             </h1>
             <p style={{
               fontSize: 14,
