@@ -14,6 +14,9 @@ export default function Admin() {
   const [error, setError] = useState(null);
   const [session, setSession] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [activeTab, setActiveTab] = useState('users');
+  const [logs, setLogs] = useState([]);
+  const [logsLoading, setLogsLoading] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in
@@ -50,6 +53,23 @@ export default function Admin() {
     } catch (err) {
       setError(err.message);
       setLoading(false);
+    }
+  };
+
+  const fetchLogs = async () => {
+    setLogsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('get-question-logs');
+      
+      if (error) throw error;
+      
+      if (data && data.logs) {
+        setLogs(data.logs);
+      }
+      setLogsLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLogsLoading(false);
     }
   };
 
@@ -126,18 +146,46 @@ export default function Admin() {
     <div style={styles.container}>
       <div style={styles.card}>
         <div style={styles.header}>
-          <h1 style={styles.title}>VAIR Admin - User Accounts</h1>
+          <h1 style={styles.title}>VAIR Admin Panel</h1>
           <button onClick={() => supabase.auth.signOut()} style={styles.logoutBtn}>
             Sign Out
           </button>
         </div>
 
-        <div style={styles.stats}>
-          <div style={styles.statBox}>
-            <div style={styles.statNumber}>{users.length}</div>
-            <div style={styles.statLabel}>Total Users</div>
-          </div>
+        {/* Tab Menu */}
+        <div style={styles.tabMenu}>
+          <button
+            onClick={() => setActiveTab('users')}
+            style={{
+              ...styles.tabButton,
+              ...(activeTab === 'users' ? styles.activeTab : {})
+            }}
+          >
+            👥 Users
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab('logs');
+              if (logs.length === 0) fetchLogs();
+            }}
+            style={{
+              ...styles.tabButton,
+              ...(activeTab === 'logs' ? styles.activeTab : {})
+            }}
+          >
+            📝 Question Logs
+          </button>
         </div>
+
+        {/* Users Tab */}
+        {activeTab === 'users' && (
+          <>
+            <div style={styles.stats}>
+              <div style={styles.statBox}>
+                <div style={styles.statNumber}>{users.length}</div>
+                <div style={styles.statLabel}>Total Users</div>
+              </div>
+            </div>
 
         <table style={styles.table}>
           <thead>
@@ -180,6 +228,57 @@ export default function Admin() {
             )}
           </tbody>
         </table>
+          </>
+        )}
+
+        {/* Logs Tab */}
+        {activeTab === 'logs' && (
+          <>
+            <div style={styles.stats}>
+              <div style={styles.statBox}>
+                <div style={styles.statNumber}>{logs.length}</div>
+                <div style={styles.statLabel}>Total Questions</div>
+              </div>
+            </div>
+
+            {logsLoading ? (
+              <div style={{textAlign: 'center', padding: 40, color: 'rgba(232,245,233,0.6)'}}>
+                Loading logs...
+              </div>
+            ) : (
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.th}>User Email</th>
+                    <th style={styles.th}>Question</th>
+                    <th style={styles.th}>Asked At</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {logs.length === 0 ? (
+                    <tr>
+                      <td colSpan="3" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>
+                        No questions logged yet
+                      </td>
+                    </tr>
+                  ) : (
+                    logs.map((log, index) => (
+                      <tr key={index} style={styles.tr}>
+                        <td style={styles.td}>{log.user_email}</td>
+                        <td style={{...styles.td, maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis'}}>
+                          {log.question}
+                        </td>
+                        <td style={styles.td}>
+                          {new Date(log.created_at).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
@@ -306,5 +405,28 @@ const styles = {
     border: '1px solid rgba(211,47,47,0.3)',
     color: '#ef5350',
     fontSize: 14,
+  },
+  tabMenu: {
+    display: 'flex',
+    gap: 12,
+    marginBottom: 30,
+    borderBottom: '2px solid rgba(76,175,80,0.2)',
+    paddingBottom: 0,
+  },
+  tabButton: {
+    padding: '12px 24px',
+    background: 'transparent',
+    border: 'none',
+    borderBottom: '2px solid transparent',
+    color: 'rgba(232,245,233,0.6)',
+    fontSize: 16,
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    marginBottom: -2,
+  },
+  activeTab: {
+    color: '#4caf50',
+    borderBottomColor: '#4caf50',
+    fontWeight: 'bold',
   },
 };
