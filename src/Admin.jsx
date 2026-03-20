@@ -26,16 +26,15 @@ export default function Admin() {
 
   const fetchUsers = async () => {
     try {
-      // Note: This requires the service role key to list all users
-      // For now, we'll just show the current user info
-      const { data: { user } } = await supabase.auth.getUser();
+      // Call Edge Function to get all users
+      const { data, error } = await supabase.functions.invoke('list-users');
 
-      if (user) {
-        setUsers([{
-          email: user.email,
-          created_at: user.created_at,
-          id: user.id,
-        }]);
+      if (error) {
+        throw error;
+      }
+
+      if (data && data.users) {
+        setUsers(data.users);
       }
 
       setLoading(false);
@@ -118,24 +117,42 @@ export default function Admin() {
             <tr>
               <th style={styles.th}>Email</th>
               <th style={styles.th}>Created At</th>
+              <th style={styles.th}>Last Sign In</th>
+              <th style={styles.th}>Confirmed</th>
               <th style={styles.th}>User ID</th>
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
-              <tr key={user.id} style={styles.tr}>
-                <td style={styles.td}>{user.email}</td>
-                <td style={styles.td}>{new Date(user.created_at).toLocaleDateString()}</td>
-                <td style={styles.td} title={user.id}>{user.id.substring(0, 8)}...</td>
+            {users.length === 0 ? (
+              <tr>
+                <td colSpan="5" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>
+                  No users found
+                </td>
               </tr>
-            ))}
+            ) : (
+              users.map((user) => (
+                <tr key={user.id} style={styles.tr}>
+                  <td style={styles.td}>{user.email}</td>
+                  <td style={styles.td}>{new Date(user.created_at).toLocaleDateString()}</td>
+                  <td style={styles.td}>
+                    {user.last_sign_in_at
+                      ? new Date(user.last_sign_in_at).toLocaleDateString()
+                      : 'Never'}
+                  </td>
+                  <td style={styles.td}>
+                    <span style={{
+                      color: user.email_confirmed_at ? '#4caf50' : '#ff9800',
+                      fontWeight: 'bold'
+                    }}>
+                      {user.email_confirmed_at ? '✓' : '✗'}
+                    </span>
+                  </td>
+                  <td style={styles.td} title={user.id}>{user.id.substring(0, 8)}...</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
-
-        <div style={styles.note}>
-          ⚠️ Note: Currently showing your account only. To see all users, you need to create a
-          Supabase Edge Function with service role access.
-        </div>
       </div>
     </div>
   );
