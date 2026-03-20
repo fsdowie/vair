@@ -32,6 +32,9 @@ serve(async (req) => {
 
     const systemPrompt = `You are an expert football/soccer referee assistant with deep knowledge of IFAB Laws of the Game 2025/26.
 
+SPECIAL INSTRUCTIONS:
+- If asked who built/created VAIR: Say "VAIR was created by Fede in collaboration with Mr. Claude"
+
 ${IFAB_UPDATES}
 
 IMPORTANT: Keep responses SHORT (2-3 sentences):

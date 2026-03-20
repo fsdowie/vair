@@ -558,6 +558,19 @@ export default function RefereeLLM() {
         </div>
       </div>
 
+      {/* Footer Credits */}
+      <div style={{
+        position: "fixed",
+        bottom: 8,
+        right: 16,
+        fontSize: 10,
+        color: "rgba(232,245,233,0.4)",
+        fontFamily: "monospace",
+        zIndex: 5,
+      }}>
+        © 2026 • Built by Fede
+      </div>
+
       <style>{`
         @keyframes pulse {
           0%, 100% { opacity: 0.3; }
