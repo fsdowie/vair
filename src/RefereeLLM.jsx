@@ -19,11 +19,32 @@ LAWS OF THE GAME 2025/26:
 
 ${LAWS_TEXT}`;
 
-const SAMPLE_QUESTIONS = [
-  "A player in an offside position doesn't touch the ball — is it still offside?",
+const ALL_SAMPLE_QUESTIONS = [
   "Can a goalkeeper score directly from a goal kick?",
   "A substitute enters the field without permission and prevents a goal. What's the ruling?",
+  "A player in an offside position doesn't touch the ball — is it still offside?",
+  "Can a player score from a drop ball restart?",
+  "What happens if a ball bursts during play?",
+  "Can a goalkeeper be sent off during a penalty shootout?",
+  "Is it handball if the ball hits a player's shoulder?",
+  "Can a team play with less than 7 players?",
+  "What's the ruling if a fan throws an object that stops a goal?",
+  "Can a penalty kick be taken before the goalkeeper is ready?",
+  "Is it offside if a player receives the ball from a throw-in?",
+  "What happens if two players on the same team commit fouls at the same time?",
+  "Can a player be offside in their own half?",
+  "What's the minimum distance defenders must be from a corner kick?",
+  "Can a goalkeeper handle a deliberate back-pass from a teammate's head?",
+  "What's the ruling on a player removing their shirt after scoring?",
+  "Can a substitute warm up behind the goal during play?",
+  "What happens if both teams score simultaneously?",
 ];
+
+// Get random sample questions
+const getRandomQuestions = (count = 3) => {
+  const shuffled = [...ALL_SAMPLE_QUESTIONS].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+};
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -70,6 +91,7 @@ export default function RefereeLLM() {
   const [chatLoading, setChatLoading] = useState(false);
   const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
+  const [sampleQuestions] = useState(() => getRandomQuestions());
 
   // Check for existing session on mount
   useEffect(() => {
@@ -406,7 +428,7 @@ export default function RefereeLLM() {
               gap: 12,
               alignItems: "center",
             }}>
-              {SAMPLE_QUESTIONS.map((q, i) => (
+              {sampleQuestions.map((q, i) => (
                 <button
                   key={i}
                   onClick={() => setInput(q)}
