@@ -1,7 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { IFAB_UPDATES } from './ifab-updates.ts';
 
-const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY')!
+const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY')!;
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const ADMIN_EMAIL = 'fsdowie@yahoo.com';
+const DAILY_LIMIT = 5;
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,6 +27,20 @@ serve(async (req) => {
       );
     }
 
+    // Create Supabase client with service role
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    
+    // Get user from token
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid authentication' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { messages } = await req.json();
     if (!messages || !Array.isArray(messages)) {
       return new Response(
@@ -29,6 +48,37 @@ serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    const isAdmin = user.email === ADMIN_EMAIL;
+
+    // Check daily limit for non-admin users
+    if (!isAdmin) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const { count, error: countError } = await supabase
+        .from('questions_log')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .gte('created_at', today.toISOString());
+
+      if (countError) {
+        console.error('Error counting questions:', countError);
+      } else if (count !== null && count >= DAILY_LIMIT) {
+        return new Response(
+          JSON.stringify({ 
+            error: `Daily limit reached. You can ask ${DAILY_LIMIT} questions per day. Try again tomorrow!`,
+            limitReached: true,
+            questionsToday: count,
+            dailyLimit: DAILY_LIMIT
+          }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    // Get the last user message (the question)
+    const userQuestion = messages.filter(m => m.role === 'user').pop()?.content || '';
 
     const systemPrompt = `You are an expert football/soccer referee assistant with deep knowledge of IFAB Laws of the Game 2025/26.
 
@@ -92,8 +142,34 @@ Only provide detailed explanations if user asks for more.`;
     const data = await anthropicResponse.json();
     const content = data.content[0].text;
 
+    // Log the question
+    const { error: logError } = await supabase
+      .from('questions_log')
+      .insert({
+        user_id: user.id,
+        question: userQuestion
+      });
+
+    if (logError) {
+      console.error('Error logging question:', logError);
+    }
+
+    // Get updated count for response
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const { count } = await supabase
+      .from('questions_log')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .gte('created_at', today.toISOString());
+
     return new Response(
-      JSON.stringify({ content }),
+      JSON.stringify({ 
+        content,
+        questionsToday: count || 0,
+        dailyLimit: isAdmin ? 'unlimited' : DAILY_LIMIT,
+        isAdmin
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 

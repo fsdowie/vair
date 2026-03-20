@@ -90,6 +90,9 @@ export default function RefereeLLM() {
   const [input, setInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [questionsToday, setQuestionsToday] = useState(0);
+  const [dailyLimit, setDailyLimit] = useState(5);
+  const [isAdmin, setIsAdmin] = useState(false);
   const messagesEndRef = useRef(null);
   const [sampleQuestions] = useState(() => getRandomQuestions());
 
