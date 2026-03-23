@@ -36,7 +36,19 @@
       "Bash(git remote add:*)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "Bash(supabase db push:*)"
+      "Bash(supabase db push:*)",
+      "WebSearch",
+      "WebFetch(domain:www.squawka.com)",
+      "WebFetch(domain:playerstats.football)",
+      "WebFetch(domain:www.whoscored.com)",
+      "WebFetch(domain:valuestats.com)",
+      "WebFetch(domain:goalometer.com)",
+      "WebFetch(domain:m.football-lineups.com)",
+      "WebFetch(domain:www.footymetrics.com)",
+      "WebFetch(domain:www.adamchoi.co.uk)",
+      "WebFetch(domain:thevarverdict.com)",
+      "WebFetch(domain:commons.wikimedia.org)",
+      "WebFetch(domain:en.wikipedia.org)"
     ]
   }
 }
