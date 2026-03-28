@@ -48,7 +48,20 @@
       "WebFetch(domain:www.adamchoi.co.uk)",
       "WebFetch(domain:thevarverdict.com)",
       "WebFetch(domain:commons.wikimedia.org)",
-      "WebFetch(domain:en.wikipedia.org)"
+      "WebFetch(domain:en.wikipedia.org)",
+      "Bash(vercel --version)",
+      "Bash(gh repo:*)",
+      "Bash(where gh:*)",
+      "Bash(winget list:*)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" --version)",
+      "Bash(\"/c/Users/fsdow/AppData/Local/Programs/gh/bin/gh.exe\" --version)",
+      "Bash(cmd.exe /c \"where gh\" 2>&1)",
+      "Bash(cmd.exe /c \"gh --version\")",
+      "Bash(cmd.exe /c \"gh api repos/fsdowie/vair/actions/secrets 2>&1\")",
+      "Bash(powershell.exe -Command \"Get-Command gh -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\" 2>&1)",
+      "Bash(echo $GITHUB_TOKEN)",
+      "Bash(git config:*)",
+      "Bash(npm run:*)"
     ]
   }
 }
