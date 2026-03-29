@@ -106,6 +106,7 @@ function FeedbackModal({ onClose }) {
   const [captcha, setCaptcha] = useState({ ...genMath(), input: "" });
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
+  const [apiError, setApiError] = useState("");
 
   // Reset captcha on mount
   useEffect(() => { setCaptcha({ ...genMath(), input: "" }); }, []);
@@ -172,9 +173,14 @@ function FeedbackModal({ onClose }) {
         body: JSON.stringify(body),
       });
       const data = await res.json();
-      if (data.success) setStatus("success");
-      else throw new Error(data.message);
-    } catch {
+      if (data.success) {
+        setStatus("success");
+      } else {
+        setApiError(data.message || "Unknown error from Web3Forms");
+        setStatus("error");
+      }
+    } catch (err) {
+      setApiError(err.message || "Network error");
       setStatus("error");
     }
   };
@@ -290,9 +296,10 @@ function FeedbackModal({ onClose }) {
         </Field>
 
         {status === "error" && (
-          <p style={{ fontSize: 13, color: "#ef9a9a", background: "rgba(239,154,154,0.1)", borderRadius: 8, padding: "10px 14px" }}>
-            Something went wrong. Please try again or email us directly at fsdowie@gmail.com
-          </p>
+          <div style={{ fontSize: 13, color: "#ef9a9a", background: "rgba(239,154,154,0.1)", borderRadius: 8, padding: "10px 14px" }}>
+            <strong>Submission failed:</strong> {apiError || "Unknown error"}<br/>
+            <span style={{ fontSize: 12, opacity: 0.8 }}>You can also email us directly at fsdowie@gmail.com</span>
+          </div>
         )}
 
         <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", marginTop: 8 }}>
