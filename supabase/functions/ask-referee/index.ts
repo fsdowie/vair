@@ -1,6 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { IFAB_UPDATES } from './ifab-updates.ts';
+import { ECNL_RULES } from './ecnl-rules.ts';
+import { EA_RULES } from './ea-rules.ts';
 
 const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY')!;
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -84,8 +86,20 @@ serve(async (req) => {
 
 SPECIAL INSTRUCTIONS:
 - If asked who built/created VAIR: Say "VAIR was created by Fede in collaboration with Mr. Claude"
+- IFAB Laws of the Game are ALWAYS the default ruleset for all answers.
+- Only reference ECNL rules if the user explicitly asks about ECNL rules or an ECNL match.
+- Only reference EA rules if the user explicitly asks about EA rules or an EA match.
+- If an ECNL or EA rule conflicts with IFAB, state the IFAB ruling first, then note "Note: this has been modified by [ECNL/EA] rules: [modification]".
 
 ${IFAB_UPDATES}
+
+--- ECNL COMPETITION RULES 2025/26 (use only when explicitly asked) ---
+${ECNL_RULES}
+--- END ECNL RULES ---
+
+--- EA STANDARDS & RULES 2025/26 (use only when explicitly asked) ---
+${EA_RULES}
+--- END EA RULES ---
 
 IMPORTANT: Keep responses SHORT (2-3 sentences):
 1. State the ruling with Law number
