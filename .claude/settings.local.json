@@ -61,7 +61,8 @@
       "Bash(powershell.exe -Command \"Get-Command gh -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\" 2>&1)",
       "Bash(echo $GITHUB_TOKEN)",
       "Bash(git config:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(claude doctor:*)"
     ]
   }
 }
