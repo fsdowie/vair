@@ -1,12 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
-import { execSync } from 'child_process'
 
-let releaseDate = 'unknown'
-try {
-  releaseDate = execSync('git log -1 --format=%cd --date=format:"%Y/%m/%d %H:%M"').toString().trim()
-} catch (e) {}
+const now = new Date();
+const releaseDate = now.toLocaleString('en-US', {
+  year: 'numeric', month: '2-digit', day: '2-digit',
+  hour: '2-digit', minute: '2-digit', hour12: false,
+  timeZone: 'UTC'
+}) + ' UTC';
 
 // https://vite.dev/config/
 export default defineConfig({

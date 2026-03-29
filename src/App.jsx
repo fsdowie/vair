@@ -7,7 +7,7 @@ import AboutUs from "./pages/AboutUs";
 
 export default function App() {
   const [activePage, setActivePage] = useState("referee");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
     <div style={{ position: "relative", height: "100vh", overflow: "hidden" }}>

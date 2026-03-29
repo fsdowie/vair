@@ -1,3 +1,4 @@
+/* global __RELEASE_DATE__ */
 import { useState, useRef, useEffect } from "react";
 import { createClient } from '@supabase/supabase-js';
 
@@ -593,7 +594,7 @@ export default function RefereeLLM() {
         fontFamily: "monospace",
         zIndex: 5,
       }}>
-        © 2026 • Built by Fede
+        © 2026 • Built by Fede{typeof __RELEASE_DATE__ !== 'undefined' ? ` • ${__RELEASE_DATE__}` : ''}
       </div>
 
       <style>{`
