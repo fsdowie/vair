@@ -62,7 +62,14 @@
       "Bash(echo $GITHUB_TOKEN)",
       "Bash(git config:*)",
       "Bash(npm run:*)",
-      "Bash(claude doctor:*)"
+      "Bash(claude doctor:*)",
+      "Bash(python -c \"import sys; print\\(sys.version\\)\")",
+      "Bash(python -c \"import pypdf; print\\(''pypdf ok''\\)\")",
+      "Bash(python -c \"import PyPDF2; print\\(''PyPDF2 ok''\\)\")",
+      "Bash(python -c \"import pdfminer; print\\(''pdfminer ok''\\)\")",
+      "Bash(pip install:*)",
+      "Bash(python -c \":*)",
+      "Bash(python:*)"
     ]
   }
 }
