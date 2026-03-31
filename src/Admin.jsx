@@ -18,6 +18,16 @@ export default function Admin() {
   const [logs, setLogs] = useState([]);
   const [logsLoading, setLogsLoading] = useState(false);
 
+  const [reports, setReports] = useState([]);
+  const [corrections, setCorrections] = useState([]);
+  const [reportsLoading, setReportsLoading] = useState(false);
+  const [actionModal, setActionModal] = useState(null); // { type: 'accept'|'reject', report }
+  const [correctionText, setCorrectionText] = useState('');
+  const [correctionNotes, setCorrectionNotes] = useState('');
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [actionLoading, setActionLoading] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(null); // correction id
+
   useEffect(() => {
     // Check if user is logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -71,6 +81,59 @@ export default function Admin() {
       setError(err.message);
       setLogsLoading(false);
     }
+  };
+
+  const fetchReports = async () => {
+    setReportsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('get-reports');
+      if (error) throw error;
+      setReports(data.reports || []);
+      setCorrections(data.corrections || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setReportsLoading(false);
+    }
+  };
+
+  const handleAccept = async () => {
+    if (!correctionText.trim()) return;
+    setActionLoading(true);
+    try {
+      const { error } = await supabase.functions.invoke('process-report', {
+        body: { action: 'accept', report_id: actionModal.report.id, correction_text: correctionText, notes: correctionNotes },
+      });
+      if (error) throw error;
+      setActionModal(null); setCorrectionText(''); setCorrectionNotes('');
+      await fetchReports();
+    } catch (err) { setError(err.message); }
+    finally { setActionLoading(false); }
+  };
+
+  const handleReject = async () => {
+    if (!rejectionReason.trim()) return;
+    setActionLoading(true);
+    try {
+      const { error } = await supabase.functions.invoke('process-report', {
+        body: { action: 'reject', report_id: actionModal.report.id, rejection_reason: rejectionReason },
+      });
+      if (error) throw error;
+      setActionModal(null); setRejectionReason('');
+      await fetchReports();
+    } catch (err) { setError(err.message); }
+    finally { setActionLoading(false); }
+  };
+
+  const handleDeleteCorrection = async (id) => {
+    try {
+      const { error } = await supabase.functions.invoke('process-report', {
+        body: { action: 'delete_correction', correction_id: id },
+      });
+      if (error) throw error;
+      setDeleteConfirm(null);
+      await fetchReports();
+    } catch (err) { setError(err.message); }
   };
 
   const handleLogin = async (e) => {
@@ -175,6 +238,18 @@ export default function Admin() {
           >
             📝 Question Logs
           </button>
+          <button
+            onClick={() => {
+              setActiveTab('reports');
+              if (reports.length === 0) fetchReports();
+            }}
+            style={{
+              ...styles.tabButton,
+              ...(activeTab === 'reports' ? styles.activeTab : {})
+            }}
+          >
+            🚩 Answer Reports
+          </button>
         </div>
 
         {/* Users Tab */}
@@ -276,6 +351,136 @@ export default function Admin() {
                   )}
                 </tbody>
               </table>
+            )}
+          </>
+        )}
+        {/* Reports Tab */}
+        {activeTab === 'reports' && (
+          <>
+            {reportsLoading ? (
+              <div style={{ textAlign: 'center', padding: 40, color: 'rgba(232,245,233,0.6)' }}>Loading reports…</div>
+            ) : (
+              <>
+                {/* Pending reports */}
+                <h3 style={{ color: '#ef9a9a', fontSize: 16, marginBottom: 16 }}>
+                  🚩 Pending Reports ({reports.filter(r => r.status === 'pending').length})
+                </h3>
+                {reports.filter(r => r.status === 'pending').length === 0 ? (
+                  <div style={{ color: 'rgba(232,245,233,0.4)', fontSize: 13, marginBottom: 32 }}>No pending reports.</div>
+                ) : (
+                  reports.filter(r => r.status === 'pending').map(r => (
+                    <div key={r.id} style={{ background: 'rgba(10,22,40,0.6)', border: '1px solid rgba(239,154,154,0.2)', borderRadius: 12, padding: 20, marginBottom: 16 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                        <span style={{ fontSize: 11, color: 'rgba(232,245,233,0.4)' }}>{r.user_email} · {new Date(r.created_at).toLocaleString()}</span>
+                      </div>
+                      <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 4, textTransform: 'uppercase' }}>Question</div>
+                      <div style={{ fontSize: 13, color: '#e8f5e9', marginBottom: 12, background: 'rgba(76,175,80,0.05)', borderRadius: 8, padding: '8px 12px' }}>{r.question}</div>
+                      <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 4, textTransform: 'uppercase' }}>VAIR's Answer</div>
+                      <div style={{ fontSize: 13, color: 'rgba(232,245,233,0.8)', marginBottom: 12, background: 'rgba(13,33,55,0.5)', borderRadius: 8, padding: '8px 12px', whiteSpace: 'pre-wrap' }}>{r.vair_answer}</div>
+                      <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 4, textTransform: 'uppercase' }}>Reporter's Explanation</div>
+                      <div style={{ fontSize: 13, color: '#ef9a9a', marginBottom: 16, background: 'rgba(183,28,28,0.1)', borderRadius: 8, padding: '8px 12px' }}>{r.explanation}</div>
+                      <div style={{ display: 'flex', gap: 10 }}>
+                        <button onClick={() => setActionModal({ type: 'accept', report: r })} style={{ background: 'linear-gradient(135deg,#2e7d32,#4caf50)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 18px', cursor: 'pointer' }}>✅ Accept</button>
+                        <button onClick={() => setActionModal({ type: 'reject', report: r })} style={{ background: 'linear-gradient(135deg,#b71c1c,#e53935)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 18px', cursor: 'pointer' }}>❌ Reject</button>
+                      </div>
+                    </div>
+                  ))
+                )}
+
+                {/* Processed reports summary */}
+                <h3 style={{ color: '#81c784', fontSize: 16, marginBottom: 16, marginTop: 8 }}>
+                  📋 Processed Reports ({reports.filter(r => r.status !== 'pending').length})
+                </h3>
+                {reports.filter(r => r.status !== 'pending').length === 0 ? (
+                  <div style={{ color: 'rgba(232,245,233,0.4)', fontSize: 13, marginBottom: 32 }}>No processed reports yet.</div>
+                ) : (
+                  <table style={styles.table}>
+                    <thead><tr>
+                      <th style={styles.th}>Reporter</th>
+                      <th style={styles.th}>Question (excerpt)</th>
+                      <th style={styles.th}>Status</th>
+                      <th style={styles.th}>Processed At</th>
+                    </tr></thead>
+                    <tbody>
+                      {reports.filter(r => r.status !== 'pending').map(r => (
+                        <tr key={r.id} style={styles.tr}>
+                          <td style={styles.td}>{r.user_email}</td>
+                          <td style={{ ...styles.td, maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.question}</td>
+                          <td style={styles.td}>
+                            <span style={{ color: r.status === 'accepted' ? '#81c784' : '#ef9a9a', fontWeight: 700 }}>
+                              {r.status === 'accepted' ? '✅ Accepted' : '❌ Rejected'}
+                            </span>
+                          </td>
+                          <td style={styles.td}>{r.processed_at ? new Date(r.processed_at).toLocaleString() : '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+
+                {/* Active corrections / rollback */}
+                <h3 style={{ color: '#4caf50', fontSize: 16, marginBottom: 16, marginTop: 8 }}>
+                  🧠 Active LLM Corrections ({corrections.filter(c => c.is_active).length})
+                </h3>
+                {corrections.filter(c => c.is_active).length === 0 ? (
+                  <div style={{ color: 'rgba(232,245,233,0.4)', fontSize: 13 }}>No active corrections.</div>
+                ) : (
+                  corrections.filter(c => c.is_active).map(c => (
+                    <div key={c.id} style={{ background: 'rgba(76,175,80,0.05)', border: '1px solid rgba(76,175,80,0.2)', borderRadius: 12, padding: 16, marginBottom: 12 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                        <span style={{ fontSize: 11, color: '#81c784', fontFamily: 'monospace' }}>v {c.version_label}</span>
+                        {deleteConfirm === c.id ? (
+                          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <span style={{ fontSize: 12, color: '#ef9a9a' }}>Permanently remove?</span>
+                            <button onClick={() => handleDeleteCorrection(c.id)} style={{ background: '#b71c1c', border: 'none', borderRadius: 6, color: '#fff', fontSize: 12, padding: '4px 10px', cursor: 'pointer' }}>Yes, remove</button>
+                            <button onClick={() => setDeleteConfirm(null)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: 6, color: '#e8f5e9', fontSize: 12, padding: '4px 10px', cursor: 'pointer' }}>Cancel</button>
+                          </div>
+                        ) : (
+                          <button onClick={() => setDeleteConfirm(c.id)} style={{ background: 'rgba(183,28,28,0.2)', border: '1px solid rgba(239,83,80,0.3)', borderRadius: 6, color: '#ef9a9a', fontSize: 12, padding: '4px 10px', cursor: 'pointer' }}>🗑 Rollback</button>
+                        )}
+                      </div>
+                      {c.notes && <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 6 }}>Note: {c.notes}</div>}
+                      <div style={{ fontSize: 13, color: '#e8f5e9', whiteSpace: 'pre-wrap' }}>{c.correction_text}</div>
+                    </div>
+                  ))
+                )}
+              </>
+            )}
+
+            {/* Accept modal */}
+            {actionModal?.type === 'accept' && (
+              <div onClick={() => setActionModal(null)} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+                <div onClick={e => e.stopPropagation()} style={{ background: '#0d2137', border: '1px solid rgba(76,175,80,0.3)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 540 }}>
+                  <h3 style={{ color: '#81c784', marginBottom: 16 }}>✅ Accept report — add correction</h3>
+                  <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 4, textTransform: 'uppercase' }}>Correction text (will be added to VAIR's knowledge) *</div>
+                  <textarea value={correctionText} onChange={e => setCorrectionText(e.target.value)} placeholder="Write the correct ruling or clarification that VAIR should use going forward…" style={{ width: '100%', minHeight: 120, background: 'rgba(10,22,40,0.7)', border: '1px solid rgba(76,175,80,0.3)', borderRadius: 8, color: '#e8f5e9', fontSize: 13, padding: '10px 12px', resize: 'vertical', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: 12 }} />
+                  <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 4, textTransform: 'uppercase' }}>Admin notes (optional)</div>
+                  <input value={correctionNotes} onChange={e => setCorrectionNotes(e.target.value)} placeholder="e.g. Law 12 clarification" style={{ width: '100%', background: 'rgba(10,22,40,0.7)', border: '1px solid rgba(76,175,80,0.3)', borderRadius: 8, color: '#e8f5e9', fontSize: 13, padding: '10px 12px', outline: 'none', boxSizing: 'border-box', marginBottom: 20 }} />
+                  <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                    <button onClick={() => setActionModal(null)} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '10px 20px', cursor: 'pointer' }}>Cancel</button>
+                    <button onClick={handleAccept} disabled={actionLoading || !correctionText.trim()} style={{ background: 'linear-gradient(135deg,#2e7d32,#4caf50)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 20px', cursor: actionLoading || !correctionText.trim() ? 'default' : 'pointer', opacity: actionLoading || !correctionText.trim() ? 0.6 : 1 }}>
+                      {actionLoading ? 'Saving…' : 'Save correction'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Reject modal */}
+            {actionModal?.type === 'reject' && (
+              <div onClick={() => setActionModal(null)} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+                <div onClick={e => e.stopPropagation()} style={{ background: '#0d2137', border: '1px solid rgba(239,83,80,0.3)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 480 }}>
+                  <h3 style={{ color: '#ef9a9a', marginBottom: 16 }}>❌ Reject report</h3>
+                  <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 4, textTransform: 'uppercase' }}>Reason for rejection (sent to reporter) *</div>
+                  <textarea value={rejectionReason} onChange={e => setRejectionReason(e.target.value)} placeholder="Explain why this report was not accepted…" style={{ width: '100%', minHeight: 100, background: 'rgba(10,22,40,0.7)', border: '1px solid rgba(239,83,80,0.3)', borderRadius: 8, color: '#e8f5e9', fontSize: 13, padding: '10px 12px', resize: 'vertical', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: 20 }} />
+                  <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                    <button onClick={() => setActionModal(null)} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '10px 20px', cursor: 'pointer' }}>Cancel</button>
+                    <button onClick={handleReject} disabled={actionLoading || !rejectionReason.trim()} style={{ background: 'linear-gradient(135deg,#b71c1c,#e53935)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 20px', cursor: actionLoading || !rejectionReason.trim() ? 'default' : 'pointer', opacity: actionLoading || !rejectionReason.trim() ? 0.6 : 1 }}>
+                      {actionLoading ? 'Saving…' : 'Reject report'}
+                    </button>
+                  </div>
+                </div>
+              </div>
             )}
           </>
         )}

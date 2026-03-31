@@ -82,6 +82,21 @@ serve(async (req) => {
     // Get the last user message (the question)
     const userQuestion = messages.filter(m => m.role === 'user').pop()?.content || '';
 
+    // Fetch active corrections from DB
+    const { data: corrections } = await supabase
+      .from('llm_corrections')
+      .select('correction_text, version_label, notes')
+      .eq('is_active', true)
+      .order('created_at', { ascending: true });
+
+    const correctionsBlock = corrections && corrections.length > 0
+      ? `\n--- VERIFIED CORRECTIONS (admin-reviewed, take precedence over default answers) ---\n` +
+        corrections.map(c =>
+          `[${c.version_label}]${c.notes ? ` (${c.notes})` : ''}\n${c.correction_text}`
+        ).join('\n\n') +
+        `\n--- END CORRECTIONS ---\n`
+      : '';
+
     const systemPrompt = `You are an expert football/soccer referee assistant with deep knowledge of IFAB Laws of the Game 2025/26.
 
 SPECIAL INSTRUCTIONS:
@@ -92,6 +107,7 @@ SPECIAL INSTRUCTIONS:
 - If an ECNL or EA rule conflicts with IFAB, state the IFAB ruling first, then note "Note: this has been modified by [ECNL/EA] rules: [modification]".
 
 ${IFAB_UPDATES}
+${correctionsBlock}
 
 --- ECNL COMPETITION RULES 2025/26 (use only when explicitly asked) ---
 ${ECNL_RULES}

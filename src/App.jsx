@@ -1,13 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 import RefereeLLM from "./RefereeLLM";
 import Sidebar from "./Sidebar";
 import RefereeComparison from "./pages/RefereeComparison";
 import GamesOrganizer from "./pages/GamesOrganizer";
 import AboutUs from "./pages/AboutUs";
+import Admin from "./Admin";
+
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 export default function App() {
   const [activePage, setActivePage] = useState("referee");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [userEmail, setUserEmail] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUserEmail(session?.user?.email ?? null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setUserEmail(session?.user?.email ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   return (
     <div style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
@@ -39,6 +57,7 @@ export default function App() {
         onClose={() => setSidebarOpen(false)}
         activePage={activePage}
         onNavigate={setActivePage}
+        userEmail={userEmail}
       />
 
       {/* Main content */}
@@ -47,6 +66,7 @@ export default function App() {
         {activePage === "comparison" && <RefereeComparison />}
         {activePage === "games"      && <GamesOrganizer />}
         {activePage === "about"      && <AboutUs />}
+        {activePage === "admin"      && <Admin />}
       </div>
     </div>
   );

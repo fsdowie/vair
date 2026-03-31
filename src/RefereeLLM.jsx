@@ -97,6 +97,11 @@ export default function RefereeLLM() {
   const messagesEndRef = useRef(null);
   const [sampleQuestions] = useState(() => getRandomQuestions());
 
+  const [reportModal, setReportModal] = useState(null); // { question, answer } | null
+  const [reportExplanation, setReportExplanation] = useState('');
+  const [reportStatus, setReportStatus] = useState('idle'); // idle | submitting | success
+  const [notifications, setNotifications] = useState([]);
+
   // Check for existing session on mount
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -117,6 +122,52 @@ export default function RefereeLLM() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Fetch unread report notifications on login
+  useEffect(() => {
+    if (!session) { setNotifications([]); return; }
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    fetch(`${supabaseUrl}/functions/v1/get-reports?mode=user-notifications`, {
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(r => r.json())
+      .then(d => { if (d.reports) setNotifications(d.reports); })
+      .catch(() => {});
+  }, [session]);
+
+  const dismissNotification = async (id) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+    await supabase.functions.invoke('process-report', {
+      body: { action: 'mark_read', report_id: id },
+    });
+  };
+
+  const submitReport = async () => {
+    if (!reportModal || !reportExplanation.trim()) return;
+    setReportStatus('submitting');
+    try {
+      const { error } = await supabase.functions.invoke('submit-report', {
+        body: {
+          question: reportModal.question,
+          vair_answer: reportModal.answer,
+          explanation: reportExplanation,
+        },
+      });
+      if (error) throw error;
+      setReportStatus('success');
+    } catch {
+      setReportStatus('idle');
+    }
+  };
+
+  const closeReportModal = () => {
+    setReportModal(null);
+    setReportExplanation('');
+    setReportStatus('idle');
+  };
 
   const handleAuth = async (e) => {
     e.preventDefault();
@@ -465,25 +516,53 @@ export default function RefereeLLM() {
           </div>
         )}
 
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            style={{
-              maxWidth: 700,
-              margin: msg.role === "user" ? "0 0 16px auto" : "0 auto 16px 0",
-              padding: "14px 18px",
-              background: msg.role === "user"
-                ? "linear-gradient(135deg, #0a1e0f, #1b4d20)"
-                : "rgba(13,33,55,0.5)",
-              border: `1px solid ${msg.role === "user" ? "rgba(76,175,80,0.3)" : "rgba(76,175,80,0.15)"}`,
-              borderRadius: 16,
-              fontSize: 15,
-              lineHeight: 1.6,
-              whiteSpace: "pre-wrap",
-              wordBreak: "break-word",
-            }}
-          >{renderMessageWithLinks(msg.content)}</div>
-        ))}
+        {messages.map((msg, idx) => {
+          const prevUserMsg = msg.role === 'assistant'
+            ? messages.slice(0, idx).filter(m => m.role === 'user').pop()
+            : null;
+          return (
+            <div key={idx} style={{ maxWidth: 700, margin: msg.role === "user" ? "0 0 16px auto" : "0 auto 16px 0" }}>
+              <div
+                style={{
+                  padding: "14px 18px",
+                  background: msg.role === "user"
+                    ? "linear-gradient(135deg, #0a1e0f, #1b4d20)"
+                    : "rgba(13,33,55,0.5)",
+                  border: `1px solid ${msg.role === "user" ? "rgba(76,175,80,0.3)" : "rgba(76,175,80,0.15)"}`,
+                  borderRadius: 16,
+                  fontSize: 15,
+                  lineHeight: 1.6,
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                }}
+              >{renderMessageWithLinks(msg.content)}</div>
+              {msg.role === 'assistant' && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
+                  <button
+                    onClick={() => setReportModal({ question: prevUserMsg?.content || '', answer: msg.content })}
+                    title="Report this answer as incorrect"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'rgba(232,245,233,0.3)',
+                      fontSize: 12,
+                      cursor: 'pointer',
+                      padding: '2px 6px',
+                      borderRadius: 6,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4,
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.color = 'rgba(239,154,154,0.8)'}
+                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(232,245,233,0.3)'}
+                  >
+                    🚩 Report
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
 
         {chatLoading && (
           <div style={{
@@ -596,6 +675,86 @@ export default function RefereeLLM() {
       }}>
         © 2026 • Built by Fede{typeof __RELEASE_DATE__ !== 'undefined' ? ` • ${__RELEASE_DATE__}` : ''}
       </div>
+
+      {/* Notification banners for processed reports */}
+      {notifications.map(n => (
+        <div key={n.id} style={{
+          position: 'fixed', top: 16, left: '50%', transform: 'translateX(-50%)',
+          zIndex: 999, maxWidth: 520, width: '90%',
+          background: n.status === 'rejected' ? 'rgba(183,28,28,0.95)' : 'rgba(27,94,32,0.95)',
+          border: `1px solid ${n.status === 'rejected' ? 'rgba(239,83,80,0.5)' : 'rgba(76,175,80,0.5)'}`,
+          borderRadius: 12, padding: '14px 18px',
+          color: '#e8f5e9', fontSize: 13,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+        }}>
+          <div style={{ fontWeight: 700, marginBottom: 4 }}>
+            {n.status === 'rejected' ? '❌ Your answer report was reviewed' : '✅ Your answer report was accepted'}
+          </div>
+          <div style={{ opacity: 0.85, marginBottom: 8, fontSize: 12 }}>
+            <strong>Your question:</strong> {n.question.slice(0, 120)}{n.question.length > 120 ? '…' : ''}
+          </div>
+          {n.status === 'rejected' && n.rejection_reason && (
+            <div style={{ opacity: 0.85, marginBottom: 8, fontSize: 12 }}>
+              <strong>Reason:</strong> {n.rejection_reason}
+            </div>
+          )}
+          <button
+            onClick={() => dismissNotification(n.id)}
+            style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 6, color: '#e8f5e9', fontSize: 12, padding: '4px 12px', cursor: 'pointer' }}
+          >
+            Dismiss
+          </button>
+        </div>
+      ))}
+
+      {/* Report modal */}
+      {reportModal && (
+        <div
+          onClick={closeReportModal}
+          style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ background: '#0d2137', border: '1px solid rgba(76,175,80,0.25)', borderRadius: 16, padding: '28px 24px', width: '100%', maxWidth: 500, boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}
+          >
+            {reportStatus === 'success' ? (
+              <div style={{ textAlign: 'center', padding: '16px 0' }}>
+                <div style={{ fontSize: 44, marginBottom: 12 }}>✅</div>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#81c784', marginBottom: 8 }}>Report submitted</h3>
+                <p style={{ fontSize: 13, color: 'rgba(232,245,233,0.6)', marginBottom: 20 }}>
+                  Thank you — we will review the correction and address it accordingly.
+                </p>
+                <button onClick={closeReportModal} style={{ background: 'linear-gradient(135deg,#2e7d32,#4caf50)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 24px', cursor: 'pointer' }}>Close</button>
+              </div>
+            ) : (
+              <>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#ef9a9a', marginBottom: 16 }}>🚩 Report incorrect answer</h3>
+                <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.07em' }}>VAIR's answer</div>
+                <div style={{ background: 'rgba(10,22,40,0.6)', border: '1px solid rgba(76,175,80,0.15)', borderRadius: 8, padding: '10px 12px', fontSize: 13, color: 'rgba(232,245,233,0.7)', marginBottom: 16, maxHeight: 100, overflowY: 'auto', whiteSpace: 'pre-wrap' }}>
+                  {reportModal.answer.slice(0, 300)}{reportModal.answer.length > 300 ? '…' : ''}
+                </div>
+                <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Why is this wrong? <span style={{ color: '#ef9a9a' }}>*</span></div>
+                <textarea
+                  value={reportExplanation}
+                  onChange={e => setReportExplanation(e.target.value)}
+                  placeholder="Explain why this answer is incorrect and what the correct ruling should be…"
+                  style={{ width: '100%', minHeight: 100, background: 'rgba(10,22,40,0.7)', border: '1px solid rgba(76,175,80,0.3)', borderRadius: 8, color: '#e8f5e9', fontSize: 13, padding: '10px 12px', resize: 'vertical', outline: 'none', boxSizing: 'border-box', fontFamily: 'system-ui,-apple-system,sans-serif', marginBottom: 16 }}
+                />
+                <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                  <button onClick={closeReportModal} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '10px 20px', cursor: 'pointer' }}>Cancel</button>
+                  <button
+                    onClick={submitReport}
+                    disabled={reportStatus === 'submitting' || !reportExplanation.trim()}
+                    style={{ background: 'linear-gradient(135deg,#b71c1c,#e53935)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 20px', cursor: reportStatus === 'submitting' || !reportExplanation.trim() ? 'default' : 'pointer', opacity: reportStatus === 'submitting' || !reportExplanation.trim() ? 0.6 : 1 }}
+                  >
+                    {reportStatus === 'submitting' ? 'Submitting…' : 'Submit report'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes pulse {
