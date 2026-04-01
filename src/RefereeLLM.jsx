@@ -126,8 +126,7 @@ export default function RefereeLLM() {
   // Fetch unread report notifications on login
   useEffect(() => {
     if (!session) { setNotifications([]); return; }
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    fetch(`${supabaseUrl}/functions/v1/get-reports?mode=user-notifications`, {
+    fetch(`https://iunehbdazfzgfclkvvgd.supabase.co/functions/v1/get-reports?mode=user-notifications`, {
       headers: {
         Authorization: `Bearer ${session.access_token}`,
         'Content-Type': 'application/json',

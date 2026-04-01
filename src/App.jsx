@@ -8,8 +8,8 @@ import AboutUs from "./pages/AboutUs";
 import Admin from "./Admin";
 
 const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
+  'https://iunehbdazfzgfclkvvgd.supabase.co',
+  'sb_publishable_SU4BJ5e9RLDl-3iSZHo-3g_mbHpD9cn'
 );
 
 export default function App() {
