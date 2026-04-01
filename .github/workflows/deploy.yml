@@ -53,3 +53,6 @@ jobs:
         run: |
           supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
           supabase functions deploy ask-referee --no-verify-jwt
+          supabase functions deploy submit-report --no-verify-jwt
+          supabase functions deploy get-reports --no-verify-jwt
+          supabase functions deploy process-report --no-verify-jwt
