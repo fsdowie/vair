@@ -4,6 +4,7 @@ import RefereeLLM from "./RefereeLLM";
 import Sidebar from "./Sidebar";
 import RefereeComparison from "./pages/RefereeComparison";
 import GamesOrganizer from "./pages/GamesOrganizer";
+import WebsiteConnections from "./pages/WebsiteConnections";
 import AboutUs from "./pages/AboutUs";
 import Admin from "./Admin";
 
@@ -65,6 +66,7 @@ export default function App() {
         {activePage === "referee"    && <RefereeLLM />}
         {activePage === "comparison" && <RefereeComparison />}
         {activePage === "games"      && <GamesOrganizer />}
+        {activePage === "connections" && <WebsiteConnections />}
         {activePage === "about"      && <AboutUs />}
         {activePage === "admin"      && <Admin />}
       </div>

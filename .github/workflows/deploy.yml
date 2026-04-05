@@ -56,3 +56,5 @@ jobs:
           supabase functions deploy submit-report --no-verify-jwt
           supabase functions deploy get-reports --no-verify-jwt
           supabase functions deploy process-report --no-verify-jwt
+          supabase functions deploy manage-credentials --no-verify-jwt
+          supabase functions deploy scrape-games --no-verify-jwt
