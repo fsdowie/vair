@@ -73,6 +73,17 @@ serve(async (req) => {
   }
 });
 
+function extractCookies(headers: Headers): string {
+  const cookies: string[] = [];
+  const raw = headers.get('set-cookie') || '';
+  const parts = raw.split(',');
+  for (const part of parts) {
+    const kv = part.trim().split(';')[0].trim();
+    if (kv.includes('=')) cookies.push(kv);
+  }
+  return cookies.join('; ');
+}
+
 async function testLogin(siteUrl: string, username: string, password: string): Promise<{ success: boolean; error?: string }> {
   try {
     // 1. GET login page to extract CSRF token
@@ -81,7 +92,7 @@ async function testLogin(siteUrl: string, username: string, password: string): P
     const tokenMatch = loginHtml.match(/name="flgX"\s+type="hidden"\s+value="([^"]+)"/);
     if (!tokenMatch) return { success: false, error: 'Could not find login token' };
 
-    const cookies = loginPageRes.headers.get('set-cookie') || '';
+    const initialCookies = extractCookies(loginPageRes.headers);
 
     // 2. POST credentials
     const form = new URLSearchParams();
@@ -91,20 +102,17 @@ async function testLogin(siteUrl: string, username: string, password: string): P
 
     const loginRes = await fetch(`${siteUrl}/logon.php`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Cookie': cookies },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Cookie': initialCookies },
       body: form.toString(),
       redirect: 'manual',
     });
 
-    const sessionCookies = loginRes.headers.get('set-cookie') || cookies;
+    const sessionCookies = extractCookies(loginRes.headers) || initialCookies;
     const location = loginRes.headers.get('location') || '';
 
-    // If redirect to error page, login failed
-    if (location.includes('logon') || loginRes.status === 200) {
-      const body = await loginRes.text();
-      if (body.includes('Invalid') || body.includes('failed') || body.includes('incorrect')) {
-        return { success: false, error: 'Invalid credentials' };
-      }
+    // If redirected back to login, credentials are wrong
+    if (location.includes('logon')) {
+      return { success: false, error: 'Invalid credentials' };
     }
 
     // 3. Verify by hitting a protected page
