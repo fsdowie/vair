@@ -106,17 +106,22 @@ function mergeCookies(existing: string, incoming: string): string {
   return [...map.entries()].map(([k, v]) => `${k}=${v}`).join('; ');
 }
 
-async function testLogin(siteUrl: string, username: string, password: string): Promise<{ success: boolean; error?: string }> {
+async function testLogin(siteUrl: string, username: string, password: string): Promise<{ success: boolean; error?: string; debug?: string[] }> {
+  const log: string[] = [];
   try {
     // 1. GET login page to extract CSRF token + initial cookies
     const loginPageRes = await fetch(`${siteUrl}/logon.php`, { redirect: 'follow' });
+    log.push(`[1] GET /logon.php → ${loginPageRes.status} ${loginPageRes.url}`);
+
     const loginHtml = await loginPageRes.text();
     const tokenMatch = loginHtml.match(/name="flgX"\s+type="hidden"\s+value="([^"]+)"/);
-    if (!tokenMatch) return { success: false, error: 'Could not find login token' };
+    if (!tokenMatch) return { success: false, error: 'Could not find login token', debug: log };
+    log.push(`[1] flgX token found: ${tokenMatch[1].substring(0, 10)}...`);
 
     let cookieJar = extractCookies(loginPageRes.headers);
+    log.push(`[1] initial cookies: ${cookieJar || '(none)'}`);
 
-    // 2. POST credentials (manual redirect to capture Set-Cookie on the 302)
+    // 2. POST credentials
     const form = new URLSearchParams();
     form.set('flgX', tokenMatch[1]);
     form.set('flgSiteName', username);
@@ -129,22 +134,33 @@ async function testLogin(siteUrl: string, username: string, password: string): P
       redirect: 'manual',
     });
 
-    cookieJar = mergeCookies(cookieJar, extractCookies(loginRes.headers));
+    const loginSetCookie = loginRes.headers.get('set-cookie') || '(none)';
     const location = loginRes.headers.get('location') || '';
+    log.push(`[2] POST /logon.php → ${loginRes.status}, location: "${location}", set-cookie: ${loginSetCookie}`);
+
+    cookieJar = mergeCookies(cookieJar, extractCookies(loginRes.headers));
+    log.push(`[2] cookie jar after POST: ${cookieJar || '(none)'}`);
 
     // Redirected back to login = bad credentials
     if (location.includes('logon')) {
-      return { success: false, error: 'Invalid credentials' };
+      return { success: false, error: 'Invalid credentials', debug: log };
     }
 
     // 3. Follow the redirect manually to collect any session cookies set there
     if (location) {
       const redirectUrl = location.startsWith('http') ? location : `${siteUrl}${location.startsWith('/') ? '' : '/'}${location}`;
+      log.push(`[3] following redirect → ${redirectUrl}`);
       const redirectRes = await fetch(redirectUrl, {
         headers: { 'Cookie': cookieJar },
         redirect: 'manual',
       });
+      const redirectSetCookie = redirectRes.headers.get('set-cookie') || '(none)';
+      const redirectLocation = redirectRes.headers.get('location') || '';
+      log.push(`[3] redirect response → ${redirectRes.status}, location: "${redirectLocation}", set-cookie: ${redirectSetCookie}`);
       cookieJar = mergeCookies(cookieJar, extractCookies(redirectRes.headers));
+      log.push(`[3] cookie jar after redirect: ${cookieJar || '(none)'}`);
+    } else {
+      log.push(`[3] no redirect location, skipping`);
     }
 
     // 4. Verify by hitting the inquiry page
@@ -152,12 +168,16 @@ async function testLogin(siteUrl: string, username: string, password: string): P
       headers: { 'Cookie': cookieJar },
       redirect: 'manual',
     });
-    if (checkRes.status === 302 || checkRes.headers.get('location')?.includes('logon')) {
-      return { success: false, error: 'Login failed — redirected back to login' };
+    const checkLocation = checkRes.headers.get('location') || '';
+    log.push(`[4] GET /refereeinquiry.php → ${checkRes.status}, location: "${checkLocation}"`);
+
+    if (checkRes.status === 302 || checkLocation.includes('logon')) {
+      return { success: false, error: 'Login failed — redirected back to login', debug: log };
     }
 
-    return { success: true };
+    return { success: true, debug: log };
   } catch (err) {
-    return { success: false, error: String(err) };
+    log.push(`[ERR] ${String(err)}`);
+    return { success: false, error: String(err), debug: log };
   }
 }

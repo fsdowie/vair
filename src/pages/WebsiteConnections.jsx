@@ -20,6 +20,7 @@ function CredentialModal({ cred, onClose, onSaved, session }) {
   const [siteName, setSiteName] = useState(cred?.site_name ?? KNOWN_SITES[0].label);
   const [username, setUsername] = useState(cred?.username ?? "");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
@@ -90,7 +91,22 @@ function CredentialModal({ cred, onClose, onSaved, session }) {
         <input style={inputStyle} value={username} onChange={e => setUsername(e.target.value)} placeholder="Your login username" />
 
         <label style={labelStyle}>Password {isEdit && <span style={{ color: "rgba(232,245,233,0.35)" }}>(leave blank to keep current)</span>}</label>
-        <input style={inputStyle} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder={isEdit ? "••••••••" : "Your login password"} />
+        <div style={{ position: "relative" }}>
+          <input
+            style={{ ...inputStyle, paddingRight: 44 }}
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            placeholder={isEdit ? "••••••••" : "Your login password"}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(p => !p)}
+            style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "rgba(232,245,233,0.45)", cursor: "pointer", fontSize: 14, padding: 2 }}
+          >
+            {showPassword ? "🙈" : "👁"}
+          </button>
+        </div>
 
         {error && <div style={{ marginTop: 10, fontSize: 13, color: "#ef9a9a" }}>{error}</div>}
 
@@ -117,6 +133,7 @@ export default function WebsiteConnections() {
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState(null); // null | 'add' | { cred }
   const [testing, setTesting] = useState({}); // { [site_url]: 'testing'|'ok'|'fail'|msg }
+  const [testDebug, setTestDebug] = useState({}); // { [site_url]: string[] }
   const [deleting, setDeleting] = useState(null);
   const [error, setError] = useState(null);
 
@@ -170,6 +187,7 @@ export default function WebsiteConnections() {
 
   const handleTest = async (siteUrl) => {
     setTesting(prev => ({ ...prev, [siteUrl]: 'testing' }));
+    setTestDebug(prev => ({ ...prev, [siteUrl]: null }));
     try {
       const res = await fetch(`${EDGE_BASE}/manage-credentials`, {
         method: 'POST',
@@ -178,6 +196,7 @@ export default function WebsiteConnections() {
       });
       const data = await res.json();
       setTesting(prev => ({ ...prev, [siteUrl]: data.success ? 'ok' : (data.error || 'fail') }));
+      if (data.debug) setTestDebug(prev => ({ ...prev, [siteUrl]: data.debug }));
     } catch (e) {
       setTesting(prev => ({ ...prev, [siteUrl]: e.message }));
     }
@@ -309,6 +328,11 @@ export default function WebsiteConnections() {
                   {testResult && testResult !== 'testing' && (
                     <div style={{ fontSize: 12, marginTop: 6, color: testOk ? "#81c784" : "#ef9a9a" }}>
                       {testOk ? "✓ Login successful" : `✗ ${testResult}`}
+                    </div>
+                  )}
+                  {testDebug[cred.site_url] && (
+                    <div style={{ marginTop: 8, padding: "8px 10px", background: "rgba(0,0,0,0.35)", borderRadius: 6, fontFamily: "monospace", fontSize: 11, color: "rgba(232,245,233,0.55)", lineHeight: 1.7, wordBreak: "break-all" }}>
+                      {testDebug[cred.site_url].map((line, i) => <div key={i}>{line}</div>)}
                     </div>
                   )}
                 </div>
