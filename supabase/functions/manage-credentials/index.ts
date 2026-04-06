@@ -84,17 +84,39 @@ function extractCookies(headers: Headers): string {
   return cookies.join('; ');
 }
 
+function mergeCookies(existing: string, incoming: string): string {
+  if (!incoming) return existing;
+  if (!existing) return incoming;
+  // Build a map so newer values overwrite older ones
+  const map = new Map<string, string>();
+  for (const pair of existing.split(';')) {
+    const kv = pair.trim();
+    if (kv.includes('=')) {
+      const [k, ...rest] = kv.split('=');
+      map.set(k.trim(), rest.join('='));
+    }
+  }
+  for (const pair of incoming.split(';')) {
+    const kv = pair.trim();
+    if (kv.includes('=')) {
+      const [k, ...rest] = kv.split('=');
+      map.set(k.trim(), rest.join('='));
+    }
+  }
+  return [...map.entries()].map(([k, v]) => `${k}=${v}`).join('; ');
+}
+
 async function testLogin(siteUrl: string, username: string, password: string): Promise<{ success: boolean; error?: string }> {
   try {
-    // 1. GET login page to extract CSRF token
+    // 1. GET login page to extract CSRF token + initial cookies
     const loginPageRes = await fetch(`${siteUrl}/logon.php`, { redirect: 'follow' });
     const loginHtml = await loginPageRes.text();
     const tokenMatch = loginHtml.match(/name="flgX"\s+type="hidden"\s+value="([^"]+)"/);
     if (!tokenMatch) return { success: false, error: 'Could not find login token' };
 
-    const initialCookies = extractCookies(loginPageRes.headers);
+    let cookieJar = extractCookies(loginPageRes.headers);
 
-    // 2. POST credentials
+    // 2. POST credentials (manual redirect to capture Set-Cookie on the 302)
     const form = new URLSearchParams();
     form.set('flgX', tokenMatch[1]);
     form.set('flgSiteName', username);
@@ -102,22 +124,32 @@ async function testLogin(siteUrl: string, username: string, password: string): P
 
     const loginRes = await fetch(`${siteUrl}/logon.php`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Cookie': initialCookies },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Cookie': cookieJar },
       body: form.toString(),
       redirect: 'manual',
     });
 
-    const sessionCookies = extractCookies(loginRes.headers) || initialCookies;
+    cookieJar = mergeCookies(cookieJar, extractCookies(loginRes.headers));
     const location = loginRes.headers.get('location') || '';
 
-    // If redirected back to login, credentials are wrong
+    // Redirected back to login = bad credentials
     if (location.includes('logon')) {
       return { success: false, error: 'Invalid credentials' };
     }
 
-    // 3. Verify by hitting a protected page
+    // 3. Follow the redirect manually to collect any session cookies set there
+    if (location) {
+      const redirectUrl = location.startsWith('http') ? location : `${siteUrl}${location.startsWith('/') ? '' : '/'}${location}`;
+      const redirectRes = await fetch(redirectUrl, {
+        headers: { 'Cookie': cookieJar },
+        redirect: 'manual',
+      });
+      cookieJar = mergeCookies(cookieJar, extractCookies(redirectRes.headers));
+    }
+
+    // 4. Verify by hitting the inquiry page
     const checkRes = await fetch(`${siteUrl}/refereeinquiry.php`, {
-      headers: { 'Cookie': sessionCookies },
+      headers: { 'Cookie': cookieJar },
       redirect: 'manual',
     });
     if (checkRes.status === 302 || checkRes.headers.get('location')?.includes('logon')) {
