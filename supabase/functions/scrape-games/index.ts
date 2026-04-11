@@ -122,9 +122,18 @@ async function scrapeGames(siteUrl: string, username: string, password: string):
 
   const initialCookies = extractCookies(loginPageRes.headers);
 
-  // 2. POST login
+  // 2. POST login — extract all hidden fields then override cdtScript=1 (JS-enabled flag)
   const form = new URLSearchParams();
-  form.set('flgX', tokenMatch[1]);
+  const hiddenRe = /<input[^>]+>/gi;
+  let hm: RegExpExecArray | null;
+  while ((hm = hiddenRe.exec(loginHtml)) !== null) {
+    const tag = hm[0];
+    if (!tag.includes('hidden')) continue;
+    const nameM = tag.match(/name="([^"]+)"/i);
+    const valM  = tag.match(/value="([^"]*)"/i);
+    if (nameM) form.set(nameM[1], valM?.[1] ?? '');
+  }
+  form.set('cdtScript', '1'); // prove JS is "enabled"
   form.set('flgSiteName', username);
   form.set('flgPassword', password);
 
