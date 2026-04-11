@@ -113,16 +113,21 @@ interface GameRow {
   ar2: string;
 }
 
+const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+
 async function scrapeGames(siteUrl: string, username: string, password: string): Promise<GameRow[]> {
   // 1. GET login page for CSRF token
-  const loginPageRes = await fetch(`${siteUrl}/logon.php`, { redirect: 'follow' });
+  const loginPageRes = await fetch(`${siteUrl}/logon.php`, {
+    redirect: 'follow',
+    headers: { 'User-Agent': BROWSER_UA },
+  });
   const loginHtml = await loginPageRes.text();
   const tokenMatch = loginHtml.match(/name="flgX"\s+type="hidden"\s+value="([^"]+)"/);
   if (!tokenMatch) throw new Error('Could not extract login token from ' + siteUrl);
 
   const initialCookies = extractCookies(loginPageRes.headers);
 
-  // 2. POST login — extract all hidden fields then override cdtScript=1 (JS-enabled flag)
+  // 2. POST login — extract all hidden fields + cdt field (set by xCDT JS function)
   const form = new URLSearchParams();
   const hiddenRe = /<input[^>]+>/gi;
   let hm: RegExpExecArray | null;
@@ -142,6 +147,9 @@ async function scrapeGames(siteUrl: string, username: string, password: string):
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Cookie': initialCookies,
+      'Referer': `${siteUrl}/logon.php`,
+      'Origin': siteUrl,
+      'User-Agent': BROWSER_UA,
     },
     body: form.toString(),
     redirect: 'manual',
@@ -151,7 +159,7 @@ async function scrapeGames(siteUrl: string, username: string, password: string):
 
   // 3. Fetch inquiry page
   const inquiryRes = await fetch(`${siteUrl}${INQUIRY_PATH}`, {
-    headers: { 'Cookie': sessionCookies },
+    headers: { 'Cookie': sessionCookies, 'User-Agent': BROWSER_UA },
     redirect: 'follow',
   });
 

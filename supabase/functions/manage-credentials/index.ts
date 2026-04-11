@@ -106,11 +106,16 @@ function mergeCookies(existing: string, incoming: string): string {
   return [...map.entries()].map(([k, v]) => `${k}=${v}`).join('; ');
 }
 
+const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+
 async function testLogin(siteUrl: string, username: string, password: string): Promise<{ success: boolean; error?: string; debug?: string[] }> {
   const log: string[] = [];
   try {
     // 1. GET login page to extract CSRF token + initial cookies
-    const loginPageRes = await fetch(`${siteUrl}/logon.php`, { redirect: 'follow' });
+    const loginPageRes = await fetch(`${siteUrl}/logon.php`, {
+      redirect: 'follow',
+      headers: { 'User-Agent': BROWSER_UA },
+    });
     log.push(`[1] GET /logon.php → ${loginPageRes.status} ${loginPageRes.url}`);
 
     const loginHtml = await loginPageRes.text();
@@ -173,6 +178,7 @@ async function testLogin(siteUrl: string, username: string, password: string): P
         'Cookie': cookieJar,
         'Referer': `${siteUrl}/logon.php`,
         'Origin': siteUrl,
+        'User-Agent': BROWSER_UA,
       },
       body: form.toString(),
       redirect: 'manual',
@@ -201,7 +207,7 @@ async function testLogin(siteUrl: string, username: string, password: string): P
       const redirectUrl = location.startsWith('http') ? location : `${siteUrl}${location.startsWith('/') ? '' : '/'}${location}`;
       log.push(`[3] following redirect → ${redirectUrl}`);
       const redirectRes = await fetch(redirectUrl, {
-        headers: { 'Cookie': cookieJar },
+        headers: { 'Cookie': cookieJar, 'User-Agent': BROWSER_UA },
         redirect: 'manual',
       });
       const redirectSetCookie = redirectRes.headers.get('set-cookie') || '(none)';
@@ -215,7 +221,7 @@ async function testLogin(siteUrl: string, username: string, password: string): P
 
     // 4. Verify by hitting the inquiry page
     const checkRes = await fetch(`${siteUrl}/refereeinquiry.php`, {
-      headers: { 'Cookie': cookieJar },
+      headers: { 'Cookie': cookieJar, 'User-Agent': BROWSER_UA },
       redirect: 'manual',
     });
     const checkLocation = checkRes.headers.get('location') || '';
