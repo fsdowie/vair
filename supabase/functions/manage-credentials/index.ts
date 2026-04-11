@@ -134,12 +134,32 @@ async function testLogin(siteUrl: string, username: string, password: string): P
     }
     log.push(`[1] hidden fields found: ${JSON.stringify(hiddenFields)}`);
 
-    // Log the raw form HTML and any inline JS referencing cookies or form fields
+    // Log the raw form HTML
     const formMatch = loginHtml.match(/<form[^>]*action[^>]*logon[^>]*>[\s\S]*?<\/form>/i);
     log.push(`[1] form HTML: ${formMatch ? formMatch[0].replace(/\s+/g, ' ').substring(0, 400) : '(not found)'}`);
 
     const jsSnippets = [...loginHtml.matchAll(/document\.cookie\s*=[^;'"]{0,120}|flg\w+\s*=[^;'"]{0,80}/gi)].map(m => m[0]);
     log.push(`[1] JS cookie/field assignments: ${jsSnippets.length ? jsSnippets.join(' | ') : '(none found)'}`);
+
+    // Find external script tags and fetch the one containing xCDT
+    const scriptSrcs = [...loginHtml.matchAll(/<script[^>]+src="([^"]+)"/gi)].map(m => m[1]);
+    log.push(`[1] external scripts: ${scriptSrcs.join(', ') || '(none)'}`);
+    for (const src of scriptSrcs) {
+      const scriptUrl = src.startsWith('http') ? src : `${siteUrl}${src.startsWith('/') ? '' : '/'}${src}`;
+      try {
+        const jsRes = await fetch(scriptUrl);
+        const jsText = await jsRes.text();
+        if (jsText.includes('xCDT') || jsText.includes('cdt') || jsText.includes('cookie')) {
+          // Extract xCDT function body
+          const fnMatch = jsText.match(/function\s+xCDT[\s\S]{0,800}/);
+          const cookieLines = [...jsText.matchAll(/document\.cookie[^;\n]{0,120}/g)].map(m => m[0]);
+          log.push(`[1] script ${src} xCDT: ${fnMatch ? fnMatch[0].replace(/\s+/g, ' ').substring(0, 400) : '(not found)'}`);
+          log.push(`[1] script ${src} cookies: ${cookieLines.join(' | ') || '(none)'}`);
+        }
+      } catch (e) {
+        log.push(`[1] failed to fetch script ${src}: ${e}`);
+      }
+    }
 
     // 2. POST credentials — include ALL hidden fields + credentials
     const form = new URLSearchParams();
