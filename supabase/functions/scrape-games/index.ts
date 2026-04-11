@@ -133,7 +133,7 @@ async function scrapeGames(siteUrl: string, username: string, password: string):
     const valM  = tag.match(/value="([^"]*)"/i);
     if (nameM) form.set(nameM[1], valM?.[1] ?? '');
   }
-  form.set('cdtScript', '1'); // prove JS is "enabled"
+  form.set('cdt', '1,1280,800,1'); // xCDT() appends this field to prove JS is running
   form.set('flgSiteName', username);
   form.set('flgPassword', password);
 

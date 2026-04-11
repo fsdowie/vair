@@ -164,8 +164,8 @@ async function testLogin(siteUrl: string, username: string, password: string): P
     // 2. POST credentials — include ALL hidden fields + credentials
     const form = new URLSearchParams();
     for (const [k, v] of Object.entries(hiddenFields)) form.set(k, v);
-    // cdtScript=0 means "JS disabled" — set to 1 to pass the JS check
-    form.set('cdtScript', '1');
+    // xCDT() dynamically appends a hidden "cdt" field: "1,{innerWidth},{innerHeight},{cookieEnabled}"
+    form.set('cdt', '1,1280,800,1');
     form.set('flgSiteName', username);
     form.set('flgPassword', password);
     log.push(`[2] posting fields: ${[...form.keys()].join(', ')}`);
