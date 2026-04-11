@@ -146,17 +146,15 @@ async function testLogin(siteUrl: string, username: string, password: string): P
     const jsSnippets = [...loginHtml.matchAll(/document\.cookie\s*=[^;'"]{0,120}|flg\w+\s*=[^;'"]{0,80}/gi)].map(m => m[0]);
     log.push(`[1] JS cookie/field assignments: ${jsSnippets.length ? jsSnippets.join(' | ') : '(none found)'}`);
 
-    // Fetch ALL external scripts and log cookie-related content from each
+    // Fetch ALL external scripts — log first 800 chars of each
     const scriptSrcs = [...loginHtml.matchAll(/<script[^>]+src="([^"]+)"/gi)].map(m => m[1]);
     log.push(`[1] external scripts: ${scriptSrcs.join(', ') || '(none)'}`);
     for (const src of scriptSrcs) {
       const scriptUrl = src.startsWith('http') ? src : `${siteUrl}${src.startsWith('/') ? '' : '/'}${src}`;
       try {
-        const jsRes = await fetch(scriptUrl);
+        const jsRes = await fetch(scriptUrl, { headers: { 'User-Agent': BROWSER_UA } });
         const jsText = await jsRes.text();
-        const cookieLines = [...jsText.matchAll(/document\.cookie[^;\n]{0,150}/g)].map(m => m[0]);
-        const fnMatch = jsText.match(/function\s+xCDT[\s\S]{0,600}/);
-        log.push(`[1] ${src}: cookies=${cookieLines.join(' | ') || '(none)'}, xCDT=${fnMatch ? fnMatch[0].replace(/\s+/g, ' ').substring(0, 300) : '(none)'}`);
+        log.push(`[1] ${src} (${jsText.length} bytes): ${jsText.replace(/\s+/g, ' ').substring(0, 800)}`);
       } catch (e) {
         log.push(`[1] failed to fetch ${src}: ${e}`);
       }
