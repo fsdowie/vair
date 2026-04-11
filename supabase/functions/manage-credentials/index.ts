@@ -111,20 +111,31 @@ const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
 async function testLogin(siteUrl: string, username: string, password: string): Promise<{ success: boolean; error?: string; debug?: string[] }> {
   const log: string[] = [];
   try {
-    // 1. GET login page to extract CSRF token + initial cookies
-    const loginPageRes = await fetch(`${siteUrl}/logon.php`, {
-      redirect: 'follow',
-      headers: { 'User-Agent': BROWSER_UA },
-    });
-    log.push(`[1] GET /logon.php → ${loginPageRes.status} ${loginPageRes.url}`);
+    // 1. GET login page — follow redirects manually to capture Set-Cookie from every hop
+    let cookieJar = '';
+    let loginHtml = '';
+    let currentUrl = `${siteUrl}/logon.php`;
+    for (let hop = 0; hop < 5; hop++) {
+      const res = await fetch(currentUrl, {
+        redirect: 'manual',
+        headers: { 'User-Agent': BROWSER_UA, ...(cookieJar ? { 'Cookie': cookieJar } : {}) },
+      });
+      const hopCookies = extractCookies(res.headers);
+      const loc = res.headers.get('location') || '';
+      log.push(`[1] hop${hop} ${currentUrl} → ${res.status}, cookies: ${hopCookies || '(none)'}, location: ${loc || '(none)'}`);
+      cookieJar = mergeCookies(cookieJar, hopCookies);
+      if (res.status >= 300 && res.status < 400 && loc) {
+        currentUrl = loc.startsWith('http') ? loc : `${siteUrl}${loc.startsWith('/') ? '' : '/'}${loc}`;
+        continue;
+      }
+      loginHtml = await res.text();
+      break;
+    }
+    log.push(`[1] final cookie jar: ${cookieJar || '(none)'}`);
 
-    const loginHtml = await loginPageRes.text();
     const tokenMatch = loginHtml.match(/name="flgX"\s+type="hidden"\s+value="([^"]+)"/);
     if (!tokenMatch) return { success: false, error: 'Could not find login token', debug: log };
     log.push(`[1] flgX token found: ${tokenMatch[1].substring(0, 10)}...`);
-
-    let cookieJar = extractCookies(loginPageRes.headers);
-    log.push(`[1] initial cookies: ${cookieJar || '(none)'}`);
 
     // Extract all hidden fields from the login form (any attribute order)
     const hiddenFields: Record<string, string> = {};
