@@ -121,14 +121,25 @@ async function testLogin(siteUrl: string, username: string, password: string): P
     let cookieJar = extractCookies(loginPageRes.headers);
     log.push(`[1] initial cookies: ${cookieJar || '(none)'}`);
 
-    // Extract all hidden fields from the login form (not just flgX)
+    // Extract all hidden fields from the login form (any attribute order)
     const hiddenFields: Record<string, string> = {};
-    const hiddenRe = /<input[^>]+type="hidden"[^>]+name="([^"]+)"[^>]+value="([^"]*)"/gi;
+    const hiddenRe = /<input[^>]+>/gi;
     let hm: RegExpExecArray | null;
     while ((hm = hiddenRe.exec(loginHtml)) !== null) {
-      hiddenFields[hm[1]] = hm[2];
+      const tag = hm[0];
+      if (!tag.includes('hidden')) continue;
+      const nameM = tag.match(/name="([^"]+)"/i);
+      const valM  = tag.match(/value="([^"]*)"/i);
+      if (nameM) hiddenFields[nameM[1]] = valM?.[1] ?? '';
     }
-    log.push(`[1] hidden fields found: ${JSON.stringify(Object.keys(hiddenFields))}`);
+    log.push(`[1] hidden fields found: ${JSON.stringify(hiddenFields)}`);
+
+    // Log the raw form HTML and any inline JS referencing cookies or form fields
+    const formMatch = loginHtml.match(/<form[^>]*action[^>]*logon[^>]*>[\s\S]*?<\/form>/i);
+    log.push(`[1] form HTML: ${formMatch ? formMatch[0].replace(/\s+/g, ' ').substring(0, 400) : '(not found)'}`);
+
+    const jsSnippets = [...loginHtml.matchAll(/document\.cookie\s*=[^;'"]{0,120}|flg\w+\s*=[^;'"]{0,80}/gi)].map(m => m[0]);
+    log.push(`[1] JS cookie/field assignments: ${jsSnippets.length ? jsSnippets.join(' | ') : '(none found)'}`);
 
     // 2. POST credentials — include ALL hidden fields + credentials
     const form = new URLSearchParams();
