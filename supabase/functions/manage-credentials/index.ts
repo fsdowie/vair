@@ -195,6 +195,11 @@ async function testLogin(siteUrl: string, username: string, password: string): P
     cookieJar = mergeCookies(cookieJar, extractCookies(loginRes.headers));
     log.push(`[2] cookie jar after POST: ${cookieJar || '(none)'}`);
 
+    // If no redirect and body contains only the JS warning (no credential error), still try to verify
+    const hasCredentialError = /invalid|incorrect|not found|no match|wrong/i.test(loginBody);
+    const hasJsWarning = /permit Javascript/i.test(loginBody);
+    log.push(`[2] hasCredentialError=${hasCredentialError}, hasJsWarning=${hasJsWarning}`);
+
     // Redirected back to login = bad credentials
     if (location.includes('logon')) {
       return { success: false, error: 'Invalid credentials', debug: log };
