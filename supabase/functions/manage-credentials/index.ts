@@ -143,8 +143,9 @@ async function testLogin(siteUrl: string, username: string, password: string): P
     const formMatch = loginHtml.match(/<form[^>]*action[^>]*logon[^>]*>[\s\S]*?<\/form>/i);
     log.push(`[1] form HTML: ${formMatch ? formMatch[0].replace(/\s+/g, ' ').substring(0, 400) : '(not found)'}`);
 
-    const jsSnippets = [...loginHtml.matchAll(/document\.cookie\s*=[^;'"]{0,120}|flg\w+\s*=[^;'"]{0,80}/gi)].map(m => m[0]);
-    log.push(`[1] JS cookie/field assignments: ${jsSnippets.length ? jsSnippets.join(' | ') : '(none found)'}`);
+    // Log all inline <script> blocks
+    const inlineScripts = [...loginHtml.matchAll(/<script(?![^>]*src)[^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1].replace(/\s+/g, ' ').trim()).filter(s => s.length > 0);
+    log.push(`[1] inline scripts (${inlineScripts.length}): ${inlineScripts.map((s, i) => `[${i}] ${s.substring(0, 300)}`).join(' || ')}`);
 
     // Fetch ALL external scripts — log first 800 chars of each
     const scriptSrcs = [...loginHtml.matchAll(/<script[^>]+src="([^"]+)"/gi)].map(m => m[1]);
@@ -186,11 +187,10 @@ async function testLogin(siteUrl: string, username: string, password: string): P
     const location = loginRes.headers.get('location') || '';
     log.push(`[2] POST /logon.php → ${loginRes.status}, location: "${location}", set-cookie: ${loginSetCookie}`);
 
-    // Log a snippet of the response body to see any error messages
+    // Log response body — strip tags and show first 600 chars
     const loginBody = await loginRes.text();
-    const errorSnippet = loginBody.match(/(?:error|invalid|incorrect|failed|wrong)[^<]{0,120}/i)?.[0]
-      ?? loginBody.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 200);
-    log.push(`[2] response body snippet: ${errorSnippet}`);
+    const bodyText = loginBody.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 600);
+    log.push(`[2] response body: ${bodyText}`);
 
     cookieJar = mergeCookies(cookieJar, extractCookies(loginRes.headers));
     log.push(`[2] cookie jar after POST: ${cookieJar || '(none)'}`);
