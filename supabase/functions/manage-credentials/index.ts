@@ -141,7 +141,7 @@ async function testLogin(siteUrl: string, username: string, password: string): P
     const jsSnippets = [...loginHtml.matchAll(/document\.cookie\s*=[^;'"]{0,120}|flg\w+\s*=[^;'"]{0,80}/gi)].map(m => m[0]);
     log.push(`[1] JS cookie/field assignments: ${jsSnippets.length ? jsSnippets.join(' | ') : '(none found)'}`);
 
-    // Find external script tags and fetch the one containing xCDT
+    // Fetch ALL external scripts and log cookie-related content from each
     const scriptSrcs = [...loginHtml.matchAll(/<script[^>]+src="([^"]+)"/gi)].map(m => m[1]);
     log.push(`[1] external scripts: ${scriptSrcs.join(', ') || '(none)'}`);
     for (const src of scriptSrcs) {
@@ -149,15 +149,11 @@ async function testLogin(siteUrl: string, username: string, password: string): P
       try {
         const jsRes = await fetch(scriptUrl);
         const jsText = await jsRes.text();
-        if (jsText.includes('xCDT') || jsText.includes('cdt') || jsText.includes('cookie')) {
-          // Extract xCDT function body
-          const fnMatch = jsText.match(/function\s+xCDT[\s\S]{0,800}/);
-          const cookieLines = [...jsText.matchAll(/document\.cookie[^;\n]{0,120}/g)].map(m => m[0]);
-          log.push(`[1] script ${src} xCDT: ${fnMatch ? fnMatch[0].replace(/\s+/g, ' ').substring(0, 400) : '(not found)'}`);
-          log.push(`[1] script ${src} cookies: ${cookieLines.join(' | ') || '(none)'}`);
-        }
+        const cookieLines = [...jsText.matchAll(/document\.cookie[^;\n]{0,150}/g)].map(m => m[0]);
+        const fnMatch = jsText.match(/function\s+xCDT[\s\S]{0,600}/);
+        log.push(`[1] ${src}: cookies=${cookieLines.join(' | ') || '(none)'}, xCDT=${fnMatch ? fnMatch[0].replace(/\s+/g, ' ').substring(0, 300) : '(none)'}`);
       } catch (e) {
-        log.push(`[1] failed to fetch script ${src}: ${e}`);
+        log.push(`[1] failed to fetch ${src}: ${e}`);
       }
     }
 
