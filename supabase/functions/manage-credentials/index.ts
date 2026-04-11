@@ -121,15 +121,30 @@ async function testLogin(siteUrl: string, username: string, password: string): P
     let cookieJar = extractCookies(loginPageRes.headers);
     log.push(`[1] initial cookies: ${cookieJar || '(none)'}`);
 
-    // 2. POST credentials
+    // Extract all hidden fields from the login form (not just flgX)
+    const hiddenFields: Record<string, string> = {};
+    const hiddenRe = /<input[^>]+type="hidden"[^>]+name="([^"]+)"[^>]+value="([^"]*)"/gi;
+    let hm: RegExpExecArray | null;
+    while ((hm = hiddenRe.exec(loginHtml)) !== null) {
+      hiddenFields[hm[1]] = hm[2];
+    }
+    log.push(`[1] hidden fields found: ${JSON.stringify(Object.keys(hiddenFields))}`);
+
+    // 2. POST credentials — include ALL hidden fields + credentials
     const form = new URLSearchParams();
-    form.set('flgX', tokenMatch[1]);
+    for (const [k, v] of Object.entries(hiddenFields)) form.set(k, v);
     form.set('flgSiteName', username);
     form.set('flgPassword', password);
+    log.push(`[2] posting fields: ${[...form.keys()].join(', ')}`);
 
     const loginRes = await fetch(`${siteUrl}/logon.php`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Cookie': cookieJar },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Cookie': cookieJar,
+        'Referer': `${siteUrl}/logon.php`,
+        'Origin': siteUrl,
+      },
       body: form.toString(),
       redirect: 'manual',
     });
@@ -137,6 +152,12 @@ async function testLogin(siteUrl: string, username: string, password: string): P
     const loginSetCookie = loginRes.headers.get('set-cookie') || '(none)';
     const location = loginRes.headers.get('location') || '';
     log.push(`[2] POST /logon.php → ${loginRes.status}, location: "${location}", set-cookie: ${loginSetCookie}`);
+
+    // Log a snippet of the response body to see any error messages
+    const loginBody = await loginRes.text();
+    const errorSnippet = loginBody.match(/(?:error|invalid|incorrect|failed|wrong)[^<]{0,120}/i)?.[0]
+      ?? loginBody.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 200);
+    log.push(`[2] response body snippet: ${errorSnippet}`);
 
     cookieJar = mergeCookies(cookieJar, extractCookies(loginRes.headers));
     log.push(`[2] cookie jar after POST: ${cookieJar || '(none)'}`);
