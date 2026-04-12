@@ -1,9 +1,8 @@
 const NAV_ITEMS = [
-  { id: "referee",     emoji: "🤖", label: "AI Referee" },
-  { id: "comparison",  emoji: "📊", label: "Referee Comparison" },
-  { id: "games",       emoji: "📅", label: "Games Organizer" },
-  { id: "connections", emoji: "🔗", label: "Website Connections" },
-  { id: "about",       emoji: "ℹ️",  label: "About Us" },
+  { id: "referee",    emoji: "🤖", label: "AI Referee" },
+  { id: "comparison", emoji: "📊", label: "Referee Comparison" },
+  { id: "games",      emoji: "📅", label: "Games Organizer" },
+  { id: "about",      emoji: "ℹ️",  label: "About Us" },
 ];
 
 const ADMIN_EMAIL = 'fsdowie@yahoo.com';

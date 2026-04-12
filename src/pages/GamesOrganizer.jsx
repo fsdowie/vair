@@ -22,8 +22,6 @@ export default function GamesOrganizer() {
   const [view, setView] = useState('future'); // future | past
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [syncing, setSyncing] = useState(false);
-  const [syncMsg, setSyncMsg] = useState(null);
   const [session, setSession] = useState(null);
   const [selected, setSelected] = useState(null); // game being viewed/edited
   const [showForm, setShowForm] = useState(false); // manual add modal
@@ -57,22 +55,6 @@ export default function GamesOrganizer() {
 
     if (!error) setGames(data || []);
     setLoading(false);
-  };
-
-  const syncNow = async () => {
-    setSyncing(true);
-    setSyncMsg(null);
-    try {
-      const { data, error } = await supabase.functions.invoke('scrape-games');
-      if (error) throw error;
-      const total = (data.results || []).reduce((s, r) => s + (r.scraped || 0), 0);
-      setSyncMsg(`Synced ${total} game(s) from ${data.results?.length || 0} site(s).`);
-      await fetchGames();
-    } catch (err) {
-      setSyncMsg('Sync failed: ' + err.message);
-    }
-    setSyncing(false);
-    setTimeout(() => setSyncMsg(null), 5000);
   };
 
   const openAdd = () => { setForm(BLANK); setShowForm(true); };
@@ -179,18 +161,9 @@ export default function GamesOrganizer() {
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <button style={btnStyle(view === 'future')} onClick={() => setView('future')}>⏭ Future</button>
           <button style={btnStyle(view === 'past')} onClick={() => setView('past')}>⏮ Past</button>
-          <button onClick={syncNow} disabled={syncing} style={{ ...btnStyle(false), background: syncing ? 'rgba(255,255,255,0.04)' : 'rgba(76,175,80,0.15)', border: '1px solid rgba(76,175,80,0.3)' }}>
-            {syncing ? '⏳ Syncing…' : '🔄 Sync Now'}
-          </button>
           <button onClick={openAdd} style={{ ...btnStyle(false), background: 'rgba(76,175,80,0.15)', border: '1px solid rgba(76,175,80,0.3)' }}>+ Add Game</button>
         </div>
       </div>
-
-      {syncMsg && (
-        <div style={{ background: 'rgba(76,175,80,0.12)', borderBottom: '1px solid rgba(76,175,80,0.2)', padding: '8px 24px', fontSize: 13, color: '#81c784' }}>
-          {syncMsg}
-        </div>
-      )}
 
       {/* Table */}
       <div style={{ flex: 1, overflowX: 'auto', padding: '16px 16px' }}>
@@ -198,7 +171,7 @@ export default function GamesOrganizer() {
           <div style={{ textAlign: 'center', padding: 60, color: 'rgba(232,245,233,0.4)' }}>Loading…</div>
         ) : games.length === 0 ? (
           <div style={{ textAlign: 'center', padding: 60, color: 'rgba(232,245,233,0.4)' }}>
-            No {view} games found. {view === 'future' ? 'Try syncing to pull games from your connected sites.' : ''}
+            No {view} games found.
           </div>
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
