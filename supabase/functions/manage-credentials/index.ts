@@ -107,6 +107,23 @@ function mergeCookies(existing: string, incoming: string): string {
 }
 
 const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+const BROWSER_HEADERS_GET = {
+  'User-Agent': BROWSER_UA,
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9',
+  'Accept-Encoding': 'gzip, deflate, br',
+  'Cache-Control': 'max-age=0',
+  'Upgrade-Insecure-Requests': '1',
+};
+const BROWSER_HEADERS_POST = {
+  'User-Agent': BROWSER_UA,
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9',
+  'Accept-Encoding': 'gzip, deflate, br',
+  'Cache-Control': 'max-age=0',
+  'Upgrade-Insecure-Requests': '1',
+  'Content-Type': 'application/x-www-form-urlencoded',
+};
 
 async function testLogin(siteUrl: string, username: string, password: string): Promise<{ success: boolean; error?: string; debug?: string[] }> {
   const log: string[] = [];
@@ -118,7 +135,7 @@ async function testLogin(siteUrl: string, username: string, password: string): P
     for (let hop = 0; hop < 5; hop++) {
       const res = await fetch(currentUrl, {
         redirect: 'manual',
-        headers: { 'User-Agent': BROWSER_UA, ...(cookieJar ? { 'Cookie': cookieJar } : {}) },
+        headers: { ...BROWSER_HEADERS_GET, ...(cookieJar ? { 'Cookie': cookieJar } : {}) },
       });
       const hopCookies = extractCookies(res.headers);
       const loc = res.headers.get('location') || '';
@@ -154,9 +171,9 @@ async function testLogin(siteUrl: string, username: string, password: string): P
     const formMatch = loginHtml.match(/<form[^>]*action[^>]*logon[^>]*>[\s\S]*?<\/form>/i);
     log.push(`[1] form HTML: ${formMatch ? formMatch[0].replace(/\s+/g, ' ').substring(0, 400) : '(not found)'}`);
 
-    // Log all inline <script> blocks
+    // Log all inline <script> blocks in full
     const inlineScripts = [...loginHtml.matchAll(/<script(?![^>]*src)[^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1].replace(/\s+/g, ' ').trim()).filter(s => s.length > 0);
-    log.push(`[1] inline scripts (${inlineScripts.length}): ${inlineScripts.map((s, i) => `[${i}] ${s.substring(0, 300)}`).join(' || ')}`);
+    log.push(`[1] inline scripts (${inlineScripts.length}): ${inlineScripts.map((s, i) => `[${i}:${s.length}chars] ${s}`).join(' || ')}`);
 
     // Fetch ALL external scripts — log first 800 chars of each
     const scriptSrcs = [...loginHtml.matchAll(/<script[^>]+src="([^"]+)"/gi)].map(m => m[1]);
@@ -184,11 +201,10 @@ async function testLogin(siteUrl: string, username: string, password: string): P
     const loginRes = await fetch(`${siteUrl}/logon.php`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        ...BROWSER_HEADERS_POST,
         'Cookie': cookieJar,
         'Referer': `${siteUrl}/logon.php`,
         'Origin': siteUrl,
-        'User-Agent': BROWSER_UA,
       },
       body: form.toString(),
       redirect: 'manual',
