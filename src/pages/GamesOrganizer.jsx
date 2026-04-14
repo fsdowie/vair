@@ -150,7 +150,7 @@ export default function GamesOrganizer() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'linear-gradient(135deg,#0a1628,#0d2137)', color: '#e8f5e9', fontFamily: 'system-ui,-apple-system,sans-serif' }}>
       {/* Header */}
-      <div style={{ padding: '20px 24px 14px', borderBottom: '1px solid rgba(76,175,80,0.2)', background: 'rgba(10,22,40,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+      <div style={{ padding: '20px 24px 14px 120px', borderBottom: '1px solid rgba(76,175,80,0.2)', background: 'rgba(10,22,40,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 700, background: 'linear-gradient(135deg,#4caf50,#81c784)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: 2 }}>
             📅 Games Organizer

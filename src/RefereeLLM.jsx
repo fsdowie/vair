@@ -406,7 +406,7 @@ export default function RefereeLLM() {
         background: "rgba(10,22,40,0.95)",
         backdropFilter: "blur(10px)",
         borderBottom: "1px solid rgba(76,175,80,0.2)",
-        padding: "16px 24px",
+        padding: "16px 24px 16px 120px",
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>

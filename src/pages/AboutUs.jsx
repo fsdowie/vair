@@ -371,7 +371,7 @@ export default function AboutUs() {
     }}>
       {/* Header */}
       <div style={{
-        padding: "24px 32px 16px",
+        padding: "24px 32px 16px 120px",
         borderBottom: "1px solid rgba(76,175,80,0.2)",
         background: "rgba(10,22,40,0.95)",
       }}>
