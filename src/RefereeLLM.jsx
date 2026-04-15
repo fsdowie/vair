@@ -102,6 +102,34 @@ export default function RefereeLLM() {
   const [reportStatus, setReportStatus] = useState('idle'); // idle | submitting | success
   const [notifications, setNotifications] = useState([]);
 
+  // Dictation
+  const [micSupported] = useState(() => !!(window.SpeechRecognition || window.webkitSpeechRecognition));
+  const [recording, setRecording] = useState(false);
+  const recognitionRef = useRef(null);
+
+  const startRecording = () => {
+    if (!micSupported || recording) return;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const rec = new SR();
+    rec.lang = 'en-US';
+    rec.continuous = false;
+    rec.interimResults = false;
+    rec.onresult = (e) => {
+      const transcript = Array.from(e.results).map(r => r[0].transcript).join(' ');
+      setInput(prev => prev ? prev + ' ' + transcript : transcript);
+    };
+    rec.onend = () => setRecording(false);
+    rec.onerror = () => setRecording(false);
+    recognitionRef.current = rec;
+    rec.start();
+    setRecording(true);
+  };
+
+  const stopRecording = () => {
+    recognitionRef.current?.stop();
+    recognitionRef.current = null;
+  };
+
   // Check for existing session on mount
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -604,12 +632,42 @@ export default function RefereeLLM() {
         borderTop: "1px solid rgba(76,175,80,0.2)",
         padding: "16px 24px",
       }}>
+        <style>{`@keyframes mic-pulse{0%,100%{box-shadow:0 0 0 0 rgba(76,175,80,0.7)}50%{box-shadow:0 0 0 8px rgba(76,175,80,0)}}`}</style>
         <div style={{
           maxWidth: 700,
           margin: "0 auto",
           display: "flex",
           gap: 12,
         }}>
+          {/* Mic button */}
+          <button
+            disabled={!micSupported}
+            onMouseDown={startRecording}
+            onMouseUp={stopRecording}
+            onMouseLeave={stopRecording}
+            onTouchStart={e => { e.preventDefault(); startRecording(); }}
+            onTouchEnd={stopRecording}
+            title={micSupported ? (recording ? "Listening…" : "Hold to dictate") : "Speech recognition not supported in this browser"}
+            style={{
+              background: recording ? "rgba(76,175,80,0.15)" : "rgba(10,30,15,0.3)",
+              border: `1px solid ${recording ? "rgba(76,175,80,0.8)" : micSupported ? "rgba(76,175,80,0.3)" : "rgba(76,175,80,0.15)"}`,
+              borderRadius: 12,
+              color: micSupported ? (recording ? "#81c784" : "rgba(232,245,233,0.85)") : "rgba(232,245,233,0.25)",
+              fontSize: 20,
+              cursor: micSupported ? "pointer" : "not-allowed",
+              minWidth: 52,
+              alignSelf: "stretch",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "all 0.2s",
+              animation: recording ? "mic-pulse 1s ease-in-out infinite" : "none",
+              userSelect: "none",
+              WebkitUserSelect: "none",
+            }}
+          >
+            🎤
+          </button>
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
