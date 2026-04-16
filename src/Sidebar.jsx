@@ -5,9 +5,7 @@ const NAV_ITEMS = [
   { id: "about",      emoji: "ℹ️",  label: "About Us" },
 ];
 
-const ADMIN_EMAIL = 'fsdowie@yahoo.com';
-
-export default function Sidebar({ open, onClose, activePage, onNavigate, userEmail }) {
+export default function Sidebar({ open, onClose, activePage, onNavigate, userEmail, isAdmin }) {
   return (
     <>
       {/* Backdrop */}
@@ -78,7 +76,7 @@ export default function Sidebar({ open, onClose, activePage, onNavigate, userEma
 
         {/* Nav items */}
         <nav style={{ padding: "16px 12px", flex: 1 }}>
-          {[...NAV_ITEMS, ...(userEmail === ADMIN_EMAIL ? [{ id: "admin", emoji: "⚙️", label: "Admin" }] : [])].map(item => {
+          {[...NAV_ITEMS, ...(isAdmin ? [{ id: "admin", emoji: "⚙️", label: "Admin" }] : [])].map(item => {
             const isActive = activePage === item.id;
             return (
               <button

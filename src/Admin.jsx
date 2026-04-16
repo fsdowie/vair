@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-const ADMIN_EMAIL = 'fsdowie@yahoo.com';
+const BOOTSTRAP_ADMIN_EMAIL = 'fsdowie@yahoo.com';
 
 const supabase = createClient(
   'https://iunehbdazfzgfclkvvgd.supabase.co',
   'sb_publishable_SU4BJ5e9RLDl-3iSZHo-3g_mbHpD9cn'
 );
+
+const EDGE_BASE = 'https://iunehbdazfzgfclkvvgd.supabase.co/functions/v1';
 
 export default function Admin() {
   const [users, setUsers] = useState([]);
@@ -28,14 +30,25 @@ export default function Admin() {
   const [actionLoading, setActionLoading] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null); // correction id
 
+  // Admin role management
+  const [adminChanges, setAdminChanges] = useState({}); // { [user_id]: is_admin }
+  const [pwdModal, setPwdModal] = useState(false);
+  const [pwdValue, setPwdValue] = useState('');
+  const [pwdError, setPwdError] = useState('');
+  const [savingAdmin, setSavingAdmin] = useState(false);
+
   useEffect(() => {
     // Check if user is logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       if (session) {
-        const userIsAdmin = session.user.email === ADMIN_EMAIL;
-        setIsAdmin(userIsAdmin);
-        if (userIsAdmin) {
+        let adminFlag = session.user.email === BOOTSTRAP_ADMIN_EMAIL;
+        if (!adminFlag) {
+          const { data } = await supabase.from('profiles').select('is_admin').eq('id', session.user.id).single();
+          adminFlag = data?.is_admin === true;
+        }
+        setIsAdmin(adminFlag);
+        if (adminFlag) {
           fetchUsers();
         } else {
           setLoading(false);
@@ -134,6 +147,32 @@ export default function Admin() {
       setDeleteConfirm(null);
       await fetchReports();
     } catch (err) { setError(err.message); }
+  };
+
+  const saveAdminRoles = async () => {
+    setPwdError('');
+    setSavingAdmin(true);
+    try {
+      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      for (const [user_id, is_admin] of Object.entries(adminChanges)) {
+        const res = await fetch(`${EDGE_BASE}/set-admin-role`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ target_user_id: user_id, is_admin, password: pwdValue }),
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Failed to update role');
+      }
+      // Refresh user list to show updated is_admin values
+      setAdminChanges({});
+      setPwdModal(false);
+      setPwdValue('');
+      await fetchUsers();
+    } catch (err) {
+      setPwdError(String(err).replace('Error: ', ''));
+    } finally {
+      setSavingAdmin(false);
+    }
   };
 
   const handleLogin = async (e) => {
@@ -262,6 +301,17 @@ export default function Admin() {
               </div>
             </div>
 
+        {Object.keys(adminChanges).length > 0 && (
+          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              onClick={() => { setPwdModal(true); setPwdError(''); setPwdValue(''); }}
+              style={{ background: 'linear-gradient(135deg,#2e7d32,#4caf50)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 22px', cursor: 'pointer' }}
+            >
+              💾 Save Changes ({Object.keys(adminChanges).length})
+            </button>
+          </div>
+        )}
+
         <table style={styles.table}>
           <thead>
             <tr>
@@ -270,39 +320,97 @@ export default function Admin() {
               <th style={styles.th}>Last Sign In</th>
               <th style={styles.th}>Confirmed</th>
               <th style={styles.th}>User ID</th>
+              <th style={{ ...styles.th, textAlign: 'center' }}>Admin</th>
             </tr>
           </thead>
           <tbody>
             {users.length === 0 ? (
               <tr>
-                <td colSpan="5" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>
+                <td colSpan="6" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>
                   No users found
                 </td>
               </tr>
             ) : (
-              users.map((user) => (
-                <tr key={user.id} style={styles.tr}>
-                  <td style={styles.td}>{user.email}</td>
-                  <td style={styles.td}>{new Date(user.created_at).toLocaleDateString()}</td>
-                  <td style={styles.td}>
-                    {user.last_sign_in_at
-                      ? new Date(user.last_sign_in_at).toLocaleDateString()
-                      : 'Never'}
-                  </td>
-                  <td style={styles.td}>
-                    <span style={{
-                      color: user.email_confirmed_at ? '#4caf50' : '#ff9800',
-                      fontWeight: 'bold'
-                    }}>
-                      {user.email_confirmed_at ? '✓' : '✗'}
-                    </span>
-                  </td>
-                  <td style={styles.td} title={user.id}>{user.id.substring(0, 8)}...</td>
-                </tr>
-              ))
+              users.map((user) => {
+                const isSelf = user.id === session?.user?.id;
+                const currentAdmin = user.id in adminChanges ? adminChanges[user.id] : user.is_admin;
+                return (
+                  <tr key={user.id} style={styles.tr}>
+                    <td style={styles.td}>{user.email}</td>
+                    <td style={styles.td}>{new Date(user.created_at).toLocaleDateString()}</td>
+                    <td style={styles.td}>
+                      {user.last_sign_in_at
+                        ? new Date(user.last_sign_in_at).toLocaleDateString()
+                        : 'Never'}
+                    </td>
+                    <td style={styles.td}>
+                      <span style={{ color: user.email_confirmed_at ? '#4caf50' : '#ff9800', fontWeight: 'bold' }}>
+                        {user.email_confirmed_at ? '✓' : '✗'}
+                      </span>
+                    </td>
+                    <td style={styles.td} title={user.id}>{user.id.substring(0, 8)}...</td>
+                    <td style={{ ...styles.td, textAlign: 'center' }}>
+                      <input
+                        type="checkbox"
+                        checked={currentAdmin}
+                        disabled={isSelf}
+                        title={isSelf ? "Cannot change your own admin status" : undefined}
+                        onChange={(e) => {
+                          const next = e.target.checked;
+                          setAdminChanges(prev => {
+                            // If reverting to original value, remove from pending changes
+                            if (next === user.is_admin) {
+                              const { [user.id]: _, ...rest } = prev;
+                              return rest;
+                            }
+                            return { ...prev, [user.id]: next };
+                          });
+                        }}
+                        style={{ width: 16, height: 16, cursor: isSelf ? 'not-allowed' : 'pointer', accentColor: '#4caf50', opacity: isSelf ? 0.4 : 1 }}
+                      />
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
+
+        {/* Password confirmation modal */}
+        {pwdModal && (
+          <div onClick={() => setPwdModal(false)} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+            <div onClick={e => e.stopPropagation()} style={{ background: '#0d2137', border: '1px solid rgba(76,175,80,0.35)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 420 }}>
+              <h3 style={{ color: '#81c784', marginBottom: 8, fontSize: 18 }}>🔐 Confirm identity</h3>
+              <p style={{ color: 'rgba(232,245,233,0.6)', fontSize: 13, marginBottom: 20 }}>
+                Enter your password to apply admin role changes.
+              </p>
+              <input
+                type="password"
+                autoFocus
+                value={pwdValue}
+                onChange={e => setPwdValue(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && pwdValue && saveAdminRoles()}
+                placeholder="Your password"
+                style={{ width: '100%', background: 'rgba(10,22,40,0.7)', border: `1px solid ${pwdError ? 'rgba(239,83,80,0.6)' : 'rgba(76,175,80,0.3)'}`, borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '11px 14px', outline: 'none', boxSizing: 'border-box', marginBottom: 12 }}
+              />
+              {pwdError && (
+                <div style={{ color: '#ef9a9a', fontSize: 13, marginBottom: 14, background: 'rgba(183,28,28,0.1)', borderRadius: 8, padding: '8px 12px' }}>
+                  {pwdError}
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                <button onClick={() => setPwdModal(false)} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '10px 20px', cursor: 'pointer' }}>Cancel</button>
+                <button
+                  onClick={saveAdminRoles}
+                  disabled={savingAdmin || !pwdValue}
+                  style={{ background: savingAdmin || !pwdValue ? 'rgba(76,175,80,0.3)' : 'linear-gradient(135deg,#2e7d32,#4caf50)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 22px', cursor: savingAdmin || !pwdValue ? 'default' : 'pointer' }}
+                >
+                  {savingAdmin ? 'Saving…' : 'Confirm'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
           </>
         )}
 

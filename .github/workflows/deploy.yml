@@ -57,3 +57,5 @@ jobs:
           supabase functions deploy get-reports --no-verify-jwt
           supabase functions deploy process-report --no-verify-jwt
           supabase functions deploy extract-game --no-verify-jwt
+          supabase functions deploy set-admin-role --no-verify-jwt
+          supabase functions deploy list-users --no-verify-jwt

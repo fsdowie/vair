@@ -67,17 +67,33 @@ const WhistleLogo = () => (
   </svg>
 );
 
+const BOOTSTRAP_ADMIN_EMAIL = 'fsdowie@yahoo.com';
+
+async function checkIsAdmin(session) {
+  if (!session) return false;
+  if (session.user.email === BOOTSTRAP_ADMIN_EMAIL) return true;
+  const { data } = await supabase
+    .from('profiles')
+    .select('is_admin')
+    .eq('id', session.user.id)
+    .single();
+  return data?.is_admin === true;
+}
+
 export default function App() {
   const [activePage, setActivePage] = useState("referee");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [userEmail, setUserEmail] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setUserEmail(session?.user?.email ?? null);
+      setIsAdmin(await checkIsAdmin(session));
     });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_e, session) => {
       setUserEmail(session?.user?.email ?? null);
+      setIsAdmin(await checkIsAdmin(session));
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -120,6 +136,7 @@ export default function App() {
         activePage={activePage}
         onNavigate={setActivePage}
         userEmail={userEmail}
+        isAdmin={isAdmin}
       />
 
       {/* Main content */}

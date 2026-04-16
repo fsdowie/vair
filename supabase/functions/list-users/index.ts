@@ -43,6 +43,15 @@ serve(async (req) => {
       );
     }
 
+    // Fetch all profiles to merge is_admin flag
+    const { data: profiles } = await supabaseAdmin
+      .from('profiles')
+      .select('id, is_admin');
+    const profileMap: Record<string, boolean> = {};
+    (profiles ?? []).forEach((p: { id: string; is_admin: boolean }) => {
+      profileMap[p.id] = p.is_admin;
+    });
+
     // Return user list with basic info
     const userList = users.map(user => ({
       id: user.id,
@@ -50,6 +59,7 @@ serve(async (req) => {
       created_at: user.created_at,
       last_sign_in_at: user.last_sign_in_at,
       email_confirmed_at: user.email_confirmed_at,
+      is_admin: profileMap[user.id] ?? false,
     }));
 
     return new Response(
