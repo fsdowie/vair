@@ -169,7 +169,7 @@ export default function Admin() {
       setPwdValue('');
       await fetchUsers();
     } catch (err) {
-      setPwdError(String(err).replace('Error: ', ''));
+      setPwdError(err?.message || String(err));
     } finally {
       setSavingAdmin(false);
     }
