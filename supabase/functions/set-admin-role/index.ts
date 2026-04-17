@@ -8,6 +8,7 @@ const corsHeaders = {
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 const BOOTSTRAP_ADMIN_EMAIL = "fsdowie@yahoo.com";
 
 serve(async (req) => {
@@ -42,12 +43,13 @@ serve(async (req) => {
       throw new Error("target_user_id, is_admin, and password are required");
     }
 
-    // Verify caller's password by re-authenticating
-    const { error: authErr } = await supabaseAdmin.auth.signInWithPassword({
-      email: caller.email!,
-      password,
+    // Verify caller's password via direct Auth API call (avoids overwriting supabaseAdmin session)
+    const verifyRes = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY },
+      body: JSON.stringify({ email: caller.email, password }),
     });
-    if (authErr) throw new Error("Incorrect password");
+    if (!verifyRes.ok) throw new Error("Incorrect password");
 
     // Upsert profile row for target user
     const { error: upsertErr } = await supabaseAdmin
