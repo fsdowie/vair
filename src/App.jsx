@@ -62,6 +62,46 @@ export default function App() {
         />
       </div>
 
+      {/* Top-right: signed-in user + sign out */}
+      {userEmail && (
+        <div style={{
+          position: "fixed",
+          top: 12,
+          right: 16,
+          zIndex: 997,
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          backdropFilter: "blur(6px)",
+        }}>
+          <span style={{
+            fontSize: 13,
+            color: "rgba(232,245,233,0.45)",
+            maxWidth: 220,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}>
+            {userEmail}
+          </span>
+          <button
+            onClick={() => supabase.auth.signOut()}
+            style={{
+              padding: "7px 14px",
+              borderRadius: 8,
+              border: "1px solid rgba(29,158,117,0.3)",
+              background: "rgba(10,22,40,0.8)",
+              color: "#1d9e75",
+              fontSize: 13,
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Sign Out
+          </button>
+        </div>
+      )}
+
       {/* Hamburger button */}
       <button
         onClick={() => setSidebarOpen(true)}

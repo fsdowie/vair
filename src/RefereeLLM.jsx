@@ -440,33 +440,7 @@ export default function RefereeLLM() {
               AI-powered referee assistant | IFAB Laws of the Game 2025/26
             </p>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{
-              fontSize: 13,
-              color: "rgba(232,245,233,0.5)",
-              maxWidth: 200,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}>
-              {session?.user?.email}
-            </span>
-            <button
-              onClick={handleSignOut}
-              style={{
-                padding: "8px 16px",
-                borderRadius: 8,
-                border: "1px solid rgba(29,158,117,0.3)",
-                background: "rgba(29,158,117,0.1)",
-                color: "#1d9e75",
-                fontSize: 14,
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-              }}
-            >
-              Sign Out
-            </button>
-          </div>
+
         </div>
       </div>
 
