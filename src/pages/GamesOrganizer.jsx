@@ -12,7 +12,7 @@ const today = () => new Date().toISOString().split('T')[0];
 
 const INPUT = {
   width: '100%', background: 'rgba(10,22,40,0.7)',
-  border: '1px solid rgba(76,175,80,0.3)', borderRadius: 8,
+  border: '1px solid rgba(29,158,117,0.3)', borderRadius: 8,
   color: '#e8f5e9', fontSize: 13, padding: '8px 12px',
   outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
 };
@@ -142,7 +142,7 @@ export default function GamesOrganizer() {
   };
 
   const btnStyle = (active) => ({
-    background: active ? 'linear-gradient(135deg,#2e7d32,#4caf50)' : 'rgba(255,255,255,0.06)',
+    background: active ? 'linear-gradient(135deg,#0e7a58,#1d9e75)' : 'rgba(255,255,255,0.06)',
     border: 'none', borderRadius: 8, color: active ? '#fff' : 'rgba(232,245,233,0.7)',
     fontSize: 13, fontWeight: active ? 600 : 400, padding: '8px 18px', cursor: 'pointer',
   });
@@ -150,9 +150,9 @@ export default function GamesOrganizer() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'linear-gradient(135deg,#0a1628,#0d2137)', color: '#e8f5e9', fontFamily: 'system-ui,-apple-system,sans-serif' }}>
       {/* Header */}
-      <div style={{ padding: '20px 24px 14px 120px', borderBottom: '1px solid rgba(76,175,80,0.2)', background: 'rgba(10,22,40,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+      <div style={{ padding: '20px 24px 14px 120px', borderBottom: '1px solid rgba(29,158,117,0.2)', background: 'rgba(10,22,40,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, background: 'linear-gradient(135deg,#4caf50,#81c784)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: 2 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, background: 'linear-gradient(135deg,#1d9e75,#5ecda4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: 2 }}>
             📅 Games Organizer
           </h1>
           <p style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)' }}>Your assigned matches</p>
@@ -160,7 +160,7 @@ export default function GamesOrganizer() {
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <button style={btnStyle(view === 'future')} onClick={() => setView('future')}>⏭ Future</button>
           <button style={btnStyle(view === 'past')} onClick={() => setView('past')}>⏮ Past</button>
-          <button onClick={() => setShowUpload(true)} style={{ ...btnStyle(false), background: 'rgba(76,175,80,0.15)', border: '1px solid rgba(76,175,80,0.3)' }}>📤 Upload Game</button>
+          <button onClick={() => setShowUpload(true)} style={{ ...btnStyle(false), background: 'rgba(29,158,117,0.15)', border: '1px solid rgba(29,158,117,0.3)' }}>📤 Upload Game</button>
           <button onClick={openAdd} style={{ ...btnStyle(false), background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>+ Add Manually</button>
         </div>
       </div>
@@ -178,19 +178,19 @@ export default function GamesOrganizer() {
             <thead>
               <tr>
                 {COLS.map(c => (
-                  <th key={c} style={{ textAlign: 'left', padding: '8px 10px', borderBottom: '2px solid rgba(76,175,80,0.25)', color: '#4caf50', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{c}</th>
+                  <th key={c} style={{ textAlign: 'left', padding: '8px 10px', borderBottom: '2px solid rgba(29,158,117,0.25)', color: '#1d9e75', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{c}</th>
                 ))}
-                <th style={{ padding: '8px 10px', borderBottom: '2px solid rgba(76,175,80,0.25)' }}></th>
+                <th style={{ padding: '8px 10px', borderBottom: '2px solid rgba(29,158,117,0.25)' }}></th>
               </tr>
             </thead>
             <tbody>
               {games.map(g => (
-                <tr key={g.id} style={{ borderBottom: '1px solid rgba(76,175,80,0.08)', cursor: 'pointer' }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(76,175,80,0.06)'}
+                <tr key={g.id} style={{ borderBottom: '1px solid rgba(29,158,117,0.08)', cursor: 'pointer' }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(29,158,117,0.06)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   onClick={() => setSelected(g)}
                 >
-                  <td style={{ padding: '9px 10px', whiteSpace: 'nowrap', color: '#81c784' }}>{formatDate(g.date)}</td>
+                  <td style={{ padding: '9px 10px', whiteSpace: 'nowrap', color: '#5ecda4' }}>{formatDate(g.date)}</td>
                   <td style={{ padding: '9px 10px', whiteSpace: 'nowrap', color: 'rgba(232,245,233,0.6)' }}>{formatTime(g.time)}</td>
                   <td style={{ padding: '9px 10px' }}>{g.league || '—'}</td>
                   <td style={{ padding: '9px 10px' }}>{g.level || '—'}</td>
@@ -334,7 +334,7 @@ function UploadGameModal({ session, onClose, onSaved }) {
   };
 
   const overlay = { position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 };
-  const box = { background: '#0d2137', border: '1px solid rgba(76,175,80,0.25)', borderRadius: 16, width: '100%', maxWidth: 580, maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 24px 64px rgba(0,0,0,0.5)' };
+  const box = { background: '#0d2137', border: '1px solid rgba(29,158,117,0.25)', borderRadius: 16, width: '100%', maxWidth: 580, maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 24px 64px rgba(0,0,0,0.5)' };
   const lbl = (text, req) => (
     <label style={{ fontSize: 11, color: 'rgba(232,245,233,0.5)', textTransform: 'uppercase', letterSpacing: '0.07em', display: 'block', marginBottom: 5 }}>
       {text}{req && <span style={{ color: '#ef9a9a' }}> *</span>}
@@ -352,9 +352,9 @@ function UploadGameModal({ session, onClose, onSaved }) {
       <div style={box} onClick={e => e.stopPropagation()}>
 
         {/* Header */}
-        <div style={{ padding: '22px 24px 16px', borderBottom: '1px solid rgba(76,175,80,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '22px 24px 16px', borderBottom: '1px solid rgba(29,158,117,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#81c784' }}>📤 Upload Game</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#5ecda4' }}>📤 Upload Game</div>
             <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.4)', marginTop: 2 }}>
               {stage === 'upload' ? 'Drop a screenshot to extract match details' : 'Review extracted details and complete your report'}
             </div>
@@ -376,10 +376,10 @@ function UploadGameModal({ session, onClose, onSaved }) {
                 onDragLeave={() => setDragOver(false)}
                 onClick={() => fileInputRef.current?.click()}
                 style={{
-                  border: `2px dashed ${dragOver ? '#4caf50' : imagePreview ? 'rgba(76,175,80,0.4)' : 'rgba(76,175,80,0.2)'}`,
+                  border: `2px dashed ${dragOver ? '#1d9e75' : imagePreview ? 'rgba(29,158,117,0.4)' : 'rgba(29,158,117,0.2)'}`,
                   borderRadius: 12, padding: imagePreview ? 12 : '40px 20px',
                   textAlign: 'center', cursor: 'pointer', transition: 'border-color 0.2s',
-                  background: dragOver ? 'rgba(76,175,80,0.06)' : 'rgba(10,22,40,0.4)',
+                  background: dragOver ? 'rgba(29,158,117,0.06)' : 'rgba(10,22,40,0.4)',
                   marginBottom: 16,
                 }}
               >
@@ -412,7 +412,7 @@ function UploadGameModal({ session, onClose, onSaved }) {
                 <button
                   onClick={handleExtract}
                   disabled={!imageBase64 || extracting}
-                  style={{ background: !imageBase64 ? 'rgba(76,175,80,0.2)' : 'linear-gradient(135deg,#2e7d32,#4caf50)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 22px', cursor: !imageBase64 ? 'default' : 'pointer', opacity: extracting ? 0.7 : 1, minWidth: 120 }}
+                  style={{ background: !imageBase64 ? 'rgba(29,158,117,0.2)' : 'linear-gradient(135deg,#0e7a58,#1d9e75)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 22px', cursor: !imageBase64 ? 'default' : 'pointer', opacity: extracting ? 0.7 : 1, minWidth: 120 }}
                 >
                   {extracting ? '⏳ Extracting…' : '✨ Extract Details'}
                 </button>
@@ -425,11 +425,11 @@ function UploadGameModal({ session, onClose, onSaved }) {
             <>
               {/* Small image preview */}
               {imagePreview && (
-                <img src={imagePreview} alt="Match screenshot" style={{ width: '100%', maxHeight: 160, objectFit: 'contain', borderRadius: 8, marginBottom: 18, border: '1px solid rgba(76,175,80,0.15)' }} />
+                <img src={imagePreview} alt="Match screenshot" style={{ width: '100%', maxHeight: 160, objectFit: 'contain', borderRadius: 8, marginBottom: 18, border: '1px solid rgba(29,158,117,0.15)' }} />
               )}
 
               {/* Section: Match Details */}
-              <div style={{ fontSize: 11, color: '#4caf50', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600, marginBottom: 12 }}>Match Details</div>
+              <div style={{ fontSize: 11, color: '#1d9e75', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600, marginBottom: 12 }}>Match Details</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
                 {fld('Date', 'date', 'date')}
                 {fld('Time', 'time', 'time')}
@@ -457,8 +457,8 @@ function UploadGameModal({ session, onClose, onSaved }) {
               </details>
 
               {/* Section: Complete Your Report */}
-              <div style={{ borderTop: '1px solid rgba(76,175,80,0.15)', paddingTop: 18, marginBottom: 20 }}>
-                <div style={{ fontSize: 11, color: '#4caf50', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600, marginBottom: 12 }}>Complete Your Report</div>
+              <div style={{ borderTop: '1px solid rgba(29,158,117,0.15)', paddingTop: 18, marginBottom: 20 }}>
+                <div style={{ fontSize: 11, color: '#1d9e75', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600, marginBottom: 12 }}>Complete Your Report</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
                   {fld('Half Duration (min)', 'half_duration', 'number', true)}
                   {fld('Halftime Duration (min)', 'halftime_duration', 'number', true)}
@@ -480,7 +480,7 @@ function UploadGameModal({ session, onClose, onSaved }) {
                 <button
                   onClick={handleSubmit}
                   disabled={submitting}
-                  style={{ background: submitting ? 'rgba(76,175,80,0.3)' : 'linear-gradient(135deg,#2e7d32,#4caf50)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 24px', cursor: submitting ? 'default' : 'pointer', minWidth: 100 }}
+                  style={{ background: submitting ? 'rgba(29,158,117,0.3)' : 'linear-gradient(135deg,#0e7a58,#1d9e75)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 24px', cursor: submitting ? 'default' : 'pointer', minWidth: 100 }}
                 >
                   {submitting ? 'Saving…' : '✅ Submit'}
                 </button>
@@ -509,9 +509,9 @@ function GameDetailModal({ game, onClose, onSave, onEdit, onDelete, formatDate, 
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: '#0d2137', border: '1px solid rgba(76,175,80,0.25)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 500, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: '#0d2137', border: '1px solid rgba(29,158,117,0.25)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 500, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: '#81c784' }}>{formatDate(game.date)} {formatTime(game.time)}</h3>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: '#5ecda4' }}>{formatDate(game.date)} {formatTime(game.time)}</h3>
           {game.match_id && <span style={{ fontSize: 11, color: 'rgba(232,245,233,0.3)', fontFamily: 'monospace' }}>#{game.match_id}</span>}
         </div>
         <div style={{ background: 'rgba(10,22,40,0.5)', borderRadius: 10, padding: '14px 16px', marginBottom: 16 }}>
@@ -544,7 +544,7 @@ function GameDetailModal({ game, onClose, onSave, onEdit, onDelete, formatDate, 
           <button onClick={onDelete} style={{ background: 'rgba(183,28,28,0.2)', border: '1px solid rgba(239,83,80,0.3)', borderRadius: 8, color: '#ef9a9a', fontSize: 13, padding: '8px 14px', cursor: 'pointer' }}>🗑 Delete</button>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={onEdit} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, color: '#e8f5e9', fontSize: 13, padding: '8px 14px', cursor: 'pointer' }}>✏️ Edit</button>
-            {isPast && <button onClick={() => onSave(game, desc, sh, sa)} style={{ background: 'linear-gradient(135deg,#2e7d32,#4caf50)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 18px', cursor: 'pointer' }}>Save</button>}
+            {isPast && <button onClick={() => onSave(game, desc, sh, sa)} style={{ background: 'linear-gradient(135deg,#0e7a58,#1d9e75)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 18px', cursor: 'pointer' }}>Save</button>}
             {!isPast && <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, color: '#e8f5e9', fontSize: 13, padding: '8px 18px', cursor: 'pointer' }}>Close</button>}
           </div>
         </div>
@@ -567,8 +567,8 @@ function GameFormModal({ form, setForm, onClose, onSave, saving, isEdit }) {
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: '#0d2137', border: '1px solid rgba(76,175,80,0.25)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 540, maxHeight: '90vh', overflowY: 'auto' }}>
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: '#81c784', marginBottom: 20 }}>{isEdit ? '✏️ Edit Game' : '➕ Add Game'}</h3>
+      <div onClick={e => e.stopPropagation()} style={{ background: '#0d2137', border: '1px solid rgba(29,158,117,0.25)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 540, maxHeight: '90vh', overflowY: 'auto' }}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: '#5ecda4', marginBottom: 20 }}>{isEdit ? '✏️ Edit Game' : '➕ Add Game'}</h3>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
           {field('Date', 'date', 'date', true)}
           {field('Time', 'time', 'time')}
@@ -598,7 +598,7 @@ function GameFormModal({ form, setForm, onClose, onSave, saving, isEdit }) {
         </div>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 }}>
           <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '10px 20px', cursor: 'pointer' }}>Cancel</button>
-          <button onClick={onSave} disabled={saving || !form.date} style={{ background: !form.date ? 'rgba(76,175,80,0.2)' : 'linear-gradient(135deg,#2e7d32,#4caf50)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 20px', cursor: !form.date ? 'default' : 'pointer', opacity: saving ? 0.6 : 1 }}>
+          <button onClick={onSave} disabled={saving || !form.date} style={{ background: !form.date ? 'rgba(29,158,117,0.2)' : 'linear-gradient(135deg,#0e7a58,#1d9e75)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 20px', cursor: !form.date ? 'default' : 'pointer', opacity: saving ? 0.6 : 1 }}>
             {saving ? 'Saving…' : 'Save'}
           </button>
         </div>

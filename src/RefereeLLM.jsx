@@ -68,7 +68,7 @@ export default function RefereeLLM() {
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              color: '#4caf50',
+              color: '#1d9e75',
               textDecoration: 'underline',
             }}
           >
@@ -287,33 +287,17 @@ export default function RefereeLLM() {
           padding: 40,
           maxWidth: 400,
           width: "100%",
-          border: "1px solid rgba(76,175,80,0.3)",
+          border: "1px solid rgba(29,158,117,0.3)",
         }}>
-          <h1 style={{
-            fontSize: 32,
-            fontWeight: "bold",
-            marginBottom: 8,
-            textAlign: "center",
-            background: "linear-gradient(135deg, #4caf50, #81c784)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}>
-            ⚽ Virtual AI Referee
-          </h1>
-          <p style={{
-            fontSize: 14,
-            color: "rgba(232,245,233,0.7)",
-            marginBottom: 32,
-            textAlign: "center",
-          }}>
-            AI-Powered Referee Assistant
-          </p>
+          <div style={{ textAlign: "center", marginBottom: 28 }}>
+            <img src="/vair-logo.svg" alt="VAiR logo" style={{ width: 220, maxWidth: "100%" }} />
+          </div>
 
           <div style={{
             display: "flex",
             gap: 8,
             marginBottom: 24,
-            borderBottom: "1px solid rgba(76,175,80,0.2)",
+            borderBottom: "1px solid rgba(29,158,117,0.2)",
           }}>
             <button
               onClick={() => setAuthView('login')}
@@ -322,8 +306,8 @@ export default function RefereeLLM() {
                 padding: "12px 0",
                 background: "transparent",
                 border: "none",
-                borderBottom: authView === 'login' ? "2px solid #4caf50" : "none",
-                color: authView === 'login' ? "#4caf50" : "rgba(232,245,233,0.6)",
+                borderBottom: authView === 'login' ? "2px solid #1d9e75" : "none",
+                color: authView === 'login' ? "#1d9e75" : "rgba(232,245,233,0.6)",
                 fontSize: 16,
                 cursor: "pointer",
                 fontWeight: authView === 'login' ? "bold" : "normal",
@@ -338,8 +322,8 @@ export default function RefereeLLM() {
                 padding: "12px 0",
                 background: "transparent",
                 border: "none",
-                borderBottom: authView === 'signup' ? "2px solid #4caf50" : "none",
-                color: authView === 'signup' ? "#4caf50" : "rgba(232,245,233,0.6)",
+                borderBottom: authView === 'signup' ? "2px solid #1d9e75" : "none",
+                color: authView === 'signup' ? "#1d9e75" : "rgba(232,245,233,0.6)",
                 fontSize: 16,
                 cursor: "pointer",
                 fontWeight: authView === 'signup' ? "bold" : "normal",
@@ -359,7 +343,7 @@ export default function RefereeLLM() {
               style={{
                 padding: 12,
                 borderRadius: 8,
-                border: "1px solid rgba(76,175,80,0.3)",
+                border: "1px solid rgba(29,158,117,0.3)",
                 background: "rgba(10,30,15,0.5)",
                 color: "#e8f5e9",
                 fontSize: 16,
@@ -375,7 +359,7 @@ export default function RefereeLLM() {
               style={{
                 padding: 12,
                 borderRadius: 8,
-                border: "1px solid rgba(76,175,80,0.3)",
+                border: "1px solid rgba(29,158,117,0.3)",
                 background: "rgba(10,30,15,0.5)",
                 color: "#e8f5e9",
                 fontSize: 16,
@@ -401,8 +385,8 @@ export default function RefereeLLM() {
                 padding: 12,
                 borderRadius: 8,
                 border: "none",
-                background: loading ? "rgba(76,175,80,0.2)" : "linear-gradient(135deg, #2e7d32, #1b5e20)",
-                color: loading ? "#4caf50" : "#e8f5e9",
+                background: loading ? "rgba(29,158,117,0.2)" : "linear-gradient(135deg, #0e7a58, #0a5c43)",
+                color: loading ? "#1d9e75" : "#e8f5e9",
                 fontSize: 16,
                 fontWeight: "bold",
                 cursor: loading ? "default" : "pointer",
@@ -433,7 +417,7 @@ export default function RefereeLLM() {
         zIndex: 10,
         background: "rgba(10,22,40,0.95)",
         backdropFilter: "blur(10px)",
-        borderBottom: "1px solid rgba(76,175,80,0.2)",
+        borderBottom: "1px solid rgba(29,158,117,0.2)",
         padding: "16px 24px 16px 120px",
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -442,7 +426,7 @@ export default function RefereeLLM() {
               fontSize: 28,
               fontWeight: "bold",
               margin: 0,
-              background: "linear-gradient(135deg, #4caf50, #81c784)",
+              background: "linear-gradient(135deg, #1d9e75, #5ecda4)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}>
@@ -461,9 +445,9 @@ export default function RefereeLLM() {
             style={{
               padding: "8px 16px",
               borderRadius: 8,
-              border: "1px solid rgba(76,175,80,0.3)",
-              background: "rgba(76,175,80,0.1)",
-              color: "#4caf50",
+              border: "1px solid rgba(29,158,117,0.3)",
+              background: "rgba(29,158,117,0.1)",
+              color: "#1d9e75",
               fontSize: 14,
               cursor: "pointer",
             }}
@@ -493,7 +477,7 @@ export default function RefereeLLM() {
               fontSize: 24,
               fontWeight: "600",
               marginBottom: 12,
-              color: "#81c784",
+              color: "#5ecda4",
             }}>
               Ask about any refereeing decision
             </h2>
@@ -519,7 +503,7 @@ export default function RefereeLLM() {
                     width: "100%",
                     padding: "12px 16px",
                     background: "rgba(10,30,15,0.3)",
-                    border: "1px solid rgba(76,175,80,0.2)",
+                    border: "1px solid rgba(29,158,117,0.2)",
                     borderRadius: 12,
                     color: "#c8e6c9",
                     fontSize: 15,
@@ -529,11 +513,11 @@ export default function RefereeLLM() {
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.background = "rgba(10,30,15,0.5)";
-                    e.currentTarget.style.borderColor = "rgba(76,175,80,0.4)";
+                    e.currentTarget.style.borderColor = "rgba(29,158,117,0.4)";
                   }}
                   onMouseLeave={e => {
                     e.currentTarget.style.background = "rgba(10,30,15,0.3)";
-                    e.currentTarget.style.borderColor = "rgba(76,175,80,0.2)";
+                    e.currentTarget.style.borderColor = "rgba(29,158,117,0.2)";
                   }}
                 >
                   {q}
@@ -555,7 +539,7 @@ export default function RefereeLLM() {
                   background: msg.role === "user"
                     ? "linear-gradient(135deg, #0a1e0f, #1b4d20)"
                     : "rgba(13,33,55,0.5)",
-                  border: `1px solid ${msg.role === "user" ? "rgba(76,175,80,0.3)" : "rgba(76,175,80,0.15)"}`,
+                  border: `1px solid ${msg.role === "user" ? "rgba(29,158,117,0.3)" : "rgba(29,158,117,0.15)"}`,
                   borderRadius: 16,
                   fontSize: 15,
                   lineHeight: 1.6,
@@ -597,7 +581,7 @@ export default function RefereeLLM() {
             margin: "0 auto 16px 0",
             padding: "14px 18px",
             background: "rgba(13,33,55,0.5)",
-            border: "1px solid rgba(76,175,80,0.15)",
+            border: "1px solid rgba(29,158,117,0.15)",
             borderRadius: 16,
           }}>
             <span style={{ animation: "pulse 1.5s ease-in-out infinite" }}>●</span>
@@ -629,10 +613,10 @@ export default function RefereeLLM() {
         bottom: 0,
         background: "rgba(10,22,40,0.95)",
         backdropFilter: "blur(10px)",
-        borderTop: "1px solid rgba(76,175,80,0.2)",
+        borderTop: "1px solid rgba(29,158,117,0.2)",
         padding: "16px 24px",
       }}>
-        <style>{`@keyframes mic-pulse{0%,100%{box-shadow:0 0 0 0 rgba(76,175,80,0.7)}50%{box-shadow:0 0 0 8px rgba(76,175,80,0)}}`}</style>
+        <style>{`@keyframes mic-pulse{0%,100%{box-shadow:0 0 0 0 rgba(29,158,117,0.7)}50%{box-shadow:0 0 0 8px rgba(29,158,117,0)}}`}</style>
         <div style={{
           maxWidth: 700,
           margin: "0 auto",
@@ -649,10 +633,10 @@ export default function RefereeLLM() {
             onTouchEnd={stopRecording}
             title={micSupported ? (recording ? "Listening…" : "Hold to dictate") : "Speech recognition not supported in this browser"}
             style={{
-              background: recording ? "rgba(76,175,80,0.15)" : "rgba(10,30,15,0.3)",
-              border: `1px solid ${recording ? "rgba(76,175,80,0.8)" : micSupported ? "rgba(76,175,80,0.3)" : "rgba(76,175,80,0.15)"}`,
+              background: recording ? "rgba(29,158,117,0.15)" : "rgba(10,30,15,0.3)",
+              border: `1px solid ${recording ? "rgba(29,158,117,0.8)" : micSupported ? "rgba(29,158,117,0.3)" : "rgba(29,158,117,0.15)"}`,
               borderRadius: 12,
-              color: micSupported ? (recording ? "#81c784" : "rgba(232,245,233,0.85)") : "rgba(232,245,233,0.25)",
+              color: micSupported ? (recording ? "#5ecda4" : "rgba(232,245,233,0.85)") : "rgba(232,245,233,0.25)",
               fontSize: 20,
               cursor: micSupported ? "pointer" : "not-allowed",
               minWidth: 52,
@@ -685,7 +669,7 @@ export default function RefereeLLM() {
               maxHeight: 200,
               padding: "14px 16px",
               background: "rgba(10,30,15,0.3)",
-              border: "1px solid rgba(76,175,80,0.3)",
+              border: "1px solid rgba(29,158,117,0.3)",
               borderRadius: 12,
               color: "#e8f5e9",
               fontSize: 15,
@@ -695,20 +679,20 @@ export default function RefereeLLM() {
               lineHeight: 1.5,
               transition: "border-color 0.2s",
             }}
-            onFocus={e => e.target.style.borderColor = "rgba(76,175,80,0.7)"}
-            onBlur={e => e.target.style.borderColor = "rgba(76,175,80,0.3)"}
+            onFocus={e => e.target.style.borderColor = "rgba(29,158,117,0.7)"}
+            onBlur={e => e.target.style.borderColor = "rgba(29,158,117,0.3)"}
           />
           <button
             onClick={() => sendMessage()}
             disabled={chatLoading || !input.trim()}
             style={{
               background: chatLoading || !input.trim()
-                ? "rgba(76,175,80,0.2)"
-                : "linear-gradient(135deg, #2e7d32, #1b5e20)",
-              border: "1px solid rgba(76,175,80,0.4)",
+                ? "rgba(29,158,117,0.2)"
+                : "linear-gradient(135deg, #0e7a58, #0a5c43)",
+              border: "1px solid rgba(29,158,117,0.4)",
               borderRadius: 12,
               padding: "0 20px",
-              color: chatLoading || !input.trim() ? "#4caf50" : "#e8f5e9",
+              color: chatLoading || !input.trim() ? "#1d9e75" : "#e8f5e9",
               fontSize: 20,
               cursor: chatLoading || !input.trim() ? "default" : "pointer",
               transition: "all 0.2s",
@@ -739,7 +723,7 @@ export default function RefereeLLM() {
           position: 'fixed', top: 16, left: '50%', transform: 'translateX(-50%)',
           zIndex: 999, maxWidth: 520, width: '90%',
           background: n.status === 'rejected' ? 'rgba(183,28,28,0.95)' : 'rgba(27,94,32,0.95)',
-          border: `1px solid ${n.status === 'rejected' ? 'rgba(239,83,80,0.5)' : 'rgba(76,175,80,0.5)'}`,
+          border: `1px solid ${n.status === 'rejected' ? 'rgba(239,83,80,0.5)' : 'rgba(29,158,117,0.5)'}`,
           borderRadius: 12, padding: '14px 18px',
           color: '#e8f5e9', fontSize: 13,
           boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
@@ -772,22 +756,22 @@ export default function RefereeLLM() {
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{ background: '#0d2137', border: '1px solid rgba(76,175,80,0.25)', borderRadius: 16, padding: '28px 24px', width: '100%', maxWidth: 500, boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}
+            style={{ background: '#0d2137', border: '1px solid rgba(29,158,117,0.25)', borderRadius: 16, padding: '28px 24px', width: '100%', maxWidth: 500, boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}
           >
             {reportStatus === 'success' ? (
               <div style={{ textAlign: 'center', padding: '16px 0' }}>
                 <div style={{ fontSize: 44, marginBottom: 12 }}>✅</div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#81c784', marginBottom: 8 }}>Report submitted</h3>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#5ecda4', marginBottom: 8 }}>Report submitted</h3>
                 <p style={{ fontSize: 13, color: 'rgba(232,245,233,0.6)', marginBottom: 20 }}>
                   Thank you — we will review the correction and address it accordingly.
                 </p>
-                <button onClick={closeReportModal} style={{ background: 'linear-gradient(135deg,#2e7d32,#4caf50)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 24px', cursor: 'pointer' }}>Close</button>
+                <button onClick={closeReportModal} style={{ background: 'linear-gradient(135deg,#0e7a58,#1d9e75)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 24px', cursor: 'pointer' }}>Close</button>
               </div>
             ) : (
               <>
                 <h3 style={{ fontSize: 16, fontWeight: 700, color: '#ef9a9a', marginBottom: 16 }}>🚩 Report incorrect answer</h3>
                 <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.07em' }}>VAIR's answer</div>
-                <div style={{ background: 'rgba(10,22,40,0.6)', border: '1px solid rgba(76,175,80,0.15)', borderRadius: 8, padding: '10px 12px', fontSize: 13, color: 'rgba(232,245,233,0.7)', marginBottom: 16, maxHeight: 100, overflowY: 'auto', whiteSpace: 'pre-wrap' }}>
+                <div style={{ background: 'rgba(10,22,40,0.6)', border: '1px solid rgba(29,158,117,0.15)', borderRadius: 8, padding: '10px 12px', fontSize: 13, color: 'rgba(232,245,233,0.7)', marginBottom: 16, maxHeight: 100, overflowY: 'auto', whiteSpace: 'pre-wrap' }}>
                   {reportModal.answer.slice(0, 300)}{reportModal.answer.length > 300 ? '…' : ''}
                 </div>
                 <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Why is this wrong? <span style={{ color: '#ef9a9a' }}>*</span></div>
@@ -795,7 +779,7 @@ export default function RefereeLLM() {
                   value={reportExplanation}
                   onChange={e => setReportExplanation(e.target.value)}
                   placeholder="Explain why this answer is incorrect and what the correct ruling should be…"
-                  style={{ width: '100%', minHeight: 100, background: 'rgba(10,22,40,0.7)', border: '1px solid rgba(76,175,80,0.3)', borderRadius: 8, color: '#e8f5e9', fontSize: 13, padding: '10px 12px', resize: 'vertical', outline: 'none', boxSizing: 'border-box', fontFamily: 'system-ui,-apple-system,sans-serif', marginBottom: 16 }}
+                  style={{ width: '100%', minHeight: 100, background: 'rgba(10,22,40,0.7)', border: '1px solid rgba(29,158,117,0.3)', borderRadius: 8, color: '#e8f5e9', fontSize: 13, padding: '10px 12px', resize: 'vertical', outline: 'none', boxSizing: 'border-box', fontFamily: 'system-ui,-apple-system,sans-serif', marginBottom: 16 }}
                 />
                 <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
                   <button onClick={closeReportModal} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '10px 20px', cursor: 'pointer' }}>Cancel</button>

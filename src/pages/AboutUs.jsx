@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 const INPUT_STYLE = {
   width: "100%",
   background: "rgba(10,22,40,0.7)",
-  border: "1px solid rgba(76,175,80,0.3)",
+  border: "1px solid rgba(29,158,117,0.3)",
   borderRadius: 8,
   color: "#e8f5e9",
   fontSize: 14,
@@ -192,7 +192,7 @@ function FeedbackModal({ onClose }) {
       <ModalShell onClose={onClose}>
         <div style={{ textAlign: "center", padding: "32px 0" }}>
           <div style={{ fontSize: 52, marginBottom: 16 }}>✅</div>
-          <h3 style={{ fontSize: 20, fontWeight: 700, color: "#81c784", marginBottom: 8 }}>
+          <h3 style={{ fontSize: 20, fontWeight: 700, color: "#5ecda4", marginBottom: 8 }}>
             Thanks for your message!
           </h3>
           <p style={{ color: "rgba(232,245,233,0.6)", fontSize: 14 }}>
@@ -208,7 +208,7 @@ function FeedbackModal({ onClose }) {
     <ModalShell onClose={onClose}>
       <h3 style={{
         fontSize: 18, fontWeight: 700,
-        background: "linear-gradient(135deg, #4caf50, #81c784)",
+        background: "linear-gradient(135deg, #1d9e75, #5ecda4)",
         WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
         marginBottom: 24,
       }}>
@@ -330,7 +330,7 @@ function ModalShell({ onClose, children }) {
         onClick={e => e.stopPropagation()}
         style={{
           background: "#0d2137",
-          border: "1px solid rgba(76,175,80,0.25)",
+          border: "1px solid rgba(29,158,117,0.25)",
           borderRadius: 16,
           padding: "32px 28px",
           width: "100%",
@@ -347,7 +347,7 @@ function ModalShell({ onClose, children }) {
 }
 
 const btnStyle = {
-  background: "linear-gradient(135deg, #2e7d32, #4caf50)",
+  background: "linear-gradient(135deg, #0e7a58, #1d9e75)",
   border: "none",
   borderRadius: 8,
   color: "#fff",
@@ -372,13 +372,13 @@ export default function AboutUs() {
       {/* Header */}
       <div style={{
         padding: "24px 32px 16px 120px",
-        borderBottom: "1px solid rgba(76,175,80,0.2)",
+        borderBottom: "1px solid rgba(29,158,117,0.2)",
         background: "rgba(10,22,40,0.95)",
       }}>
         <h1 style={{
           fontSize: 24,
           fontWeight: 700,
-          background: "linear-gradient(135deg, #4caf50, #81c784)",
+          background: "linear-gradient(135deg, #1d9e75, #5ecda4)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           marginBottom: 4,
@@ -400,7 +400,7 @@ export default function AboutUs() {
       }}>
         <div style={{
           background: "rgba(13,33,55,0.6)",
-          border: "1px solid rgba(76,175,80,0.2)",
+          border: "1px solid rgba(29,158,117,0.2)",
           borderRadius: 16,
           padding: "40px 56px",
           display: "flex",
@@ -409,43 +409,35 @@ export default function AboutUs() {
           minWidth: 320,
         }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 56, marginBottom: 12 }}>🟢</div>
-            <h2 style={{
-              fontSize: 28,
-              fontWeight: 700,
-              background: "linear-gradient(135deg, #4caf50, #81c784)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}>
-              VAIR
-            </h2>
-            <p style={{ fontSize: 13, color: "rgba(232,245,233,0.5)", marginTop: 4 }}>
-              Video Assistant Intelligence Referee
-            </p>
+            <img
+              src="/vair-logo.svg"
+              alt="VAiR – Virtual AI Referee"
+              style={{ width: 280, maxWidth: "100%", marginBottom: 8 }}
+            />
           </div>
 
-          <div style={{ borderTop: "1px solid rgba(76,175,80,0.15)", paddingTop: 24, display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ borderTop: "1px solid rgba(29,158,117,0.15)", paddingTop: 24, display: "flex", flexDirection: "column", gap: 16 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 32 }}>
               <span style={{ fontSize: 13, color: "rgba(232,245,233,0.5)", textTransform: "uppercase", letterSpacing: "0.08em" }}>Author</span>
               <span style={{ fontSize: 15, fontWeight: 600, color: "#e8f5e9" }}>Federico</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 32 }}>
               <span style={{ fontSize: 13, color: "rgba(232,245,233,0.5)", textTransform: "uppercase", letterSpacing: "0.08em" }}>Release</span>
-              <span style={{ fontSize: 14, fontFamily: "monospace", color: "#81c784" }}>
+              <span style={{ fontSize: 14, fontFamily: "monospace", color: "#5ecda4" }}>
                 {typeof __RELEASE_DATE__ !== 'undefined' ? __RELEASE_DATE__ : 'unknown'}
               </span>
             </div>
           </div>
 
           {/* Feedback button */}
-          <div style={{ borderTop: "1px solid rgba(76,175,80,0.15)", paddingTop: 24, textAlign: "center" }}>
+          <div style={{ borderTop: "1px solid rgba(29,158,117,0.15)", paddingTop: 24, textAlign: "center" }}>
             <button
               onClick={() => setShowForm(true)}
               style={{
                 ...btnStyle,
                 fontSize: 15,
                 padding: "12px 28px",
-                boxShadow: "0 4px 16px rgba(76,175,80,0.2)",
+                boxShadow: "0 4px 16px rgba(29,158,117,0.2)",
               }}
             >
               💬 Send Feedback

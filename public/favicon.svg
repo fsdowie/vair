@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="226 101 188 188">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0d2040"/>
+      <stop offset="100%" stop-color="#050d1a"/>
+    </radialGradient>
+    <radialGradient id="ball" cx="40%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#f0f0f0"/>
+      <stop offset="100%" stop-color="#b8b8b8"/>
+    </radialGradient>
+    <clipPath id="clip">
+      <circle cx="320" cy="195" r="73"/>
+    </clipPath>
+  </defs>
+  <circle cx="320" cy="195" r="94" fill="url(#bg)"/>
+  <circle cx="320" cy="195" r="74" fill="url(#ball)" stroke="#b0b0b0" stroke-width="1.2"/>
+  <g clip-path="url(#clip)">
+    <polygon points="344,195 332,215.8 308,215.8 296,195 308,174.2 332,174.2" fill="#1a1a2e" opacity="0.86"/>
+    <polygon points="344,127 332,147.8 308,147.8 296,127 308,106.2 332,106.2" fill="#1a1a2e" opacity="0.78"/>
+    <polygon points="403,161 391,181.8 367,181.8 355,161 367,140.2 391,140.2" fill="#1a1a2e" opacity="0.78"/>
+    <polygon points="403,229 391,249.8 367,249.8 355,229 367,208.2 391,208.2" fill="#1a1a2e" opacity="0.78"/>
+    <polygon points="344,263 332,283.8 308,283.8 296,263 308,242.2 332,242.2" fill="#1a1a2e" opacity="0.78"/>
+    <polygon points="285,229 273,249.8 249,249.8 237,229 249,208.2 273,208.2" fill="#1a1a2e" opacity="0.78"/>
+    <polygon points="285,161 273,181.8 249,181.8 237,161 249,140.2 273,140.2" fill="#1a1a2e" opacity="0.78"/>
+  </g>
+  <circle cx="320" cy="195" r="74" fill="none" stroke="#b0b0b0" stroke-width="1.4"/>
+  <ellipse cx="300" cy="163" rx="19" ry="12" fill="white" opacity="0.18" transform="rotate(-20,300,163)"/>
+  <circle cx="320" cy="195" r="78" fill="none" stroke="#1d9e75" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="320" cy="195" r="84" fill="none" stroke="#ef9f27" stroke-width="0.9" stroke-dasharray="4,3" opacity="0.5"/>
+  <circle cx="320" cy="195" r="3.5" fill="#ef9f27" opacity="0.95"/>
+</svg>

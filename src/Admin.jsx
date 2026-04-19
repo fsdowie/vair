@@ -305,7 +305,7 @@ export default function Admin() {
           <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
             <button
               onClick={() => { setPwdModal(true); setPwdError(''); setPwdValue(''); }}
-              style={{ background: 'linear-gradient(135deg,#2e7d32,#4caf50)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 22px', cursor: 'pointer' }}
+              style={{ background: 'linear-gradient(135deg,#0e7a58,#1d9e75)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 22px', cursor: 'pointer' }}
             >
               💾 Save Changes ({Object.keys(adminChanges).length})
             </button>
@@ -344,7 +344,7 @@ export default function Admin() {
                         : 'Never'}
                     </td>
                     <td style={styles.td}>
-                      <span style={{ color: user.email_confirmed_at ? '#4caf50' : '#ff9800', fontWeight: 'bold' }}>
+                      <span style={{ color: user.email_confirmed_at ? '#1d9e75' : '#ff9800', fontWeight: 'bold' }}>
                         {user.email_confirmed_at ? '✓' : '✗'}
                       </span>
                     </td>
@@ -366,7 +366,7 @@ export default function Admin() {
                             return { ...prev, [user.id]: next };
                           });
                         }}
-                        style={{ width: 16, height: 16, cursor: isSelf ? 'not-allowed' : 'pointer', accentColor: '#4caf50', opacity: isSelf ? 0.4 : 1 }}
+                        style={{ width: 16, height: 16, cursor: isSelf ? 'not-allowed' : 'pointer', accentColor: '#1d9e75', opacity: isSelf ? 0.4 : 1 }}
                       />
                     </td>
                   </tr>
@@ -379,8 +379,8 @@ export default function Admin() {
         {/* Password confirmation modal */}
         {pwdModal && (
           <div onClick={() => setPwdModal(false)} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-            <div onClick={e => e.stopPropagation()} style={{ background: '#0d2137', border: '1px solid rgba(76,175,80,0.35)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 420 }}>
-              <h3 style={{ color: '#81c784', marginBottom: 8, fontSize: 18 }}>🔐 Confirm identity</h3>
+            <div onClick={e => e.stopPropagation()} style={{ background: '#0d2137', border: '1px solid rgba(29,158,117,0.35)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 420 }}>
+              <h3 style={{ color: '#5ecda4', marginBottom: 8, fontSize: 18 }}>🔐 Confirm identity</h3>
               <p style={{ color: 'rgba(232,245,233,0.6)', fontSize: 13, marginBottom: 20 }}>
                 Enter your password to apply admin role changes.
               </p>
@@ -391,7 +391,7 @@ export default function Admin() {
                 onChange={e => setPwdValue(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && pwdValue && saveAdminRoles()}
                 placeholder="Your password"
-                style={{ width: '100%', background: 'rgba(10,22,40,0.7)', border: `1px solid ${pwdError ? 'rgba(239,83,80,0.6)' : 'rgba(76,175,80,0.3)'}`, borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '11px 14px', outline: 'none', boxSizing: 'border-box', marginBottom: 12 }}
+                style={{ width: '100%', background: 'rgba(10,22,40,0.7)', border: `1px solid ${pwdError ? 'rgba(239,83,80,0.6)' : 'rgba(29,158,117,0.3)'}`, borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '11px 14px', outline: 'none', boxSizing: 'border-box', marginBottom: 12 }}
               />
               {pwdError && (
                 <div style={{ color: '#ef9a9a', fontSize: 13, marginBottom: 14, background: 'rgba(183,28,28,0.1)', borderRadius: 8, padding: '8px 12px' }}>
@@ -403,7 +403,7 @@ export default function Admin() {
                 <button
                   onClick={saveAdminRoles}
                   disabled={savingAdmin || !pwdValue}
-                  style={{ background: savingAdmin || !pwdValue ? 'rgba(76,175,80,0.3)' : 'linear-gradient(135deg,#2e7d32,#4caf50)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 22px', cursor: savingAdmin || !pwdValue ? 'default' : 'pointer' }}
+                  style={{ background: savingAdmin || !pwdValue ? 'rgba(29,158,117,0.3)' : 'linear-gradient(135deg,#0e7a58,#1d9e75)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 22px', cursor: savingAdmin || !pwdValue ? 'default' : 'pointer' }}
                 >
                   {savingAdmin ? 'Saving…' : 'Confirm'}
                 </button>
@@ -482,13 +482,13 @@ export default function Admin() {
                         <span style={{ fontSize: 11, color: 'rgba(232,245,233,0.4)' }}>{r.user_email} · {new Date(r.created_at).toLocaleString()}</span>
                       </div>
                       <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 4, textTransform: 'uppercase' }}>Question</div>
-                      <div style={{ fontSize: 13, color: '#e8f5e9', marginBottom: 12, background: 'rgba(76,175,80,0.05)', borderRadius: 8, padding: '8px 12px' }}>{r.question}</div>
+                      <div style={{ fontSize: 13, color: '#e8f5e9', marginBottom: 12, background: 'rgba(29,158,117,0.05)', borderRadius: 8, padding: '8px 12px' }}>{r.question}</div>
                       <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 4, textTransform: 'uppercase' }}>VAIR's Answer</div>
                       <div style={{ fontSize: 13, color: 'rgba(232,245,233,0.8)', marginBottom: 12, background: 'rgba(13,33,55,0.5)', borderRadius: 8, padding: '8px 12px', whiteSpace: 'pre-wrap' }}>{r.vair_answer}</div>
                       <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 4, textTransform: 'uppercase' }}>Reporter's Explanation</div>
                       <div style={{ fontSize: 13, color: '#ef9a9a', marginBottom: 16, background: 'rgba(183,28,28,0.1)', borderRadius: 8, padding: '8px 12px' }}>{r.explanation}</div>
                       <div style={{ display: 'flex', gap: 10 }}>
-                        <button onClick={() => setActionModal({ type: 'accept', report: r })} style={{ background: 'linear-gradient(135deg,#2e7d32,#4caf50)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 18px', cursor: 'pointer' }}>✅ Accept</button>
+                        <button onClick={() => setActionModal({ type: 'accept', report: r })} style={{ background: 'linear-gradient(135deg,#0e7a58,#1d9e75)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 18px', cursor: 'pointer' }}>✅ Accept</button>
                         <button onClick={() => setActionModal({ type: 'reject', report: r })} style={{ background: 'linear-gradient(135deg,#b71c1c,#e53935)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 18px', cursor: 'pointer' }}>❌ Reject</button>
                       </div>
                     </div>
@@ -496,7 +496,7 @@ export default function Admin() {
                 )}
 
                 {/* Processed reports summary */}
-                <h3 style={{ color: '#81c784', fontSize: 16, marginBottom: 16, marginTop: 8 }}>
+                <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 16, marginTop: 8 }}>
                   📋 Processed Reports ({reports.filter(r => r.status !== 'pending').length})
                 </h3>
                 {reports.filter(r => r.status !== 'pending').length === 0 ? (
@@ -515,7 +515,7 @@ export default function Admin() {
                           <td style={styles.td}>{r.user_email}</td>
                           <td style={{ ...styles.td, maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.question}</td>
                           <td style={styles.td}>
-                            <span style={{ color: r.status === 'accepted' ? '#81c784' : '#ef9a9a', fontWeight: 700 }}>
+                            <span style={{ color: r.status === 'accepted' ? '#5ecda4' : '#ef9a9a', fontWeight: 700 }}>
                               {r.status === 'accepted' ? '✅ Accepted' : '❌ Rejected'}
                             </span>
                           </td>
@@ -527,16 +527,16 @@ export default function Admin() {
                 )}
 
                 {/* Active corrections / rollback */}
-                <h3 style={{ color: '#4caf50', fontSize: 16, marginBottom: 16, marginTop: 8 }}>
+                <h3 style={{ color: '#1d9e75', fontSize: 16, marginBottom: 16, marginTop: 8 }}>
                   🧠 Active LLM Corrections ({corrections.filter(c => c.is_active).length})
                 </h3>
                 {corrections.filter(c => c.is_active).length === 0 ? (
                   <div style={{ color: 'rgba(232,245,233,0.4)', fontSize: 13 }}>No active corrections.</div>
                 ) : (
                   corrections.filter(c => c.is_active).map(c => (
-                    <div key={c.id} style={{ background: 'rgba(76,175,80,0.05)', border: '1px solid rgba(76,175,80,0.2)', borderRadius: 12, padding: 16, marginBottom: 12 }}>
+                    <div key={c.id} style={{ background: 'rgba(29,158,117,0.05)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: 12, padding: 16, marginBottom: 12 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                        <span style={{ fontSize: 11, color: '#81c784', fontFamily: 'monospace' }}>v {c.version_label}</span>
+                        <span style={{ fontSize: 11, color: '#5ecda4', fontFamily: 'monospace' }}>v {c.version_label}</span>
                         {deleteConfirm === c.id ? (
                           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                             <span style={{ fontSize: 12, color: '#ef9a9a' }}>Permanently remove?</span>
@@ -558,15 +558,15 @@ export default function Admin() {
             {/* Accept modal */}
             {actionModal?.type === 'accept' && (
               <div onClick={() => setActionModal(null)} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-                <div onClick={e => e.stopPropagation()} style={{ background: '#0d2137', border: '1px solid rgba(76,175,80,0.3)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 540 }}>
-                  <h3 style={{ color: '#81c784', marginBottom: 16 }}>✅ Accept report — add correction</h3>
+                <div onClick={e => e.stopPropagation()} style={{ background: '#0d2137', border: '1px solid rgba(29,158,117,0.3)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 540 }}>
+                  <h3 style={{ color: '#5ecda4', marginBottom: 16 }}>✅ Accept report — add correction</h3>
                   <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 4, textTransform: 'uppercase' }}>Correction text (will be added to VAIR's knowledge) *</div>
-                  <textarea value={correctionText} onChange={e => setCorrectionText(e.target.value)} placeholder="Write the correct ruling or clarification that VAIR should use going forward…" style={{ width: '100%', minHeight: 120, background: 'rgba(10,22,40,0.7)', border: '1px solid rgba(76,175,80,0.3)', borderRadius: 8, color: '#e8f5e9', fontSize: 13, padding: '10px 12px', resize: 'vertical', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: 12 }} />
+                  <textarea value={correctionText} onChange={e => setCorrectionText(e.target.value)} placeholder="Write the correct ruling or clarification that VAIR should use going forward…" style={{ width: '100%', minHeight: 120, background: 'rgba(10,22,40,0.7)', border: '1px solid rgba(29,158,117,0.3)', borderRadius: 8, color: '#e8f5e9', fontSize: 13, padding: '10px 12px', resize: 'vertical', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: 12 }} />
                   <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 4, textTransform: 'uppercase' }}>Admin notes (optional)</div>
-                  <input value={correctionNotes} onChange={e => setCorrectionNotes(e.target.value)} placeholder="e.g. Law 12 clarification" style={{ width: '100%', background: 'rgba(10,22,40,0.7)', border: '1px solid rgba(76,175,80,0.3)', borderRadius: 8, color: '#e8f5e9', fontSize: 13, padding: '10px 12px', outline: 'none', boxSizing: 'border-box', marginBottom: 20 }} />
+                  <input value={correctionNotes} onChange={e => setCorrectionNotes(e.target.value)} placeholder="e.g. Law 12 clarification" style={{ width: '100%', background: 'rgba(10,22,40,0.7)', border: '1px solid rgba(29,158,117,0.3)', borderRadius: 8, color: '#e8f5e9', fontSize: 13, padding: '10px 12px', outline: 'none', boxSizing: 'border-box', marginBottom: 20 }} />
                   <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
                     <button onClick={() => setActionModal(null)} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '10px 20px', cursor: 'pointer' }}>Cancel</button>
-                    <button onClick={handleAccept} disabled={actionLoading || !correctionText.trim()} style={{ background: 'linear-gradient(135deg,#2e7d32,#4caf50)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 20px', cursor: actionLoading || !correctionText.trim() ? 'default' : 'pointer', opacity: actionLoading || !correctionText.trim() ? 0.6 : 1 }}>
+                    <button onClick={handleAccept} disabled={actionLoading || !correctionText.trim()} style={{ background: 'linear-gradient(135deg,#0e7a58,#1d9e75)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 20px', cursor: actionLoading || !correctionText.trim() ? 'default' : 'pointer', opacity: actionLoading || !correctionText.trim() ? 0.6 : 1 }}>
                       {actionLoading ? 'Saving…' : 'Save correction'}
                     </button>
                   </div>
@@ -612,7 +612,7 @@ const styles = {
     padding: 40,
     maxWidth: 900,
     width: '100%',
-    border: '1px solid rgba(76,175,80,0.3)',
+    border: '1px solid rgba(29,158,117,0.3)',
   },
   header: {
     display: 'flex',
@@ -623,15 +623,15 @@ const styles = {
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#4caf50',
+    color: '#1d9e75',
     margin: 0,
   },
   logoutBtn: {
     padding: '8px 16px',
     borderRadius: 8,
-    border: '1px solid rgba(76,175,80,0.3)',
-    background: 'rgba(76,175,80,0.1)',
-    color: '#4caf50',
+    border: '1px solid rgba(29,158,117,0.3)',
+    background: 'rgba(29,158,117,0.1)',
+    color: '#1d9e75',
     cursor: 'pointer',
     fontSize: 14,
   },
@@ -642,16 +642,16 @@ const styles = {
   },
   statBox: {
     flex: 1,
-    background: 'rgba(76,175,80,0.1)',
+    background: 'rgba(29,158,117,0.1)',
     padding: 20,
     borderRadius: 12,
-    border: '1px solid rgba(76,175,80,0.2)',
+    border: '1px solid rgba(29,158,117,0.2)',
     textAlign: 'center',
   },
   statNumber: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: '#4caf50',
+    color: '#1d9e75',
   },
   statLabel: {
     fontSize: 14,
@@ -666,13 +666,13 @@ const styles = {
   th: {
     textAlign: 'left',
     padding: 12,
-    borderBottom: '2px solid rgba(76,175,80,0.3)',
-    color: '#4caf50',
+    borderBottom: '2px solid rgba(29,158,117,0.3)',
+    color: '#1d9e75',
     fontSize: 14,
     fontWeight: 'bold',
   },
   tr: {
-    borderBottom: '1px solid rgba(76,175,80,0.1)',
+    borderBottom: '1px solid rgba(29,158,117,0.1)',
   },
   td: {
     padding: 12,
@@ -695,7 +695,7 @@ const styles = {
   input: {
     padding: 12,
     borderRadius: 8,
-    border: '1px solid rgba(76,175,80,0.3)',
+    border: '1px solid rgba(29,158,117,0.3)',
     background: 'rgba(10,30,15,0.5)',
     color: '#e8f5e9',
     fontSize: 16,
@@ -705,7 +705,7 @@ const styles = {
     padding: 12,
     borderRadius: 8,
     border: 'none',
-    background: 'linear-gradient(135deg, #2e7d32, #1b5e20)',
+    background: 'linear-gradient(135deg, #0e7a58, #0a5c43)',
     color: '#e8f5e9',
     fontSize: 16,
     fontWeight: 'bold',
@@ -723,7 +723,7 @@ const styles = {
     display: 'flex',
     gap: 12,
     marginBottom: 30,
-    borderBottom: '2px solid rgba(76,175,80,0.2)',
+    borderBottom: '2px solid rgba(29,158,117,0.2)',
     paddingBottom: 0,
   },
   tabButton: {
@@ -738,8 +738,8 @@ const styles = {
     marginBottom: -2,
   },
   activeTab: {
-    color: '#4caf50',
-    borderBottomColor: '#4caf50',
+    color: '#1d9e75',
+    borderBottomColor: '#1d9e75',
     fontWeight: 'bold',
   },
 };

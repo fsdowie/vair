@@ -11,13 +11,13 @@ export default function RefereeComparison() {
       {/* Header */}
       <div style={{
         padding: "24px 32px 16px 120px",
-        borderBottom: "1px solid rgba(76,175,80,0.2)",
+        borderBottom: "1px solid rgba(29,158,117,0.2)",
         background: "rgba(10,22,40,0.95)",
       }}>
         <h1 style={{
           fontSize: 24,
           fontWeight: 700,
-          background: "linear-gradient(135deg, #4caf50, #81c784)",
+          background: "linear-gradient(135deg, #1d9e75, #5ecda4)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           marginBottom: 4,
@@ -35,11 +35,11 @@ export default function RefereeComparison() {
         {/* Chart 1 */}
         <div style={{
           background: "rgba(13,33,55,0.6)",
-          border: "1px solid rgba(76,175,80,0.2)",
+          border: "1px solid rgba(29,158,117,0.2)",
           borderRadius: 16,
           padding: 24,
         }}>
-          <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: "#81c784" }}>
+          <h2 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16, color: "#5ecda4" }}>
             Match Statistics Overview
           </h2>
           <img
@@ -52,7 +52,7 @@ export default function RefereeComparison() {
         {/* Future charts placeholder */}
         <div style={{
           background: "rgba(13,33,55,0.3)",
-          border: "1px dashed rgba(76,175,80,0.15)",
+          border: "1px dashed rgba(29,158,117,0.15)",
           borderRadius: 16,
           padding: 32,
           textAlign: "center",

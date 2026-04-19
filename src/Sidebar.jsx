@@ -29,7 +29,7 @@ export default function Sidebar({ open, onClose, activePage, onNavigate, userEma
         bottom: 0,
         width: 260,
         background: "linear-gradient(180deg, #0a1e0f 0%, #0a1628 100%)",
-        borderRight: "1px solid rgba(76,175,80,0.2)",
+        borderRight: "1px solid rgba(29,158,117,0.2)",
         zIndex: 999,
         transform: open ? "translateX(0)" : "translateX(-100%)",
         transition: "transform 0.25s ease",
@@ -59,11 +59,11 @@ export default function Sidebar({ open, onClose, activePage, onNavigate, userEma
         </button>
 
         {/* Logo */}
-        <div style={{ padding: "0 24px 24px", borderBottom: "1px solid rgba(76,175,80,0.12)" }}>
+        <div style={{ padding: "0 24px 24px", borderBottom: "1px solid rgba(29,158,117,0.12)" }}>
           <div style={{
             fontSize: 18,
             fontWeight: 700,
-            background: "linear-gradient(135deg, #4caf50, #81c784)",
+            background: "linear-gradient(135deg, #1d9e75, #5ecda4)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
           }}>
@@ -89,10 +89,10 @@ export default function Sidebar({ open, onClose, activePage, onNavigate, userEma
                   width: "100%",
                   padding: "11px 14px",
                   marginBottom: 4,
-                  background: isActive ? "rgba(76,175,80,0.15)" : "transparent",
-                  border: isActive ? "1px solid rgba(76,175,80,0.3)" : "1px solid transparent",
+                  background: isActive ? "rgba(29,158,117,0.15)" : "transparent",
+                  border: isActive ? "1px solid rgba(29,158,117,0.3)" : "1px solid transparent",
                   borderRadius: 10,
-                  color: isActive ? "#81c784" : "rgba(232,245,233,0.75)",
+                  color: isActive ? "#5ecda4" : "rgba(232,245,233,0.75)",
                   fontSize: 14,
                   fontWeight: isActive ? 600 : 400,
                   cursor: "pointer",
@@ -102,7 +102,7 @@ export default function Sidebar({ open, onClose, activePage, onNavigate, userEma
                 }}
                 onMouseEnter={e => {
                   if (!isActive) {
-                    e.currentTarget.style.background = "rgba(76,175,80,0.07)";
+                    e.currentTarget.style.background = "rgba(29,158,117,0.07)";
                     e.currentTarget.style.color = "#e8f5e9";
                   }
                 }}
