@@ -4,7 +4,7 @@ export default function RefereeComparison() {
       display: "flex",
       flexDirection: "column",
       minHeight: "100vh",
-      background: "linear-gradient(135deg, #0a1628, #0d2137)",
+      background: "transparent",
       color: "#e8f5e9",
       fontFamily: "system-ui, -apple-system, sans-serif",
     }}>

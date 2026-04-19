@@ -148,7 +148,7 @@ export default function GamesOrganizer() {
   });
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'linear-gradient(135deg,#0a1628,#0d2137)', color: '#e8f5e9', fontFamily: 'system-ui,-apple-system,sans-serif' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: "transparent", color: '#e8f5e9', fontFamily: 'system-ui,-apple-system,sans-serif' }}>
       {/* Header */}
       <div style={{ padding: '20px 24px 14px 120px', borderBottom: '1px solid rgba(29,158,117,0.2)', background: 'rgba(10,22,40,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         <div>

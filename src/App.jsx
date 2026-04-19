@@ -44,7 +44,7 @@ export default function App() {
   }, []);
 
   return (
-    <div style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
+    <div style={{ position: "relative", height: "100vh", overflow: "hidden", background: "linear-gradient(135deg, #0a1628, #0d2137)" }}>
       {/* Faded logo background */}
       <div style={{
         position: "fixed",
