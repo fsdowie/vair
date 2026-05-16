@@ -75,7 +75,8 @@
       "Bash(npx vercel *)",
       "Bash(git *)",
       "Bash(echo \"EXIT:$?\")",
-      "Bash(vercel *)"
+      "Bash(vercel *)",
+      "Bash(supabase --version)"
     ]
   }
 }
