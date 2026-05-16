@@ -69,7 +69,13 @@
       "Bash(python -c \"import pdfminer; print\\(''pdfminer ok''\\)\")",
       "Bash(pip install:*)",
       "Bash(python -c \":*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(grep -r \"vercel\\\\|production\\\\|\\\\.app\\\\|\\\\.io\\\\|\\\\.com\" src/ .env* vercel.json)",
+      "Bash(npx supabase *)",
+      "Bash(npx vercel *)",
+      "Bash(git *)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(vercel *)"
     ]
   }
 }

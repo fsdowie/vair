@@ -35,3 +35,4 @@ laws-line.txt
 
 # Cache
 .cache/
+.vercel

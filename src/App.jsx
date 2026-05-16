@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import RefereeLLM from "./RefereeLLM";
 import Sidebar from "./Sidebar";
-import RefereeComparison from "./pages/RefereeComparison";
+import RefereeStatistics from "./pages/RefereeStatistics";
 import GamesOrganizer from "./pages/GamesOrganizer";
 import AboutUs from "./pages/AboutUs";
 import Admin from "./Admin";
@@ -102,27 +102,23 @@ export default function App() {
         </div>
       )}
 
-      {/* Hamburger button */}
+      {/* Logo / menu toggle */}
       <button
         onClick={() => setSidebarOpen(true)}
         aria-label="Open menu"
         style={{
           position: "fixed",
-          top: 12,
-          left: 14,
+          top: 8,
+          left: 12,
           zIndex: 997,
-          background: "rgba(10,22,40,0.8)",
-          border: "1px solid rgba(29,158,117,0.35)",
-          borderRadius: 8,
-          color: "rgba(232,245,233,0.85)",
-          fontSize: 22,
+          background: "transparent",
+          border: "none",
           cursor: "pointer",
-          padding: "7px 12px",
-          lineHeight: 1,
-          backdropFilter: "blur(6px)",
+          padding: 0,
+          lineHeight: 0,
         }}
       >
-        ☰
+        <img src="/vair-logo.svg" alt="VAiR" style={{ width: 84, display: "block" }} />
       </button>
 
       <Sidebar
@@ -137,7 +133,7 @@ export default function App() {
       {/* Main content */}
       <div style={{ position: "relative", zIndex: 1, height: "100vh", overflowY: "auto" }}>
         {activePage === "referee"    && <RefereeLLM />}
-        {activePage === "comparison" && <RefereeComparison />}
+        {activePage === "statistics" && <RefereeStatistics />}
         {activePage === "games"      && <GamesOrganizer />}
         {activePage === "about"      && <AboutUs />}
         {activePage === "admin"      && <Admin />}

@@ -1,6 +1,6 @@
 const NAV_ITEMS = [
   { id: "referee",    emoji: "🤖", label: "AI Referee" },
-  { id: "comparison", emoji: "📊", label: "Referee Comparison" },
+  { id: "statistics", emoji: "📈", label: "Referee Statistics" },
   { id: "games",      emoji: "📅", label: "Games Organizer" },
   { id: "about",      emoji: "ℹ️",  label: "About Us" },
 ];
@@ -59,19 +59,8 @@ export default function Sidebar({ open, onClose, activePage, onNavigate, userEma
         </button>
 
         {/* Logo */}
-        <div style={{ padding: "0 24px 24px", borderBottom: "1px solid rgba(29,158,117,0.12)" }}>
-          <div style={{
-            fontSize: 18,
-            fontWeight: 700,
-            background: "linear-gradient(135deg, #1d9e75, #5ecda4)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}>
-            VAIR
-          </div>
-          <div style={{ fontSize: 11, color: "rgba(232,245,233,0.4)", marginTop: 2 }}>
-            Video Assistant Intelligence Referee
-          </div>
+        <div style={{ padding: "0 24px 24px", borderBottom: "1px solid rgba(29,158,117,0.12)", textAlign: "center" }}>
+          <img src="/vair-logo.svg" alt="VAiR" style={{ width: 140, maxWidth: "100%" }} />
         </div>
 
         {/* Nav items */}

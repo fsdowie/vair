@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 const BOOTSTRAP_ADMIN_EMAIL = 'fsdowie@yahoo.com';
@@ -23,6 +23,15 @@ export default function Admin() {
   const [reports, setReports] = useState([]);
   const [corrections, setCorrections] = useState([]);
   const [reportsLoading, setReportsLoading] = useState(false);
+
+  const [profileRequests, setProfileRequests] = useState([]);
+  const [profileRequestsLoading, setProfileRequestsLoading] = useState(false);
+  const [profileRequestAction, setProfileRequestAction] = useState(null); // { type: 'approve'|'reject', req }
+  const [profileRequestNotes, setProfileRequestNotes] = useState('');
+  const [profileRequestActionLoading, setProfileRequestActionLoading] = useState(false);
+  const [generatingProfile, setGeneratingProfile] = useState(null); // referee_name being generated
+  const [genProgress, setGenProgress] = useState(0);
+  const genIntervalRef = useRef(null);
   const [actionModal, setActionModal] = useState(null); // { type: 'accept'|'reject', report }
   const [correctionText, setCorrectionText] = useState('');
   const [correctionNotes, setCorrectionNotes] = useState('');
@@ -58,6 +67,22 @@ export default function Admin() {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (generatingProfile) {
+      setGenProgress(3);
+      genIntervalRef.current = setInterval(() => {
+        setGenProgress(p => {
+          if (p >= 88) return p;
+          return Math.min(p + (88 - p) * 0.06 + 0.5, 88);
+        });
+      }, 220);
+    } else {
+      clearInterval(genIntervalRef.current);
+      setGenProgress(0);
+    }
+    return () => clearInterval(genIntervalRef.current);
+  }, [generatingProfile]);
 
   const fetchUsers = async () => {
     try {
@@ -107,6 +132,69 @@ export default function Admin() {
       setError(err.message);
     } finally {
       setReportsLoading(false);
+    }
+  };
+
+  const fetchProfileRequests = async () => {
+    setProfileRequestsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('referee_profile_requests')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      setProfileRequests(data || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setProfileRequestsLoading(false);
+    }
+  };
+
+  const handleProfileRequestAction = async (type) => {
+    if (!profileRequestAction) return;
+    setProfileRequestActionLoading(true);
+    const req = profileRequestAction.req;
+
+    try {
+      if (type === 'reject') {
+        const { error } = await supabase
+          .from('referee_profile_requests')
+          .update({
+            status: 'rejected',
+            admin_notes: profileRequestNotes.trim() || null,
+            reviewed_by: session.user.id,
+            reviewed_at: new Date().toISOString(),
+          })
+          .eq('id', req.id);
+        if (error) throw error;
+        setProfileRequestAction(null);
+        setProfileRequestNotes('');
+        await fetchProfileRequests();
+        return;
+      }
+
+      // Approve: close modal first, then generate profile via Edge Function
+      setProfileRequestAction(null);
+      setProfileRequestNotes('');
+      setGeneratingProfile(req.referee_name);
+
+      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      const res = await supabase.functions.invoke('generate-referee-profile', {
+        body: {
+          referee_name: req.referee_name,
+          request_id:   req.id,
+        },
+      });
+
+      if (res.error) throw new Error(res.error.message || 'Profile generation failed');
+
+      await fetchProfileRequests();
+    } catch (err) {
+      setError(`Profile generation failed: ${err.message}`);
+    } finally {
+      setProfileRequestActionLoading(false);
+      setGeneratingProfile(null);
     }
   };
 
@@ -254,6 +342,30 @@ export default function Admin() {
           </button>
         </div>
 
+        {/* Profile generation overlay */}
+        {generatingProfile && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: 'rgba(0,0,0,0.82)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+            <div style={{ background: '#0d2137', border: '1px solid rgba(29,158,117,0.4)', borderRadius: 20, padding: '40px 44px', width: '100%', maxWidth: 500, textAlign: 'center', boxShadow: '0 24px 80px rgba(0,0,0,0.6)' }}>
+              <div style={{ fontSize: 42, marginBottom: 18, display: 'inline-block', animation: 'spin 2s linear infinite' }}>⚙️</div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: '#e8f5e9', marginBottom: 8 }}>Generating Profile</div>
+              <div style={{ fontSize: 16, color: '#5ecda4', fontWeight: 600, marginBottom: 28 }}>{generatingProfile}</div>
+
+              {/* Progress bar track */}
+              <div style={{ background: 'rgba(29,158,117,0.15)', borderRadius: 10, height: 10, overflow: 'hidden', marginBottom: 10 }}>
+                <div style={{ position: 'relative', height: '100%', width: `${genProgress}%`, background: 'linear-gradient(90deg, #0e7a58, #1d9e75, #5ecda4)', borderRadius: 10, transition: 'width 0.35s ease', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.22) 50%, transparent 100%)', animation: 'shimmer 1.6s infinite' }} />
+                </div>
+              </div>
+              <div style={{ fontSize: 12, color: 'rgba(29,158,117,0.7)', marginBottom: 20, textAlign: 'right' }}>{Math.round(genProgress)}%</div>
+
+              <div style={{ fontSize: 13, color: 'rgba(232,245,233,0.45)', lineHeight: 1.6 }}>
+                AI is researching and building the referee's full stats profile.<br />
+                This may take up to 30 seconds — please wait.
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Tab Menu */}
         <div style={styles.tabMenu}>
           <button
@@ -288,6 +400,18 @@ export default function Admin() {
             }}
           >
             🚩 Answer Reports
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab('profile_requests');
+              if (profileRequests.length === 0) fetchProfileRequests();
+            }}
+            style={{
+              ...styles.tabButton,
+              ...(activeTab === 'profile_requests' ? styles.activeTab : {})
+            }}
+          >
+            📋 Profile Requests
           </button>
         </div>
 
@@ -585,6 +709,120 @@ export default function Admin() {
                     <button onClick={() => setActionModal(null)} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '10px 20px', cursor: 'pointer' }}>Cancel</button>
                     <button onClick={handleReject} disabled={actionLoading || !rejectionReason.trim()} style={{ background: 'linear-gradient(135deg,#b71c1c,#e53935)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 20px', cursor: actionLoading || !rejectionReason.trim() ? 'default' : 'pointer', opacity: actionLoading || !rejectionReason.trim() ? 0.6 : 1 }}>
                       {actionLoading ? 'Saving…' : 'Reject report'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Profile Requests Tab */}
+        {activeTab === 'profile_requests' && (
+          <>
+            {profileRequestsLoading ? (
+              <div style={{ textAlign: 'center', padding: 40, color: 'rgba(232,245,233,0.6)' }}>Loading requests…</div>
+            ) : (
+              <>
+                <h3 style={{ color: '#ef9a9a', fontSize: 16, marginBottom: 16 }}>
+                  ⏳ Pending ({profileRequests.filter(r => r.status === 'pending').length})
+                </h3>
+                {profileRequests.filter(r => r.status === 'pending').length === 0 ? (
+                  <div style={{ color: 'rgba(232,245,233,0.4)', fontSize: 13, marginBottom: 32 }}>No pending profile requests.</div>
+                ) : (
+                  profileRequests.filter(r => r.status === 'pending').map(req => (
+                    <div key={req.id} style={{ background: 'rgba(10,22,40,0.6)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: 12, padding: 20, marginBottom: 16 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+                        <span style={{ fontSize: 16, fontWeight: 700, color: '#e8f5e9' }}>{req.referee_name}</span>
+                        <span style={{ fontSize: 11, color: 'rgba(232,245,233,0.4)' }}>{new Date(req.created_at).toLocaleString()}</span>
+                      </div>
+                      <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.45)', marginBottom: 6 }}>Requested by: {req.requester_email}</div>
+                      <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', textTransform: 'uppercase', marginBottom: 4 }}>Reason</div>
+                      <div style={{ fontSize: 13, color: '#e8f5e9', background: 'rgba(29,158,117,0.05)', borderRadius: 8, padding: '8px 12px', marginBottom: req.additional_fields ? 12 : 16 }}>{req.reason}</div>
+                      {req.additional_fields && (
+                        <>
+                          <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', textTransform: 'uppercase', marginBottom: 4 }}>Additional Notes</div>
+                          <div style={{ fontSize: 13, color: 'rgba(232,245,233,0.75)', background: 'rgba(13,33,55,0.5)', borderRadius: 8, padding: '8px 12px', marginBottom: 16 }}>{req.additional_fields}</div>
+                        </>
+                      )}
+                      <div style={{ display: 'flex', gap: 10 }}>
+                        <button onClick={() => { setProfileRequestAction({ type: 'approve', req }); setProfileRequestNotes(''); }} style={{ background: 'linear-gradient(135deg,#0e7a58,#1d9e75)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 18px', cursor: 'pointer' }}>✅ Approve</button>
+                        <button onClick={() => { setProfileRequestAction({ type: 'reject', req }); setProfileRequestNotes(''); }} style={{ background: 'linear-gradient(135deg,#b71c1c,#e53935)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 18px', cursor: 'pointer' }}>❌ Reject</button>
+                      </div>
+                    </div>
+                  ))
+                )}
+
+                <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 16, marginTop: 8 }}>
+                  📋 Reviewed ({profileRequests.filter(r => r.status !== 'pending').length})
+                </h3>
+                {profileRequests.filter(r => r.status !== 'pending').length === 0 ? (
+                  <div style={{ color: 'rgba(232,245,233,0.4)', fontSize: 13 }}>No reviewed requests yet.</div>
+                ) : (
+                  profileRequests.filter(r => r.status !== 'pending').map(req => {
+                    const approved = req.status === 'approved';
+                    return (
+                      <div key={req.id} style={{ background: 'rgba(10,22,40,0.5)', border: `1px solid ${approved ? 'rgba(29,158,117,0.2)' : 'rgba(239,83,80,0.2)'}`, borderRadius: 12, padding: 18, marginBottom: 12, opacity: 0.85 }}>
+                        {/* Status banner */}
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: approved ? 'rgba(29,158,117,0.14)' : 'rgba(183,28,28,0.14)', border: `1px solid ${approved ? 'rgba(29,158,117,0.3)' : 'rgba(239,83,80,0.3)'}`, borderRadius: 20, padding: '4px 14px', marginBottom: 14 }}>
+                          <span style={{ fontSize: 14 }}>{approved ? '✅' : '❌'}</span>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: approved ? '#5ecda4' : '#ef9a9a' }}>
+                            {approved ? 'Profile Approved & Generated' : 'Request Rejected'}
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 8 }}>
+                          <div>
+                            <div style={{ fontSize: 15, fontWeight: 700, color: 'rgba(232,245,233,0.75)', marginBottom: 3 }}>{req.referee_name}</div>
+                            <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.35)' }}>Requested by {req.requester_email}</div>
+                          </div>
+                          <div style={{ fontSize: 11, color: 'rgba(232,245,233,0.3)', textAlign: 'right' }}>
+                            {req.reviewed_at ? new Date(req.reviewed_at).toLocaleString() : '—'}
+                          </div>
+                        </div>
+                        {req.admin_notes && (
+                          <div style={{ marginTop: 12, fontSize: 12, color: 'rgba(232,245,233,0.5)', background: 'rgba(13,33,55,0.5)', borderRadius: 8, padding: '8px 12px' }}>
+                            <span style={{ color: 'rgba(232,245,233,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 6 }}>Note:</span>
+                            {req.admin_notes}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </>
+            )}
+
+            {/* Approve / Reject modal */}
+            {profileRequestAction && (
+              <div onClick={() => setProfileRequestAction(null)} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+                <div onClick={e => e.stopPropagation()} style={{ background: '#0d2137', border: `1px solid ${profileRequestAction.type === 'approve' ? 'rgba(29,158,117,0.3)' : 'rgba(239,83,80,0.3)'}`, borderRadius: 16, padding: 28, width: '100%', maxWidth: 480 }}>
+                  <h3 style={{ color: profileRequestAction.type === 'approve' ? '#5ecda4' : '#ef9a9a', marginBottom: 8, fontSize: 18 }}>
+                    {profileRequestAction.type === 'approve' ? '✅ Approve & Generate Profile' : '❌ Reject Profile Request'}
+                  </h3>
+                  <p style={{ color: 'rgba(232,245,233,0.6)', fontSize: 13, marginBottom: 4 }}>
+                    Referee: <strong style={{ color: '#e8f5e9' }}>{profileRequestAction.req.referee_name}</strong>
+                  </p>
+                  {profileRequestAction.type === 'approve' && (
+                    <p style={{ color: 'rgba(94,205,164,0.6)', fontSize: 12, marginBottom: 16 }}>
+                      AI will automatically generate the full profile (bio, leagues, estimated statistics) upon approval.
+                    </p>
+                  )}
+                  <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 6, textTransform: 'uppercase' }}>Admin Notes (optional)</div>
+                  <textarea
+                    value={profileRequestNotes}
+                    onChange={e => setProfileRequestNotes(e.target.value)}
+                    placeholder={profileRequestAction.type === 'approve' ? 'e.g. Profile will be created within 48h…' : 'Reason for rejection…'}
+                    rows={3}
+                    style={{ width: '100%', background: 'rgba(10,22,40,0.7)', border: '1px solid rgba(29,158,117,0.3)', borderRadius: 8, color: '#e8f5e9', fontSize: 13, padding: '10px 12px', resize: 'vertical', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: 20 }}
+                  />
+                  <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                    <button onClick={() => setProfileRequestAction(null)} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '10px 20px', cursor: 'pointer' }}>Cancel</button>
+                    <button
+                      onClick={() => handleProfileRequestAction(profileRequestAction.type)}
+                      disabled={profileRequestActionLoading}
+                      style={{ background: profileRequestAction.type === 'approve' ? 'linear-gradient(135deg,#0e7a58,#1d9e75)' : 'linear-gradient(135deg,#b71c1c,#e53935)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 22px', cursor: profileRequestActionLoading ? 'default' : 'pointer', opacity: profileRequestActionLoading ? 0.6 : 1 }}
+                    >
+                      {profileRequestActionLoading ? 'Processing…' : profileRequestAction.type === 'approve' ? 'Approve & Generate Profile' : 'Confirm Rejection'}
                     </button>
                   </div>
                 </div>
