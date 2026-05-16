@@ -189,6 +189,12 @@ export default function Admin() {
 
       if (res.error) throw new Error(res.error.message || 'Profile generation failed');
 
+      // Immediately reflect approval in local state so the status is visible without waiting for refetch
+      setProfileRequests(prev => prev.map(r =>
+        r.id === req.id
+          ? { ...r, status: 'approved', reviewed_at: new Date().toISOString(), reviewed_by: session.user.id }
+          : r
+      ));
       await fetchProfileRequests();
     } catch (err) {
       setError(`Profile generation failed: ${err.message}`);

@@ -575,15 +575,24 @@ export default function RefereeStatistics() {
   const [dbProfiles, setDbProfiles] = useState([]);
 
   useEffect(() => {
-    supabase
-      .from('referee_profiles')
-      .select('*')
-      .order('name')
-      .then(({ data }) => {
-        if (data) {
-          setDbProfiles(data.map(p => ({ ...p, flag_code: p.flag })));
-        }
-      });
+    const loadProfiles = () => {
+      supabase
+        .from('referee_profiles')
+        .select('*')
+        .order('name')
+        .then(({ data }) => {
+          if (data) setDbProfiles(data.map(p => ({ ...p, flag_code: p.flag })));
+        });
+    };
+
+    loadProfiles();
+
+    const channel = supabase
+      .channel('referee-profiles-changes')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'referee_profiles' }, loadProfiles)
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
   }, []);
 
   const staticNameSet = new Set(STATIC_PROFILES.map(p => p.name.toLowerCase()));
