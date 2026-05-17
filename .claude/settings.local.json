@@ -76,7 +76,9 @@
       "Bash(git *)",
       "Bash(echo \"EXIT:$?\")",
       "Bash(vercel *)",
-      "Bash(supabase --version)"
+      "Bash(supabase --version)",
+      "Bash(supabase db *)",
+      "Bash(supabase migration *)"
     ]
   }
 }

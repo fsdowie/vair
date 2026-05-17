@@ -188,6 +188,7 @@ export default function Admin() {
       });
 
       if (res.error) throw new Error(res.error.message || 'Profile generation failed');
+      if (res.data?.error) throw new Error(res.data.error);
 
       // Immediately reflect approval in local state so the status is visible without waiting for refetch
       setProfileRequests(prev => prev.map(r =>
@@ -347,6 +348,15 @@ export default function Admin() {
             Sign Out
           </button>
         </div>
+
+        {/* Global error banner (visible to logged-in admins) */}
+        {error && (
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 16px', marginBottom: 20, background: 'rgba(183,28,28,0.12)', border: '1px solid rgba(239,83,80,0.4)', borderRadius: 10, fontSize: 13, color: '#ef9a9a' }}>
+            <span style={{ flexShrink: 0 }}>⚠️</span>
+            <span style={{ flex: 1 }}>{error}</span>
+            <button onClick={() => setError(null)} style={{ background: 'none', border: 'none', color: '#ef9a9a', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: 0 }}>✕</button>
+          </div>
+        )}
 
         {/* Profile generation overlay */}
         {generatingProfile && (
