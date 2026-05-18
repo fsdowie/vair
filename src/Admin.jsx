@@ -32,6 +32,7 @@ export default function Admin() {
   const [generatingProfile, setGeneratingProfile] = useState(null); // referee_name being generated
   const [genProgress, setGenProgress] = useState(0);
   const genIntervalRef = useRef(null);
+  const [successNotice, setSuccessNotice] = useState(null); // { profileName, statusUpdateError }
   const [actionModal, setActionModal] = useState(null); // { type: 'accept'|'reject', report }
   const [correctionText, setCorrectionText] = useState('');
   const [correctionNotes, setCorrectionNotes] = useState('');
@@ -190,6 +191,12 @@ export default function Admin() {
       if (res.error) throw new Error(res.error.message || 'Profile generation failed');
       if (res.data?.error) throw new Error(res.data.error);
 
+      // Show success notice (includes warning if status update had an issue)
+      setSuccessNotice({
+        profileName: res.data?.profile?.name ?? req.referee_name,
+        statusUpdateError: res.data?.statusUpdateError ?? null,
+      });
+
       // Immediately reflect approval in local state so the status is visible without waiting for refetch
       setProfileRequests(prev => prev.map(r =>
         r.id === req.id
@@ -198,7 +205,7 @@ export default function Admin() {
       ));
       await fetchProfileRequests();
     } catch (err) {
-      setError(`Profile generation failed: ${err.message}`);
+      setError(`Profile generation failed: ${err?.message ?? String(err)}`);
     } finally {
       setProfileRequestActionLoading(false);
       setGeneratingProfile(null);
@@ -341,6 +348,31 @@ export default function Admin() {
 
   return (
     <div style={styles.container}>
+      {/* Fixed-position toast: error */}
+      {error && (
+        <div style={{ position: 'fixed', top: 24, right: 24, zIndex: 9999, maxWidth: 420, width: 'calc(100% - 48px)', display: 'flex', alignItems: 'flex-start', gap: 12, padding: '14px 16px', background: 'rgba(16,4,4,0.97)', border: '1px solid rgba(239,83,80,0.55)', borderRadius: 12, fontSize: 13, color: '#ef9a9a', boxShadow: '0 8px 32px rgba(0,0,0,0.55)' }}>
+          <span style={{ flexShrink: 0 }}>⚠️</span>
+          <span style={{ flex: 1 }}>{error}</span>
+          <button onClick={() => setError(null)} style={{ background: 'none', border: 'none', color: '#ef9a9a', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: 0, flexShrink: 0 }}>✕</button>
+        </div>
+      )}
+
+      {/* Fixed-position toast: success after profile generation */}
+      {successNotice && (
+        <div style={{ position: 'fixed', top: error ? 88 : 24, right: 24, zIndex: 9999, maxWidth: 420, width: 'calc(100% - 48px)', boxShadow: '0 8px 32px rgba(0,0,0,0.55)' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '14px 16px', background: 'rgba(4,16,12,0.97)', border: '1px solid rgba(29,158,117,0.5)', borderRadius: successNotice.statusUpdateError ? '12px 12px 0 0' : 12, fontSize: 13, color: '#5ecda4' }}>
+            <span style={{ flexShrink: 0 }}>✅</span>
+            <span style={{ flex: 1 }}>Profile for <strong style={{ color: '#e8f5e9' }}>{successNotice.profileName}</strong> created and added to Referee Statistics.</span>
+            <button onClick={() => setSuccessNotice(null)} style={{ background: 'none', border: 'none', color: '#5ecda4', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: 0, flexShrink: 0 }}>✕</button>
+          </div>
+          {successNotice.statusUpdateError && (
+            <div style={{ display: 'flex', gap: 10, padding: '10px 16px', background: 'rgba(16,10,2,0.97)', border: '1px solid rgba(255,152,0,0.4)', borderTop: 'none', borderRadius: '0 0 12px 12px', fontSize: 12, color: '#ffb74d' }}>
+              ⚠️ Profile created but request status update failed: {successNotice.statusUpdateError}
+            </div>
+          )}
+        </div>
+      )}
+
       <div style={styles.card}>
         <div style={styles.header}>
           <h1 style={styles.title}>VAIR Admin Panel</h1>
@@ -348,15 +380,6 @@ export default function Admin() {
             Sign Out
           </button>
         </div>
-
-        {/* Global error banner (visible to logged-in admins) */}
-        {error && (
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 16px', marginBottom: 20, background: 'rgba(183,28,28,0.12)', border: '1px solid rgba(239,83,80,0.4)', borderRadius: 10, fontSize: 13, color: '#ef9a9a' }}>
-            <span style={{ flexShrink: 0 }}>⚠️</span>
-            <span style={{ flex: 1 }}>{error}</span>
-            <button onClick={() => setError(null)} style={{ background: 'none', border: 'none', color: '#ef9a9a', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: 0 }}>✕</button>
-          </div>
-        )}
 
         {/* Profile generation overlay */}
         {generatingProfile && (

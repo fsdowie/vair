@@ -147,9 +147,10 @@ serve(async (req) => {
 
     if (insertError) throw insertError;
 
-    // If a request_id was provided, mark it approved
+    // Mark the request as approved
+    let statusUpdateError: string | null = null;
     if (request_id) {
-      await supabase
+      const { error: updateErr } = await supabase
         .from('referee_profile_requests')
         .update({
           status:      'approved',
@@ -157,10 +158,16 @@ serve(async (req) => {
           reviewed_at: new Date().toISOString(),
         })
         .eq('id', request_id);
+      if (updateErr) {
+        console.error('Status update failed:', updateErr);
+        statusUpdateError = updateErr.message;
+      }
     }
 
-    return new Response(JSON.stringify({ success: true, profile: inserted }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    return new Response(
+      JSON.stringify({ success: true, profile: inserted, statusUpdateError }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    );
 
   } catch (error) {
     console.error('generate-referee-profile error:', error);
