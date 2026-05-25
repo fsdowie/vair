@@ -181,20 +181,29 @@ export default function Admin() {
       setGeneratingProfile(req.referee_name);
 
       const token = (await supabase.auth.getSession()).data.session?.access_token;
-      const res = await supabase.functions.invoke('generate-referee-profile', {
-        body: {
-          referee_name: req.referee_name,
-          request_id:   req.id,
-        },
-      });
 
-      if (res.error) throw new Error(res.error.message || 'Profile generation failed');
-      if (res.data?.error) throw new Error(res.data.error);
+      // Use raw fetch so we can read the error body on non-2xx (supabase.functions.invoke drops it)
+      const rawRes = await fetch(`${EDGE_BASE}/generate-referee-profile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'apikey': 'sb_publishable_SU4BJ5e9RLDl-3iSZHo-3g_mbHpD9cn',
+        },
+        body: JSON.stringify({ referee_name: req.referee_name, request_id: req.id }),
+      });
+      const rawText = await rawRes.text();
+      let res;
+      try { res = JSON.parse(rawText); } catch { res = { error: rawText.slice(0, 300) }; }
+
+      if (!rawRes.ok || res?.error) {
+        throw new Error(res?.error ?? `HTTP ${rawRes.status}`);
+      }
 
       // Show success notice (includes warning if status update had an issue)
       setSuccessNotice({
-        profileName: res.data?.profile?.name ?? req.referee_name,
-        statusUpdateError: res.data?.statusUpdateError ?? null,
+        profileName: res?.profile?.name ?? req.referee_name,
+        statusUpdateError: res?.statusUpdateError ?? null,
       });
 
       // Immediately reflect approval in local state so the status is visible without waiting for refetch
