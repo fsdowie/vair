@@ -145,7 +145,7 @@ serve(async (req) => {
       .select()
       .single();
 
-    if (insertError) throw insertError;
+    if (insertError) throw new Error(`DB insert failed: ${insertError.message} (code: ${insertError.code}, details: ${insertError.details})`);
 
     // Mark the request as approved
     let statusUpdateError: string | null = null;
@@ -171,7 +171,8 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('generate-referee-profile error:', error);
-    return new Response(JSON.stringify({ error: String(error) }),
+    const msg = error instanceof Error ? error.message : (error?.message ?? String(error));
+    return new Response(JSON.stringify({ error: msg }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
 });
