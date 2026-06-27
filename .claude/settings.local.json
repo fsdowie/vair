@@ -78,7 +78,8 @@
       "Bash(vercel *)",
       "Bash(supabase --version)",
       "Bash(supabase db *)",
-      "Bash(supabase migration *)"
+      "Bash(supabase migration *)",
+      "Skill(claude-api)"
     ]
   }
 }
