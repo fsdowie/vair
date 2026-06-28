@@ -133,48 +133,51 @@ const STATIC_PROFILES = [
     age: null,
     date_of_birth: null,
     place_of_birth: null,
-    leagues: ["MLS", "CONCACAF Champions Cup", "US Open Cup"],
+    leagues: ["MLS", "CONCACAF Champions Cup", "Leagues Cup", "FIFA International Panel"],
     active: true,
-    data_source: "estimated",
-    source_note: "Estimated from public MLS officiating records and CONCACAF match reports",
-    verified_matches: null,
+    data_source: "public",
+    source_note: "117+ career matches (statshub.com, 2026). YC/RC/penalties from public match database; fouls estimated (not publicly tracked).",
+    verified_matches: 117,
     fouls_per_game: 21.3,
-    yellow_per_game: 3.1,
+    fouls_estimated: true,
+    yellow_per_game: 4.67,
     red_per_game: 0.09,
-    penalties_per_game: 0.20,
-    penalties_estimated: true,
+    penalties_per_game: 0.39,
+    penalties_estimated: false,
+    achievements: ["2023 MLS Referee of the Year", "FIFA International Panel since 2023"],
     stat_by_league: {
-      "MLS":                    { fouls: 21.3, yc: 3.1, rc: 0.09, matches: null, fouls_la: 20.5, yc_la: 3.0, rc_la: 0.08 },
-      "CONCACAF Champions Cup": { fouls: 20.1, yc: 2.8, rc: 0.13, matches: null, fouls_la: 21.0, yc_la: 3.1, rc_la: 0.11 },
-      "US Open Cup":            { fouls: 19.8, yc: 2.5, rc: 0.10, matches: null, fouls_la: 20.2, yc_la: 2.9, rc_la: 0.07 },
+      // YC/RC/Pen from statshub.com career data. Fouls estimated.
+      "MLS":                    { fouls: 21.3, yc: 4.67, rc: 0.09, penalties: 0.39, matches: 117, fouls_la: 20.5, yc_la: 3.6, rc_la: 0.09 },
+      "Leagues Cup":            { fouls: 21.0, yc: 7.00, rc: 0.50, penalties: 0.50, matches: 2,   fouls_la: 21.0, yc_la: 3.8, rc_la: 0.13 },
+      "CONCACAF Champions Cup": { fouls: 19.8, yc: 2.00, rc: 0.00, penalties: 0.00, matches: 1,   fouls_la: 21.0, yc_la: 3.2, rc_la: 0.11 },
     },
     competition_tendency: {
       domestic: {
         label: "MLS Regular Season",
-        matches: null,
-        fouls: 21.3, yc: 3.1, rc: 0.09,
-        note: "Consistent card threshold across MLS's mixed playing cultures. Adapts communication style to multi-language environments common in MLS.",
+        matches: 117,
+        fouls: 21.3, yc: 4.67, rc: 0.09,
+        note: "Rivas is strictly above the MLS average for yellow cards (4.67 vs league avg ~3.6). He issues cards frequently and consistently — named MLS Referee of the Year 2023 despite, or because of, his firm disciplinary approach. Low RC rate means he prefers accumulating yellows over escalating to red.",
       },
       continental: {
-        label: "CONCACAF Champions Cup",
-        matches: null,
-        fouls: 20.1, yc: 2.8, rc: 0.13,
-        note: "Slightly firmer in CONCACAF competition where Central American and Caribbean teams play at high physical intensity. Red card rate increases in knockout stages.",
+        label: "Leagues Cup & CONCACAF",
+        matches: 3,
+        fouls: 20.3, yc: 5.33, rc: 0.33,
+        note: "Very small sample (3 matches total). Leagues Cup data shows elevated card counts (7 YC/game). CONCACAF CC is a single match. Use with caution — not enough matches to draw firm conclusions.",
       },
       international: {
-        label: "US Open Cup / CONCACAF Qualifiers",
+        label: "FIFA International Appointments",
         matches: null,
-        fouls: 19.8, yc: 2.5, rc: 0.10,
-        note: "Domestic cup play tends toward fewer cards — player pools and reduced intensity outside major competitions.",
+        fouls: 21.0, yc: 4.50, rc: 0.15,
+        note: "Joined the FIFA international panel in 2023 (2023 CONCACAF U-17 Championship). International data is limited; figures are extrapolated from his domestic profile and available international match records.",
       },
     },
     refereeing_style: {
-      summary: "Rivas is a methodical and patient MLS official known for handling the league's diverse mix of playing cultures — from South American physicality to North American athleticism. He has developed a strong read of MLS match tempo and communicates effectively across language barriers.",
-      traits: ["Methodical decision-making", "Cross-cultural communication", "Patient in physical play", "CONCACAF experience", "Consistent domestic standard"],
-      game_management: "Rivas manages games through clear signals and decisive positioning rather than excessive card use. His MLS experience gives him strong pattern recognition for the timing of challenges and the temperature of disputes. In CONCACAF matches, he elevates his firmness early to prevent escalation.",
-      learning_notes: "Rivas demonstrates the importance of multilingual awareness in refereeing. In diverse leagues like MLS, a referee who can communicate with players in their own language — or at minimum use universal gesture and tone — gains enormous trust. Study how top MLS referees establish presence in the first minutes with teams from different footballing cultures.",
+      summary: "Rivas is one of MLS's most recognised and demanding officials. Named the 2023 MLS Referee of the Year, his 4.67 yellow cards per game average is well above the league norm — he brings consistent, firm discipline to every match. His career began while working as a swimming instructor in Piedmont, California, before joining PRO (Professional Referee Organization) as a full-time official.",
+      traits: ["Above-average card rate", "Consistent foul threshold", "Cross-cultural communication", "Strong MLS presence", "2023 MLS Referee of the Year"],
+      game_management: "Rivas manages the game through active card use rather than verbal warnings. His above-average YC rate signals that he does not issue as many 'warnings' before booking — players in his matches are expected to self-regulate sooner. This style can create a controlled environment where players know exactly what the threshold is, but it also means matches with Rivas tend to see more early yellows than average.",
+      learning_notes: "Rivas illustrates a valid but demanding game management style: establish the standard immediately and enforce it consistently. Some referees prefer more warnings; Rivas uses cards as his primary tool for control. Study whether his approach produces more or fewer incidents per match compared to referees with lower card rates — the data suggests it can be equally effective at maintaining order when applied consistently from the first minute.",
     },
-    comments: "MLS referee recognized for consistent officiating in high-pressure CONCACAF competition matches. Biographical details including date of birth are not confirmed in public records.",
+    comments: "Named 2023 MLS Referee of the Year by MLS and PRO — the first time he earned this distinction. MLS debut: May 2018 (Minnesota United vs San Jose Earthquakes). Joined FIFA international panel in 2023. Date of birth not confirmed in public records.",
   },
 
   {
@@ -182,103 +185,110 @@ const STATIC_PROFILES = [
     name: "Ismail Elfath",
     country: "USA",
     flag_code: "us",
-    age: 45,
-    date_of_birth: "1981-03-18",
+    age: 44,
+    date_of_birth: "1982-03-03",
     place_of_birth: "Casablanca, Morocco (raised in USA)",
-    leagues: ["MLS", "CONCACAF Champions Cup", "Copa America 2024", "FIFA International"],
+    leagues: ["MLS", "FIFA World Cup 2026", "FIFA World Cup 2022", "CONCACAF Champions Cup", "Leagues Cup"],
     active: true,
-    data_source: "estimated",
-    source_note: "Estimated from MLS officiating records, CONCACAF and Copa America 2024 match reports",
-    verified_matches: null,
+    data_source: "public",
+    source_note: "249 career matches (statshub.com, 2026). YC/RC/penalties from public match database; fouls estimated (not publicly tracked).",
+    verified_matches: 249,
     fouls_per_game: 20.8,
-    yellow_per_game: 3.2,
-    red_per_game: 0.10,
-    penalties_per_game: 0.22,
-    penalties_estimated: true,
+    fouls_estimated: true,
+    yellow_per_game: 3.84,
+    red_per_game: 0.14,
+    penalties_per_game: 0.37,
+    penalties_estimated: false,
+    achievements: ["FIFA World Cup 2026 referee (Netherlands–Japan, Uruguay–Spain)", "4th official — 2022 FIFA World Cup Final", "2022 MLS Referee of the Year", "2020 MLS Referee of the Year", "2019 U-20 World Cup Final", "2025 Intercontinental Cup Final"],
     stat_by_league: {
-      "MLS":                    { fouls: 20.8, yc: 3.2, rc: 0.10, matches: null, fouls_la: 20.5, yc_la: 3.0, rc_la: 0.08 },
-      "CONCACAF Champions Cup": { fouls: 19.6, yc: 3.0, rc: 0.13, matches: null, fouls_la: 21.0, yc_la: 3.1, rc_la: 0.11 },
-      "Copa America / FIFA Intl": { fouls: 21.4, yc: 3.6, rc: 0.15, matches: null, fouls_la: 22.3, yc_la: 3.3, rc_la: 0.13 },
+      // YC/RC/Pen from statshub.com career data (249 matches). Fouls estimated.
+      "MLS":                    { fouls: 20.8, yc: 3.86, rc: 0.14, penalties: 0.33, matches: 222, fouls_la: 20.5, yc_la: 3.6, rc_la: 0.09 },
+      "FIFA World Cup":         { fouls: 22.0, yc: 4.50, rc: 0.25, penalties: 0.25, matches: 4,   fouls_la: 22.5, yc_la: 3.0, rc_la: 0.12 },
+      "CONCACAF Champions Cup": { fouls: 19.6, yc: 4.00, rc: 0.00, penalties: 0.29, matches: 7,   fouls_la: 21.0, yc_la: 3.2, rc_la: 0.11 },
+      "Leagues Cup":            { fouls: 21.0, yc: 5.67, rc: 0.33, penalties: 0.67, matches: 3,   fouls_la: 21.0, yc_la: 3.8, rc_la: 0.13 },
     },
     competition_tendency: {
       domestic: {
         label: "MLS Regular Season",
-        matches: null,
-        fouls: 20.8, yc: 3.2, rc: 0.10,
-        note: "Calm and controlled in domestic league. Below-average fouls per game reflects his positioning — he often avoids calling borderline challenges in flow situations.",
+        matches: 222,
+        fouls: 20.8, yc: 3.86, rc: 0.14,
+        note: "Steady and below-average card rate for MLS across 222 matches — the largest verified sample in this dataset. Elfath is one of the league's most controlled officials at domestic level. His penalty rate (0.33/game) is notable — he is willing to award spot kicks when warranted.",
       },
       continental: {
-        label: "CONCACAF Champions Cup",
-        matches: null,
-        fouls: 19.6, yc: 3.0, rc: 0.13,
-        note: "Slightly fewer fouls but higher RC rate in CONCACAF — he tends to let physical play continue but acts decisively when serious fouls occur.",
+        label: "CONCACAF Champions Cup & Leagues Cup",
+        matches: 10,
+        fouls: 20.5, yc: 4.60, rc: 0.10,
+        note: "Card rate rises noticeably in continental competition, particularly the Leagues Cup (5.67 YC/game in 3 matches). CONCACAF Champions Cup (7 matches) shows 4.00 YC/game. The elevated Leagues Cup figure may reflect the higher-intensity format — one match per round, no second chances.",
       },
       international: {
-        label: "Copa America & FIFA International",
-        matches: null,
-        fouls: 21.4, yc: 3.6, rc: 0.15,
-        note: "International assignments show elevated but controlled card use. Copa America 2024 group stage demonstrated his ability to manage technically skilled teams under scrutiny.",
+        label: "FIFA World Cup",
+        matches: 4,
+        fouls: 22.0, yc: 4.50, rc: 0.25,
+        note: "World Cup assignments (2022 group + R16) show a firmer threshold. Notably, Elfath is one of very few active referees already with World Cup AND 2026 World Cup experience — his Uruguay vs Spain group match in 2026 included a red card (Canobbio) in stoppage time.",
       },
     },
     refereeing_style: {
-      summary: "Elfath made history as the first Moroccan-American to earn a FIFA referee badge. His calm, composed demeanor and precise positioning have earned him trust at the highest levels of CONCACAF competition. He officiated at Copa America 2024 — a testament to his technical ability under scrutiny.",
-      traits: ["Calm under pressure", "Precise challenge assessment", "Cultural versatility", "Strong FIFA-level fitness", "Respected in CONCACAF"],
-      game_management: "Elfath's approach centres on reading the game early and positioning to be in the best possible angle for decisions. He uses minimal but effective verbal communication, letting his body positioning signal authority. His advantage play is deliberate and well-timed. In CONCACAF competition, he establishes early control by being decisive in the first contested physical challenge.",
-      learning_notes: "Elfath shows how diversity of background can be an asset in refereeing. His bilingual Arabic-English capability helps in international matches. More broadly, his career path — from lower-tier American soccer to Copa America — is a model for how consistent domestic performance builds toward international appointments. Study his pre-match positioning habits.",
+      summary: "Elfath is among the most decorated active referees in North American football. His career spans 249 matches, two FIFA World Cups (as referee and 4th official at the final), multiple MLS Referee of the Year awards, and the 2025 Intercontinental Cup Final. Born in Casablanca, Morocco and raised in the USA, he became the first Moroccan-American to earn a FIFA badge in 2016.",
+      traits: ["Calm under pressure", "Precise challenge assessment", "Below-average domestic card rate", "High-profile international appointments", "2022 World Cup Final 4th official"],
+      game_management: "Elfath's approach centres on early positioning to be in the best possible angle for decisions. He uses minimal but deliberate verbal communication, relying on body language and proximity to assert authority. His MLS career average (3.86 YC/game across 222 matches) is one of the lower rates for senior officials in the league — he prefers position and conversation over cards as his primary control tool.",
+      learning_notes: "Elfath's career progression is instructive for any referee: he debuted in MLS in 2012, became FIFA-listed in 2016, won MLS ROTY in 2020 and 2022, served as 4th official at the 2022 World Cup Final, and is now a full match referee at the 2026 World Cup. The path to international football is built on domestic consistency. Study his pre-match preparation routines and how he handles VAR interaction — he has more experience navigating elite VAR environments than almost any other American referee.",
     },
-    comments: "One of the top FIFA-badged referees from the USA. Officiated at Copa America 2024 group stage matches and multiple CONCACAF Champions Cup fixtures. His career path from MLS to international competition is a model for North American referees.",
+    comments: "One of the most accomplished referees in US Soccer history. 4th official at the 2022 FIFA World Cup Final (Argentina vs France). Referee at 2026 FIFA World Cup — officiated Netherlands 2–2 Japan and Uruguay vs Spain (group stage, stoppage-time red card). Named MLS Referee of the Year 2020 and 2022. 2025 Intercontinental Cup Final referee. 2019 U-20 World Cup Final.",
   },
 
   {
     id: "4",
-    name: "Dario Herrera",
+    name: "Darío Herrera",
     country: "Argentina",
     flag_code: "ar",
-    age: 46,
-    date_of_birth: "1979-11-04",
-    place_of_birth: "Córdoba, Argentina",
-    leagues: ["Argentine Primera División", "Copa Argentina", "Copa Libertadores"],
+    age: 41,
+    date_of_birth: "1985-02-24",
+    place_of_birth: "Andacollo, Neuquén, Argentina",
+    leagues: ["Argentine Primera División", "Copa Libertadores", "Copa Sudamericana", "Copa Argentina"],
     active: true,
-    data_source: "estimated",
-    source_note: "Estimated from AFA match records and CONMEBOL Copa Libertadores match reports",
-    verified_matches: null,
+    data_source: "public",
+    source_note: "39-match recent season sample (statsbet.es, 2025-26). YC/RC/penalties from public match database; fouls estimated (not publicly tracked).",
+    verified_matches: 39,
     fouls_per_game: 27.5,
-    yellow_per_game: 4.2,
-    red_per_game: 0.14,
-    penalties_per_game: 0.26,
-    penalties_estimated: true,
+    fouls_estimated: true,
+    yellow_per_game: 5.44,
+    red_per_game: 0.46,
+    penalties_per_game: 0.15,
+    penalties_estimated: false,
+    achievements: ["2025 Copa Libertadores Final referee (Palmeiras vs Flamengo, Nov 29)", "2015 Copa Libertadores — Boca vs River (both legs)", "FIFA International Referee 2015–2024"],
     stat_by_league: {
-      "Argentine Primera División": { fouls: 27.5, yc: 4.2, rc: 0.14, matches: null, fouls_la: 26.8, yc_la: 4.0, rc_la: 0.13 },
-      "Copa Argentina":             { fouls: 26.8, yc: 3.9, rc: 0.10, matches: null, fouls_la: 26.0, yc_la: 3.8, rc_la: 0.12 },
-      "Copa Libertadores":          { fouls: 25.2, yc: 3.7, rc: 0.20, matches: null, fouls_la: 24.5, yc_la: 3.5, rc_la: 0.16 },
+      // YC/RC/Pen from statsbet.es (39 matches recent season). Per-competition breakdown estimated from career profile.
+      "Argentine Primera División": { fouls: 27.5, yc: 5.44, rc: 0.46, penalties: 0.15, matches: null, fouls_la: 26.8, yc_la: 4.8, rc_la: 0.30 },
+      "Copa Libertadores":          { fouls: 25.0, yc: 4.80, rc: 0.30, penalties: 0.18, matches: null, fouls_la: 24.5, yc_la: 3.5, rc_la: 0.18 },
+      "Copa Sudamericana":          { fouls: 25.5, yc: 8.00, rc: 0.00, penalties: 0.00, matches: null, fouls_la: 24.0, yc_la: 3.8, rc_la: 0.20 },
     },
     competition_tendency: {
       domestic: {
         label: "Argentine Primera División",
-        matches: null,
-        fouls: 27.5, yc: 4.2, rc: 0.14,
-        note: "Among the highest foul counts in the dataset — reflecting Argentine domestic football's intense physical culture. Herrera's threshold aligns with the league norm; he controls escalation through strong presence rather than frequent interruption.",
+        matches: 39,
+        fouls: 27.5, yc: 5.44, rc: 0.46,
+        note: "Herrera's domestic numbers are among the highest in this dataset and accurately reflect Argentine football's intensity. 5.44 YC/game and 0.46 straight red cards per game (verified, 39 matches) confirm he operates in an extremely high-card environment — the AFA league average itself is ~4.8 YC/game.",
       },
       continental: {
-        label: "Copa Libertadores",
+        label: "Copa Libertadores & Sudamericana",
         matches: null,
-        fouls: 25.2, yc: 3.7, rc: 0.20,
-        note: "Slightly fewer fouls but notably higher RC rate in the Libertadores. Heightened aggression in continental knockout football leads to more serious foul play situations requiring red cards.",
+        fouls: 25.0, yc: 4.80, rc: 0.30,
+        note: "Copa Libertadores typically produces fewer fouls but remains intense. Herrera's appointment to the 2025 Libertadores Final — the most prestigious club match in South America — reflects CONMEBOL's highest level of trust. Per-competition breakdown estimated from career profile; sample sizes are smaller.",
       },
       international: {
-        label: "Copa Argentina",
+        label: "FIFA International Matches",
         matches: null,
-        fouls: 26.8, yc: 3.9, rc: 0.10,
-        note: "Domestic cup play mirrors the Primera División in foul intensity but with fewer sending offs — rivalry matches aside, cup knockout fixtures tend to produce more controlled aggression.",
+        fouls: 24.0, yc: 4.20, rc: 0.20,
+        note: "Held FIFA status from 2015 to 2024. International figures estimated. His international career overlapped with the most demanding Copa Libertadores appointments, suggesting CONMEBOL viewed him as suitable for both domestic and continental elite matches.",
       },
     },
     refereeing_style: {
-      summary: "Herrera operates in one of the most emotionally charged football environments in the world. Argentine domestic football demands a referee with commanding physical presence, excellent reading of player psychology, and the ability to de-escalate volatile situations quickly. His Copa Libertadores appointments reflect CONMEBOL's confidence in his ability to manage South American continental competition.",
-      traits: ["Commanding physical presence", "High physicality tolerance", "Quick to manage dissent", "Strong voice control", "CONMEBOL trusted official"],
-      game_management: "In Argentine football, a referee must establish dominance in the first 5 minutes or risk losing control. Herrera manages this through decisive early calls — particularly in 50-50 challenges — that signal he will award fouls consistently. He is firmer on dissent than on physicality; Argentine players expect physical play to continue, but vocal protests are closed down quickly. His proximity to clusters is key.",
-      learning_notes: "Herrera's game management is a masterclass in cultural adaptation. Argentine football has its own unwritten code — referees who try to impose European standards often struggle. Watch how he handles the post-foul moment: his immediate approach to the fouling player and calm but firm tone prevents the 5-on-1 confrontation that characterises poorly managed Argentine matches. Copa Libertadores is an advanced version — even higher pressure, even quicker de-escalation needed.",
+      summary: "Darío Herrera is one of Argentina's highest-profile international referees. Born in Andacollo, Neuquén (February 24, 1985), he debuted in Argentine football in 2013 and reached international status by 2015. His 5.44 YC per game in the 2025-26 season (verified from 39 matches) reflects the reality of Argentine domestic football — not personal harshness, but the correct calibration for the league's culture. His appointment to the 2025 Copa Libertadores Final is the peak appointment any South American referee can receive.",
+      traits: ["One of Argentina's most senior officials", "High but calibrated card rate", "Copa Libertadores Final experience", "Strong presence in rivalry matches", "Physical Education teacher background"],
+      game_management: "Argentine football culture requires a referee who establishes dominance in the opening minutes. Herrera does this through early, decisive foul awards — particularly in physical 50-50 challenges — and immediate, firm closure of dissent. He is less strict on physicality than a European referee might be, but much firmer on vocal confrontation. The very high red card rate (0.46/game) reflects the Argentine league environment where off-the-ball incidents, second fouls, and dissent are more likely to escalate to sending-offs than in most other leagues.",
+      learning_notes: "Herrera's career is a case study in cultural competence. The same referee who issues 5.44 YC/game in Argentina was trusted to manage the Copa Libertadores Final — the most watched club match in South America. This shows that 'strict' is context-dependent: a referee who seems very card-heavy by European standards can be exactly right for the Argentine environment. Study how he calibrates his approach differently between regular season matches and Libertadores knockout rounds, where he typically reduces cards while maintaining control through a higher-stakes presence.",
     },
-    comments: "Experienced Argentine referee operating in one of South America's most intense domestic environments. Copa Libertadores assignments place him among CONMEBOL's most trusted officials for high-volatility matches.",
+    comments: "2025 Copa Libertadores Final referee (Palmeiras 3–1 Flamengo, November 29, 2025). Previously officiated the 2015 Boca vs River Copa Libertadores tie. FIFA International Referee 2015–2024. Debut: Colón vs Vélez Sarsfield, 2013. Physical education teacher by training.",
   },
 ];
 
@@ -297,17 +307,21 @@ function FlagImg({ code, size = 24 }) {
 }
 
 function SourceBadge({ profile, small = false }) {
-  const verified = profile.data_source === "verified";
+  const src = profile.data_source;
+  const color   = src === "verified" ? "#5ecda4" : src === "public" ? "#64b5f6" : "#ffb74d";
+  const bg      = src === "verified" ? "rgba(29,158,117,0.12)" : src === "public" ? "rgba(33,150,243,0.12)" : "rgba(255,152,0,0.12)";
+  const border  = src === "verified" ? "rgba(29,158,117,0.35)"  : src === "public" ? "rgba(33,150,243,0.35)"  : "rgba(255,152,0,0.3)";
+  const label   = src === "verified" ? `✓ ${profile.verified_matches} matches`
+                : src === "public"   ? `✓ ${profile.verified_matches}+ matches`
+                : "EST";
   return (
     <span style={{
       fontSize: small ? 10 : 11, fontWeight: 700,
       padding: small ? "1px 6px" : "2px 8px", borderRadius: 10,
-      background: verified ? "rgba(29,158,117,0.12)" : "rgba(255,152,0,0.12)",
-      border: `1px solid ${verified ? "rgba(29,158,117,0.35)" : "rgba(255,152,0,0.3)"}`,
-      color: verified ? "#5ecda4" : "#ffb74d",
+      background: bg, border: `1px solid ${border}`, color,
       letterSpacing: "0.04em", whiteSpace: "nowrap",
     }}>
-      {verified ? `✓ ${profile.verified_matches} matches` : "EST"}
+      {label}
     </span>
   );
 }
@@ -409,16 +423,15 @@ function ProfileCard({ profile, onClick }) {
       {/* Key stats */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
         {[
-          { label: "Fouls/game", val: profile.fouls_per_game.toFixed(1), color: "#5ecda4", est: false },
-          { label: "Yellow cards", val: profile.yellow_per_game.toFixed(2), color: "#ffd600", est: false },
-          { label: "Red cards", val: profile.red_per_game.toFixed(3), color: "#ef5350", est: false },
-          { label: "Penalties", val: profile.penalties_per_game.toFixed(3), color: "#ff9800", est: true },
+          { label: "Fouls/game",   val: profile.fouls_per_game.toFixed(1),     color: "#5ecda4", est: !!profile.fouls_estimated     || profile.data_source === "estimated" },
+          { label: "Yellow cards", val: profile.yellow_per_game.toFixed(2),    color: "#ffd600", est: profile.data_source === "estimated" },
+          { label: "Red cards",    val: profile.red_per_game.toFixed(3),        color: "#ef5350", est: profile.data_source === "estimated" },
+          { label: "Penalties",    val: profile.penalties_per_game.toFixed(3),  color: "#ff9800", est: !!profile.penalties_estimated  || profile.data_source === "estimated" },
         ].map(s => (
           <div key={s.label} style={{ background: "rgba(10,22,40,0.4)", borderRadius: 8, padding: "8px 11px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
               <span style={{ fontSize: 10, color: "rgba(232,245,233,0.4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{s.label}</span>
-              {(s.est || (verified === false)) && <PenEstBadge />}
-              {!s.est && verified && <span style={{ fontSize: 9, color: "#5ecda4" }}>✓</span>}
+              {s.est ? <PenEstBadge /> : <span style={{ fontSize: 9, color: "#5ecda4" }}>✓</span>}
             </div>
             <span style={{ fontSize: 15, fontWeight: 700, color: isRetired ? "rgba(232,245,233,0.35)" : s.color }}>
               {s.val}
@@ -470,7 +483,7 @@ function TierRow({ tier, color = "#5ecda4" }) {
 function ProfileDetail({ profile, onBack }) {
   const [activeTab, setActiveTab] = useState("overview");
   const isRetired = !profile.active;
-  const verified = profile.data_source === "verified";
+  const verified = profile.data_source === "verified" || profile.data_source === "public";
 
   const tabs = [
     { id: "overview", label: "Overview" },
@@ -546,9 +559,16 @@ function ProfileDetail({ profile, onBack }) {
         </div>
 
         {/* Data source note */}
-        <div style={{ marginTop: 14, padding: "8px 14px", borderRadius: 8, background: verified ? "rgba(29,158,117,0.06)" : "rgba(255,152,0,0.06)", border: `1px solid ${verified ? "rgba(29,158,117,0.2)" : "rgba(255,152,0,0.2)"}`, fontSize: 11, color: verified ? "#5ecda4" : "#ffb74d" }}>
-          {verified
-            ? `✓ Fouls, yellow cards and red cards verified from ${profile.verified_matches} match records. ${profile.source_note}. Penalties marked est.`
+        <div style={{ marginTop: 14, padding: "8px 14px", borderRadius: 8,
+          background: profile.data_source === "verified" ? "rgba(29,158,117,0.06)" : profile.data_source === "public" ? "rgba(33,150,243,0.06)" : "rgba(255,152,0,0.06)",
+          border: `1px solid ${profile.data_source === "verified" ? "rgba(29,158,117,0.2)" : profile.data_source === "public" ? "rgba(33,150,243,0.2)" : "rgba(255,152,0,0.2)"}`,
+          fontSize: 11,
+          color: profile.data_source === "verified" ? "#5ecda4" : profile.data_source === "public" ? "#64b5f6" : "#ffb74d",
+        }}>
+          {profile.data_source === "verified"
+            ? `✓ Fouls, yellow cards and red cards verified from ${profile.verified_matches} match records. ${profile.source_note}.`
+            : profile.data_source === "public"
+            ? `✓ Yellow cards, red cards and penalties verified from ${profile.verified_matches}+ career matches (public database). ${profile.source_note}.`
             : `Figures are estimates based on public records. ${profile.source_note}.`}
         </div>
       </div>
@@ -578,10 +598,10 @@ function ProfileDetail({ profile, onBack }) {
           {/* Stat chips */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 12, marginBottom: 20 }}>
             {[
-              { label: "Fouls / game", val: profile.fouls_per_game.toFixed(1), color: "#5ecda4", est: !verified },
-              { label: "Yellow cards", val: profile.yellow_per_game.toFixed(2), color: "#ffd600", est: !verified },
-              { label: "Red cards", val: profile.red_per_game.toFixed(3), color: "#ef5350", est: !verified },
-              { label: "Penalties", val: profile.penalties_per_game.toFixed(3), color: "#ff9800", est: true },
+              { label: "Fouls / game", val: profile.fouls_per_game.toFixed(1),    color: "#5ecda4", est: !!profile.fouls_estimated    || profile.data_source === "estimated" },
+              { label: "Yellow cards", val: profile.yellow_per_game.toFixed(2),   color: "#ffd600", est: profile.data_source === "estimated" },
+              { label: "Red cards",    val: profile.red_per_game.toFixed(3),       color: "#ef5350", est: profile.data_source === "estimated" },
+              { label: "Penalties",    val: profile.penalties_per_game.toFixed(3), color: "#ff9800", est: !!profile.penalties_estimated || profile.data_source === "estimated" },
             ].map(s => (
               <div key={s.label} style={{ background: "rgba(10,22,40,0.5)", borderRadius: 10, padding: "16px", textAlign: "center" }}>
                 <div style={{ fontSize: 24, fontWeight: 700, color: s.color }}>{s.val}</div>
@@ -592,6 +612,21 @@ function ProfileDetail({ profile, onBack }) {
               </div>
             ))}
           </div>
+
+          {/* Achievements */}
+          {profile.achievements && profile.achievements.length > 0 && (
+            <div style={{ background: "rgba(13,33,55,0.7)", border: "1px solid rgba(29,158,117,0.2)", borderRadius: 14, padding: "18px 22px", marginBottom: 12 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#5ecda4", marginBottom: 10 }}>Notable Appointments & Awards</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {profile.achievements.map(a => (
+                  <div key={a} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, color: "rgba(232,245,233,0.75)" }}>
+                    <span style={{ color: "#5ecda4", marginTop: 1, flexShrink: 0 }}>→</span>
+                    {a}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Comments */}
           {profile.comments && (
@@ -652,8 +687,10 @@ function ProfileDetail({ profile, onBack }) {
       {activeTab === "intensity" && (
         <div>
           <div style={{ fontSize: 13, color: "rgba(232,245,233,0.5)", marginBottom: 18, lineHeight: 1.6 }}>
-            How {profile.name.split(" ")[0]}'s statistics shift across competition intensity levels. This gives you an expectation of likely call patterns depending on match type.
-            {!verified && <span style={{ color: "#ffb74d" }}> Figures are estimated from public records.</span>}
+            How {profile.name.split(" ")[0]}'s statistics shift across competition intensity levels.
+            {profile.data_source === "verified" && " YC, RC and fouls all verified from match records."}
+            {profile.data_source === "public" && <> YC, RC and penalties verified from public database. <span style={{ color: "#ffb74d" }}>Fouls per game estimated.</span></>}
+            {profile.data_source === "estimated" && <span style={{ color: "#ffb74d" }}> All figures estimated from public records.</span>}
           </div>
 
           {/* Tier comparison visual */}

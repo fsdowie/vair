@@ -80,7 +80,15 @@
       "Bash(supabase db *)",
       "Bash(supabase migration *)",
       "Skill(claude-api)",
-      "Bash(npx vite *)"
+      "Bash(npx vite *)",
+      "Bash(grep -n '`' \"C:/Users/fsdow/Claude/vair/supabase/functions/ask-referee/ea-rules.ts\")",
+      "Bash(grep -n '`' \"C:/Users/fsdow/Claude/vair/supabase/functions/ask-referee/ecnl-rules.ts\")",
+      "Bash(grep -n '\\\\${' \"C:/Users/fsdow/Claude/vair/supabase/functions/ask-referee/ea-rules.ts\")",
+      "Bash(grep -n '\\\\${' \"C:/Users/fsdow/Claude/vair/supabase/functions/ask-referee/ecnl-rules.ts\")",
+      "Bash(node *)",
+      "WebFetch(domain:www.statshub.com)",
+      "WebFetch(domain:es.wikipedia.org)",
+      "WebFetch(domain:statsbet.es)"
     ]
   }
 }
