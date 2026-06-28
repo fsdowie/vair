@@ -79,7 +79,8 @@
       "Bash(supabase --version)",
       "Bash(supabase db *)",
       "Bash(supabase migration *)",
-      "Skill(claude-api)"
+      "Skill(claude-api)",
+      "Bash(npx vite *)"
     ]
   }
 }
