@@ -90,7 +90,7 @@ Deno.serve(async (req) => {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'claude-sonnet-5',
         max_tokens: 2000,
         system: `You are a football/soccer referee statistics expert. When asked to generate a referee profile, respond with ONLY a valid JSON object — no markdown, no explanation, no code fences. Use your knowledge of the referee to populate biographical fields accurately. For statistics, provide rolling 3-season estimates based on typical performance in the competitions they work. The "league_avg" field is the estimated average per game across ALL referees in that competition, used as a peer benchmark.`,
         messages: [
