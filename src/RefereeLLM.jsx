@@ -208,7 +208,12 @@ export default function RefereeLLM() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Don't gate on the getSession() call above settling — under auth lock
+      // contention it can hang indefinitely while this listener still fires
+      // with the correct session. Either path is sufficient to stop showing
+      // "Loading...".
       setSession(session);
+      setLoading(false);
     });
 
     return () => {
