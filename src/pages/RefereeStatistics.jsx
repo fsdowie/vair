@@ -1,10 +1,5 @@
 import { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  'https://iunehbdazfzgfclkvvgd.supabase.co',
-  'sb_publishable_SU4BJ5e9RLDl-3iSZHo-3g_mbHpD9cn'
-);
+import { supabase } from "../supabaseClient";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 // Verified stats for Oliver and Taylor are derived from 50 and 53 match records

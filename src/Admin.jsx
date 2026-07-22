@@ -1,12 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from './supabaseClient';
 
 const BOOTSTRAP_ADMIN_EMAIL = 'fsdowie@yahoo.com';
-
-const supabase = createClient(
-  'https://iunehbdazfzgfclkvvgd.supabase.co',
-  'sb_publishable_SU4BJ5e9RLDl-3iSZHo-3g_mbHpD9cn'
-);
 
 const EDGE_BASE = 'https://iunehbdazfzgfclkvvgd.supabase.co/functions/v1';
 

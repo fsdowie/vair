@@ -88,7 +88,20 @@
       "Bash(node *)",
       "WebFetch(domain:www.statshub.com)",
       "WebFetch(domain:es.wikipedia.org)",
-      "WebFetch(domain:statsbet.es)"
+      "WebFetch(domain:statsbet.es)",
+      "Bash(supabase functions *)",
+      "Bash(supabase --help)",
+      "Bash(supabase projects *)",
+      "Read(//c/Users/fsdow/.supabase/**)",
+      "Bash(env)",
+      "Read(//c/Users/fsdow/AppData/Roaming/**)",
+      "Read(//c/Users/fsdow/.config/**)",
+      "Read(//c/Users/fsdow/AppData/**)",
+      "Bash(scoop update *)",
+      "Read(//tmp/**)",
+      "Bash(rm -f /tmp/login2.json /tmp/create.json /tmp/testuid.txt)",
+      "Bash(npm run *)",
+      "Bash(disown)"
     ]
   }
 }
