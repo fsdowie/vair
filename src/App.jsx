@@ -27,16 +27,53 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setUserEmail(session?.user?.email ?? null);
-      setIsAdmin(await checkIsAdmin(session));
-    });
+    let cancelled = false;
+
+    const loadSession = (retriesLeft = 1) => {
+      supabase.auth.getSession()
+        .then(async ({ data: { session } }) => {
+          if (cancelled) return;
+          setUserEmail(session?.user?.email ?? null);
+          setIsAdmin(await checkIsAdmin(session));
+        })
+        .catch(() => {
+          if (cancelled) return;
+          if (retriesLeft > 0) {
+            // Transient auth lock contention with another mounted
+            // component's session check (self-recovers) — retry once.
+            loadSession(retriesLeft - 1);
+            return;
+          }
+          setUserEmail(null);
+          setIsAdmin(false);
+        });
+    };
+    loadSession();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_e, session) => {
       setUserEmail(session?.user?.email ?? null);
       setIsAdmin(await checkIsAdmin(session));
     });
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      // signOut() shares the same internal auth lock as getSession() — a
+      // transient lock-steal AbortError here would otherwise make the
+      // button appear to do nothing. Clear local state regardless so the
+      // UI always reflects the sign-out the user asked for.
+      console.error('signOut failed, clearing local session state anyway:', err);
+    } finally {
+      setUserEmail(null);
+      setIsAdmin(false);
+    }
+  };
 
   return (
     <div style={{ position: "relative", height: "100vh", overflow: "hidden", background: "linear-gradient(135deg, #0a1628, #0d2137)" }}>
@@ -80,7 +117,7 @@ export default function App() {
             {userEmail}
           </span>
           <button
-            onClick={() => supabase.auth.signOut()}
+            onClick={handleSignOut}
             style={{
               padding: "7px 14px",
               borderRadius: 8,

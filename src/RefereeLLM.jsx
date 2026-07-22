@@ -179,10 +179,31 @@ export default function RefereeLLM() {
 
   // Check for existing session on mount
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
+    let cancelled = false;
+
+    const loadSession = (retriesLeft = 1) => {
+      supabase.auth.getSession()
+        .then(({ data: { session } }) => {
+          if (cancelled) return;
+          setSession(session);
+          setLoading(false);
+        })
+        .catch(() => {
+          if (cancelled) return;
+          if (retriesLeft > 0) {
+            // @supabase/gotrue-js can abort a getSession() call with
+            // "Lock broken by another request with the 'steal' option" when
+            // another mounted component's session check contends for the
+            // same internal lock — this is transient and self-recovers, so
+            // retry once instead of treating a valid session as logged out.
+            loadSession(retriesLeft - 1);
+            return;
+          }
+          setSession(null);
+          setLoading(false);
+        });
+    };
+    loadSession();
 
     const {
       data: { subscription },
@@ -190,7 +211,10 @@ export default function RefereeLLM() {
       setSession(session);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Auto-scroll to latest message
