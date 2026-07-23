@@ -243,23 +243,42 @@ export default function RefereeLLM() {
 
   const dismissNotification = async (id) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
-    await supabase.functions.invoke('process-report', {
-      body: { action: 'mark_read', report_id: id },
-    });
+    // Direct fetch, not supabase.functions.invoke() — see sendMessage() for
+    // why (invoke() can hang forever on a wedged auth lock).
+    fetch('https://iunehbdazfzgfclkvvgd.supabase.co/functions/v1/process-report', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: 'mark_read', report_id: id }),
+    }).catch(() => {});
   };
 
   const submitReport = async () => {
     if (!reportModal || !reportExplanation.trim()) return;
     setReportStatus('submitting');
     try {
-      const { error } = await supabase.functions.invoke('submit-report', {
-        body: {
-          question: reportModal.question,
-          vair_answer: reportModal.answer,
-          explanation: reportExplanation,
-        },
-      });
-      if (error) throw error;
+      // Direct fetch, not supabase.functions.invoke() — see sendMessage()
+      // above for why: invoke() can hang forever if the SDK's internal auth
+      // lock is wedged, which would leave reportStatus stuck on
+      // 'submitting' with no way to recover.
+      const res = await fetch(
+        'https://iunehbdazfzgfclkvvgd.supabase.co/functions/v1/submit-report',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            question: reportModal.question,
+            vair_answer: reportModal.answer,
+            explanation: reportExplanation,
+          }),
+        }
+      );
+      if (!res.ok) throw new Error(`Request failed (${res.status})`);
       setReportStatus('success');
     } catch {
       setReportStatus('idle');
@@ -308,14 +327,27 @@ export default function RefereeLLM() {
     setError(null);
 
     try {
-      // Call Supabase Edge Function instead of direct Anthropic API
-      const { data, error } = await supabase.functions.invoke('ask-referee', {
-        body: {
-          messages: [...messages, userMessage]
+      // Call the edge function directly with the access token already held
+      // in React state, rather than supabase.functions.invoke(). invoke()
+      // internally fetches the session via the SDK's auth lock, which can
+      // get permanently wedged mid-session (same underlying issue as the
+      // getSession()/signOut() lock contention fixed above) and hang
+      // forever with no error — leaving the chat stuck on the "thinking"
+      // indicator. This matches the pattern already used for notifications.
+      const res = await fetch(
+        'https://iunehbdazfzgfclkvvgd.supabase.co/functions/v1/ask-referee',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ messages: [...messages, userMessage] }),
         }
-      });
+      );
 
-      if (error) throw error;
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
 
       setMessages(prev => [...prev, {
         role: "assistant",
