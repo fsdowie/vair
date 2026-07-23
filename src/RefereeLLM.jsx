@@ -103,6 +103,7 @@ const getRandomQuestions = (count = 3) => {
 export default function RefereeLLM() {
   // Helper function to render text with clickable links
   const renderMessageWithLinks = (text) => {
+    if (typeof text !== 'string') return '';
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = text.split(urlRegex);
     
@@ -348,6 +349,13 @@ export default function RefereeLLM() {
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+      if (typeof data.content !== 'string') {
+        // Malformed success response — treat as an error instead of pushing
+        // a message with no content, which previously crashed the whole
+        // chat (renderMessageWithLinks called .split() on undefined,
+        // unmounting the entire page to a blank screen).
+        throw new Error('Received an empty response. Please try again.');
+      }
 
       setMessages(prev => [...prev, {
         role: "assistant",
