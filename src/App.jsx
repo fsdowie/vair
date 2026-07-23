@@ -61,26 +61,32 @@ export default function App() {
   }, []);
 
   const handleSignOut = async () => {
-    // signOut() shares the same internal auth lock as getSession() and can
-    // fail with "Lock broken by another request with the 'steal' option" —
-    // transient, self-recovering contention. A real signOut() call is what
-    // actually clears the stored token and broadcasts SIGNED_OUT to every
-    // mounted component (e.g. RefereeLLM's own session state); merely
-    // clearing this component's local state would leave other components
-    // still showing signed-in. So retry before falling back to a local-only
-    // clear.
-    for (let attempt = 0; attempt <= 1; attempt++) {
+    // signOut() shares gotrue-js's internal auth lock with getSession(), and
+    // that lock can end up genuinely stuck (not just contended) — observed
+    // live: navigator.locks.query() shows it held with nothing pending,
+    // never resolving. A retry doesn't help once it's in that state, so
+    // bound the attempt with a timeout. If it doesn't finish in time, clear
+    // the stored token directly and reload the page — a full reload is the
+    // only way to guarantee every mounted component (App, RefereeLLM, etc.,
+    // which each hold their own session state off the same stuck client)
+    // re-syncs from a clean slate instead of some staying "signed in".
+    const SIGNOUT_TIMEOUT_MS = 4000;
+    try {
+      await Promise.race([
+        supabase.auth.signOut(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('signOut timed out')), SIGNOUT_TIMEOUT_MS)),
+      ]);
+    } catch (err) {
+      console.error('signOut did not complete cleanly, forcing local cleanup:', err);
       try {
-        await supabase.auth.signOut();
-        return; // onAuthStateChange (SIGNED_OUT) updates state for us
-      } catch (err) {
-        if (attempt === 1) {
-          console.error('signOut failed after retry, clearing local session state anyway:', err);
-        }
+        Object.keys(localStorage)
+          .filter((k) => k.startsWith('sb-') && k.endsWith('-auth-token'))
+          .forEach((k) => localStorage.removeItem(k));
+      } catch {
+        // ignore — best effort
       }
     }
-    setUserEmail(null);
-    setIsAdmin(false);
+    window.location.reload();
   };
 
   return (
