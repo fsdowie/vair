@@ -156,6 +156,12 @@ Only provide detailed explanations if user asks for more.`;
         max_tokens: 300,
         system: systemPrompt,
         messages: messages,
+        // Claude Sonnet 5 runs adaptive thinking by default when this is
+        // omitted, which prepends a `thinking` content block before the
+        // `text` block. This tool wants short, direct rulings, not extended
+        // reasoning, so disable it explicitly — also avoids thinking tokens
+        // competing with the answer for the 300-token budget above.
+        thinking: { type: 'disabled' },
       }),
     });
 
@@ -169,7 +175,16 @@ Only provide detailed explanations if user asks for more.`;
     }
 
     const data = await anthropicResponse.json();
-    const content = data.content[0].text;
+    // Find the text block by type rather than assuming index 0 — defensive
+    // even with thinking disabled, in case other block types are ever added.
+    const content = data.content.find((block) => block.type === 'text')?.text;
+    if (!content) {
+      console.error('Anthropic response had no text block:', JSON.stringify(data));
+      return new Response(
+        JSON.stringify({ error: 'AI service error' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Log the question
     const { error: logError } = await supabase
