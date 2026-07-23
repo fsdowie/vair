@@ -61,18 +61,26 @@ export default function App() {
   }, []);
 
   const handleSignOut = async () => {
-    try {
-      await supabase.auth.signOut();
-    } catch (err) {
-      // signOut() shares the same internal auth lock as getSession() — a
-      // transient lock-steal AbortError here would otherwise make the
-      // button appear to do nothing. Clear local state regardless so the
-      // UI always reflects the sign-out the user asked for.
-      console.error('signOut failed, clearing local session state anyway:', err);
-    } finally {
-      setUserEmail(null);
-      setIsAdmin(false);
+    // signOut() shares the same internal auth lock as getSession() and can
+    // fail with "Lock broken by another request with the 'steal' option" —
+    // transient, self-recovering contention. A real signOut() call is what
+    // actually clears the stored token and broadcasts SIGNED_OUT to every
+    // mounted component (e.g. RefereeLLM's own session state); merely
+    // clearing this component's local state would leave other components
+    // still showing signed-in. So retry before falling back to a local-only
+    // clear.
+    for (let attempt = 0; attempt <= 1; attempt++) {
+      try {
+        await supabase.auth.signOut();
+        return; // onAuthStateChange (SIGNED_OUT) updates state for us
+      } catch (err) {
+        if (attempt === 1) {
+          console.error('signOut failed after retry, clearing local session state anyway:', err);
+        }
+      }
     }
+    setUserEmail(null);
+    setIsAdmin(false);
   };
 
   return (
