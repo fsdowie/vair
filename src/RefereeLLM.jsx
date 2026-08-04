@@ -553,7 +553,7 @@ export default function RefereeLLM() {
               color: "rgba(232,245,233,0.6)",
               margin: "4px 0 0 0",
             }}>
-              AI-powered referee assistant | IFAB Laws of the Game 2025/26
+              AI-powered referee assistant | IFAB Laws of the Game 2026/27
             </p>
           </div>
 

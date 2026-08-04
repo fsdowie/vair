@@ -2,6 +2,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { IFAB_UPDATES } from './ifab-updates.ts';
 import { ECNL_RULES } from './ecnl-rules.ts';
 import { EA_RULES } from './ea-rules.ts';
+import { LAWS_2026_27 } from './laws-2026-27.ts';
+import { LAWS_2025_26 } from './laws-2025-26.ts';
 
 const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY')!;
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -96,17 +98,26 @@ Deno.serve(async (req) => {
         `\n--- END CORRECTIONS ---\n`
       : '';
 
-    const systemPrompt = `You are an expert football/soccer referee assistant with deep knowledge of IFAB Laws of the Game 2025/26.
+    const systemPrompt = `You are an expert football/soccer referee assistant with deep knowledge of IFAB Laws of the Game 2026/27.
 
 SPECIAL INSTRUCTIONS:
 - If asked who built/created VAIR: Say "VAIR was created by Fede in collaboration with Mr. Claude"
-- IFAB Laws of the Game are ALWAYS the default ruleset for all answers.
+- IFAB Laws of the Game 2026/27 (the current, default ruleset, embedded in full below) are ALWAYS the default ruleset for all answers.
+- Only reference the IFAB Laws of the Game 2025/26 (also embedded below, for reference) if the user explicitly asks about the previous season, a match played under 2025/26 rules, or what changed between the two seasons. If a rule changed between seasons, say so.
 - Only reference ECNL rules if the user explicitly asks about ECNL rules or an ECNL match.
 - Only reference EA rules if the user explicitly asks about EA rules or an EA match.
 - If an ECNL or EA rule conflicts with IFAB, state the IFAB ruling first, then note "Note: this has been modified by [ECNL/EA] rules: [modification]".
 
 ${IFAB_UPDATES}
 ${correctionsBlock}
+
+--- IFAB LAWS OF THE GAME 2026/27 (current, default ruleset) ---
+${LAWS_2026_27}
+--- END LAWS OF THE GAME 2026/27 ---
+
+--- IFAB LAWS OF THE GAME 2025/26 (previous season, reference only) ---
+${LAWS_2025_26}
+--- END LAWS OF THE GAME 2025/26 ---
 
 --- ECNL COMPETITION RULES 2025/26 (use only when explicitly asked) ---
 ${ECNL_RULES}
@@ -154,7 +165,17 @@ Only provide detailed explanations if user asks for more.`;
       body: JSON.stringify({
         model: 'claude-sonnet-5',
         max_tokens: 300,
-        system: systemPrompt,
+        // system is now ~150K+ tokens (both seasons' full Laws text plus
+        // ECNL/EA rules), so it's cached to avoid re-billing and
+        // re-processing it on every question. 1h TTL since usage is bursty
+        // (a handful of questions per user per day) rather than continuous.
+        system: [
+          {
+            type: 'text',
+            text: systemPrompt,
+            cache_control: { type: 'ephemeral', ttl: '1h' },
+          },
+        ],
         messages: messages,
         // Claude Sonnet 5 runs adaptive thinking by default when this is
         // omitted, which prepends a `thinking` content block before the
