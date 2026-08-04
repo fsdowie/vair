@@ -5,6 +5,23 @@ const BOOTSTRAP_ADMIN_EMAIL = 'fsdowie@yahoo.com';
 
 const EDGE_BASE = 'https://iunehbdazfzgfclkvvgd.supabase.co/functions/v1';
 
+function formatCountdown(resetIso, nowMs) {
+  if (!resetIso) return null;
+  const diffMs = new Date(resetIso).getTime() - nowMs;
+  if (diffMs <= 0) return 'resets any moment';
+  const totalSeconds = Math.floor(diffMs / 1000);
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  if (h > 0) return `resets in ${h}h ${m}m`;
+  if (m > 0) return `resets in ${m}m ${s}s`;
+  return `resets in ${s}s`;
+}
+
+function formatNum(n) {
+  return (n ?? 0).toLocaleString();
+}
+
 export default function Admin() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,6 +31,11 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState('users');
   const [logs, setLogs] = useState([]);
   const [logsLoading, setLogsLoading] = useState(false);
+
+  const [userTotals, setUserTotals] = useState([]);
+  const [rateLimit, setRateLimit] = useState(null);
+  const [usageLoading, setUsageLoading] = useState(false);
+  const [now, setNow] = useState(Date.now());
 
   const [reports, setReports] = useState([]);
   const [corrections, setCorrections] = useState([]);
@@ -116,6 +138,28 @@ export default function Admin() {
       setLogsLoading(false);
     }
   };
+
+  const fetchUsageStats = async () => {
+    setUsageLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('get-usage-stats');
+      if (error) throw error;
+      setUserTotals(data?.userTotals || []);
+      setRateLimit(data?.rateLimit || null);
+      setUsageLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setUsageLoading(false);
+    }
+  };
+
+  // Tick every second while the Token Usage tab is open so the reset
+  // countdown (e.g. "resets in 42s") stays live without re-fetching.
+  useEffect(() => {
+    if (activeTab !== 'token_usage') return;
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, [activeTab]);
 
   const fetchReports = async () => {
     setReportsLoading(true);
@@ -455,6 +499,18 @@ export default function Admin() {
             }}
           >
             📋 Profile Requests
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab('token_usage');
+              if (userTotals.length === 0) fetchUsageStats();
+            }}
+            style={{
+              ...styles.tabButton,
+              ...(activeTab === 'token_usage' ? styles.activeTab : {})
+            }}
+          >
+            🔋 Token Usage
           </button>
         </div>
 
@@ -870,6 +926,90 @@ export default function Admin() {
                   </div>
                 </div>
               </div>
+            )}
+          </>
+        )}
+
+        {/* Token Usage Tab */}
+        {activeTab === 'token_usage' && (
+          <>
+            {usageLoading ? (
+              <div style={{ textAlign: 'center', padding: 40, color: 'rgba(232,245,233,0.6)' }}>Loading usage…</div>
+            ) : (
+              <>
+                <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 6 }}>
+                  ⚡ Live API Capacity
+                </h3>
+                <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.4)', marginBottom: 16 }}>
+                  From the Anthropic account VAIR connects through — shared across all users, as of the last question asked.
+                </div>
+                {!rateLimit ? (
+                  <div style={{ color: 'rgba(232,245,233,0.4)', fontSize: 13, marginBottom: 32 }}>
+                    No data yet — capacity is recorded the next time someone asks a question.
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 32 }}>
+                    {[
+                      { label: 'Input tokens', remaining: rateLimit.input_tokens_remaining, limit: rateLimit.input_tokens_limit, reset: rateLimit.input_tokens_reset },
+                      { label: 'Output tokens', remaining: rateLimit.output_tokens_remaining, limit: rateLimit.output_tokens_limit, reset: rateLimit.output_tokens_reset },
+                      { label: 'Total tokens', remaining: rateLimit.tokens_remaining, limit: rateLimit.tokens_limit, reset: rateLimit.tokens_reset },
+                      { label: 'Requests', remaining: rateLimit.requests_remaining, limit: rateLimit.requests_limit, reset: rateLimit.requests_reset },
+                    ].filter(c => c.limit != null).map(c => {
+                      const pct = c.limit > 0 ? Math.max(0, Math.min(100, (c.remaining / c.limit) * 100)) : 0;
+                      return (
+                        <div key={c.label} style={{ flex: '1 1 200px', background: 'rgba(29,158,117,0.08)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: 12, padding: '16px 18px' }}>
+                          <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.55)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 8 }}>{c.label}</div>
+                          <div style={{ fontSize: 20, fontWeight: 700, color: '#e8f5e9', marginBottom: 8 }}>
+                            {formatNum(c.remaining)} <span style={{ fontSize: 13, fontWeight: 400, color: 'rgba(232,245,233,0.4)' }}>/ {formatNum(c.limit)}</span>
+                          </div>
+                          <div style={{ background: 'rgba(29,158,117,0.15)', borderRadius: 6, height: 6, overflow: 'hidden', marginBottom: 8 }}>
+                            <div style={{ height: '100%', width: `${pct}%`, background: pct < 15 ? 'linear-gradient(90deg,#b71c1c,#e53935)' : 'linear-gradient(90deg,#0e7a58,#1d9e75)', borderRadius: 6, transition: 'width 0.3s ease' }} />
+                          </div>
+                          <div style={{ fontSize: 11, color: 'rgba(232,245,233,0.4)' }}>{formatCountdown(c.reset, now) || '—'}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 16 }}>
+                  📊 Token Usage by User
+                </h3>
+                <table style={styles.table}>
+                  <thead>
+                    <tr>
+                      <th style={styles.th}>User</th>
+                      <th style={{ ...styles.th, textAlign: 'right' }}>Questions</th>
+                      <th style={{ ...styles.th, textAlign: 'right' }}>Input</th>
+                      <th style={{ ...styles.th, textAlign: 'right' }}>Output</th>
+                      <th style={{ ...styles.th, textAlign: 'right' }}>Cache Write</th>
+                      <th style={{ ...styles.th, textAlign: 'right' }}>Cache Read</th>
+                      <th style={{ ...styles.th, textAlign: 'right' }}>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {userTotals.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>
+                          No token usage recorded yet
+                        </td>
+                      </tr>
+                    ) : (
+                      userTotals.map(u => (
+                        <tr key={u.user_id} style={styles.tr}>
+                          <td style={styles.td}>{u.user_email}</td>
+                          <td style={{ ...styles.td, textAlign: 'right' }}>{formatNum(u.questions)}</td>
+                          <td style={{ ...styles.td, textAlign: 'right' }}>{formatNum(u.input_tokens)}</td>
+                          <td style={{ ...styles.td, textAlign: 'right' }}>{formatNum(u.output_tokens)}</td>
+                          <td style={{ ...styles.td, textAlign: 'right' }}>{formatNum(u.cache_creation_input_tokens)}</td>
+                          <td style={{ ...styles.td, textAlign: 'right' }}>{formatNum(u.cache_read_input_tokens)}</td>
+                          <td style={{ ...styles.td, textAlign: 'right', fontWeight: 700, color: '#5ecda4' }}>{formatNum(u.total_tokens)}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </>
             )}
           </>
         )}

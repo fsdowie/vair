@@ -11,6 +11,12 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const ADMIN_EMAIL = 'fsdowie@yahoo.com';
 const DAILY_LIMIT = 5;
 
+function numOrNull(value: string | null): number | null {
+  if (value === null) return null;
+  const n = Number(value);
+  return Number.isNaN(n) ? null : n;
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -195,6 +201,33 @@ Only provide detailed explanations if user asks for more.`;
       );
     }
 
+    // Snapshot Anthropic's rate-limit headers before consuming the body —
+    // this is the only place we see the account's live capacity, so record
+    // it on every call for the admin panel to read back.
+    const rl = anthropicResponse.headers;
+    const rateLimitSnapshot = {
+      id: 1,
+      requests_limit: numOrNull(rl.get('anthropic-ratelimit-requests-limit')),
+      requests_remaining: numOrNull(rl.get('anthropic-ratelimit-requests-remaining')),
+      requests_reset: rl.get('anthropic-ratelimit-requests-reset'),
+      input_tokens_limit: numOrNull(rl.get('anthropic-ratelimit-input-tokens-limit')),
+      input_tokens_remaining: numOrNull(rl.get('anthropic-ratelimit-input-tokens-remaining')),
+      input_tokens_reset: rl.get('anthropic-ratelimit-input-tokens-reset'),
+      output_tokens_limit: numOrNull(rl.get('anthropic-ratelimit-output-tokens-limit')),
+      output_tokens_remaining: numOrNull(rl.get('anthropic-ratelimit-output-tokens-remaining')),
+      output_tokens_reset: rl.get('anthropic-ratelimit-output-tokens-reset'),
+      tokens_limit: numOrNull(rl.get('anthropic-ratelimit-tokens-limit')),
+      tokens_remaining: numOrNull(rl.get('anthropic-ratelimit-tokens-remaining')),
+      tokens_reset: rl.get('anthropic-ratelimit-tokens-reset'),
+      updated_at: new Date().toISOString(),
+    };
+    const { error: rlError } = await supabase
+      .from('api_rate_limit_status')
+      .upsert(rateLimitSnapshot);
+    if (rlError) {
+      console.error('Error saving rate limit snapshot:', rlError);
+    }
+
     const data = await anthropicResponse.json();
     // Find the text block by type rather than assuming index 0 — defensive
     // even with thinking disabled, in case other block types are ever added.
@@ -207,12 +240,18 @@ Only provide detailed explanations if user asks for more.`;
       );
     }
 
-    // Log the question
+    // Log the question along with the real token usage Anthropic billed for
+    // this request, so usage can be broken down per VAIR user later.
+    const usage = data.usage ?? {};
     const { error: logError } = await supabase
       .from('questions_log')
       .insert({
         user_id: user.id,
-        question: userQuestion
+        question: userQuestion,
+        input_tokens: usage.input_tokens ?? null,
+        output_tokens: usage.output_tokens ?? null,
+        cache_creation_input_tokens: usage.cache_creation_input_tokens ?? null,
+        cache_read_input_tokens: usage.cache_read_input_tokens ?? null,
       });
 
     if (logError) {
