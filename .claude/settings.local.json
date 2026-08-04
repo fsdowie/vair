@@ -101,7 +101,9 @@
       "Read(//tmp/**)",
       "Bash(rm -f /tmp/login2.json /tmp/create.json /tmp/testuid.txt)",
       "Bash(npm run *)",
-      "Bash(disown)"
+      "Bash(disown)",
+      "Bash(pdfinfo \"Laws of the Game 2026_27_single pages.pdf\")",
+      "Bash(grep -c \"^[0-9]\\\\{1,3\\\\}$\" full_extract.txt)"
     ]
   }
 }
