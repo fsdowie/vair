@@ -103,7 +103,9 @@
       "Bash(npm run *)",
       "Bash(disown)",
       "Bash(pdfinfo \"Laws of the Game 2026_27_single pages.pdf\")",
-      "Bash(grep -c \"^[0-9]\\\\{1,3\\\\}$\" full_extract.txt)"
+      "Bash(grep -c \"^[0-9]\\\\{1,3\\\\}$\" full_extract.txt)",
+      "Bash(npx eslint *)",
+      "Bash(kill 963)"
     ]
   }
 }

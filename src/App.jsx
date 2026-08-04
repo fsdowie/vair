@@ -4,6 +4,7 @@ import RefereeLLM from "./RefereeLLM";
 import Sidebar from "./Sidebar";
 import RefereeStatistics from "./pages/RefereeStatistics";
 import GamesOrganizer from "./pages/GamesOrganizer";
+import Features from "./pages/Features";
 import AboutUs from "./pages/AboutUs";
 import Admin from "./Admin";
 
@@ -178,9 +179,10 @@ export default function App() {
 
       {/* Main content */}
       <div style={{ position: "relative", zIndex: 1, height: "100vh", overflowY: "auto" }}>
-        {activePage === "referee"    && <RefereeLLM />}
+        {activePage === "referee"    && <RefereeLLM onNavigate={setActivePage} />}
         {activePage === "statistics" && <RefereeStatistics />}
         {activePage === "games"      && <GamesOrganizer />}
+        {activePage === "features"   && <Features onNavigate={setActivePage} />}
         {activePage === "about"      && <AboutUs />}
         {activePage === "admin"      && <Admin />}
       </div>

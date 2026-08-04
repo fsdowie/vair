@@ -100,7 +100,7 @@ const getRandomQuestions = (count = 3) => {
   return shuffled.slice(0, count);
 };
 
-export default function RefereeLLM() {
+export default function RefereeLLM({ onNavigate } = {}) {
   // Helper function to render text with clickable links
   const renderMessageWithLinks = (text) => {
     if (typeof text !== 'string') return '';
@@ -511,6 +511,24 @@ export default function RefereeLLM() {
               {loading ? "Loading..." : (authView === 'login' ? 'Login' : 'Sign Up')}
             </button>
           </form>
+
+          {onNavigate && (
+            <div style={{ textAlign: "center", marginTop: 20 }}>
+              <button
+                onClick={() => onNavigate('features')}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#5ecda4",
+                  fontSize: 13,
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                }}
+              >
+                ✨ See what VAiR can do →
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
