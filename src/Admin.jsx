@@ -5,6 +5,8 @@ const BOOTSTRAP_ADMIN_EMAIL = 'fsdowie@yahoo.com';
 
 const EDGE_BASE = 'https://iunehbdazfzgfclkvvgd.supabase.co/functions/v1';
 
+const HIGHLIGHTED_USER_EMAIL = 'fsdowie@gmail.com';
+
 function formatCountdown(resetIso, nowMs) {
   if (!resetIso) return null;
   const diffMs = new Date(resetIso).getTime() - nowMs;
@@ -972,6 +974,38 @@ export default function Admin() {
                   </div>
                 )}
 
+                {(() => {
+                  const highlighted = userTotals.find(u => u.user_email === HIGHLIGHTED_USER_EMAIL);
+                  return (
+                    <>
+                      <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 6 }}>
+                        🎯 {HIGHLIGHTED_USER_EMAIL}
+                      </h3>
+                      {!highlighted ? (
+                        <div style={{ color: 'rgba(232,245,233,0.4)', fontSize: 13, marginBottom: 32 }}>
+                          No usage recorded yet for this account.
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 32 }}>
+                          {[
+                            { label: 'Questions', value: highlighted.questions },
+                            { label: 'Input', value: highlighted.input_tokens },
+                            { label: 'Output', value: highlighted.output_tokens },
+                            { label: 'Cache Write', value: highlighted.cache_creation_input_tokens },
+                            { label: 'Cache Read', value: highlighted.cache_read_input_tokens },
+                            { label: 'Total', value: highlighted.total_tokens, emphasize: true },
+                          ].map(c => (
+                            <div key={c.label} style={{ flex: '1 1 130px', background: c.emphasize ? 'rgba(29,158,117,0.16)' : 'rgba(29,158,117,0.08)', border: `1px solid ${c.emphasize ? 'rgba(29,158,117,0.4)' : 'rgba(29,158,117,0.2)'}`, borderRadius: 12, padding: '14px 16px' }}>
+                              <div style={{ fontSize: 11, color: 'rgba(232,245,233,0.55)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>{c.label}</div>
+                              <div style={{ fontSize: 20, fontWeight: 700, color: c.emphasize ? '#5ecda4' : '#e8f5e9' }}>{formatNum(c.value)}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
+
                 <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 16 }}>
                   📊 Token Usage by User
                 </h3>
@@ -996,8 +1030,15 @@ export default function Admin() {
                       </tr>
                     ) : (
                       userTotals.map(u => (
-                        <tr key={u.user_id} style={styles.tr}>
-                          <td style={styles.td}>{u.user_email}</td>
+                        <tr
+                          key={u.user_id}
+                          style={u.user_email === HIGHLIGHTED_USER_EMAIL
+                            ? { ...styles.tr, background: 'rgba(29,158,117,0.1)' }
+                            : styles.tr}
+                        >
+                          <td style={{ ...styles.td, fontWeight: u.user_email === HIGHLIGHTED_USER_EMAIL ? 700 : 400 }}>
+                            {u.user_email === HIGHLIGHTED_USER_EMAIL ? '🎯 ' : ''}{u.user_email}
+                          </td>
                           <td style={{ ...styles.td, textAlign: 'right' }}>{formatNum(u.questions)}</td>
                           <td style={{ ...styles.td, textAlign: 'right' }}>{formatNum(u.input_tokens)}</td>
                           <td style={{ ...styles.td, textAlign: 'right' }}>{formatNum(u.output_tokens)}</td>
