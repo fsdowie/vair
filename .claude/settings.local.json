@@ -105,7 +105,12 @@
       "Bash(pdfinfo \"Laws of the Game 2026_27_single pages.pdf\")",
       "Bash(grep -c \"^[0-9]\\\\{1,3\\\\}$\" full_extract.txt)",
       "Bash(npx eslint *)",
-      "Bash(kill 963)"
+      "Bash(kill 963)",
+      "Bash(where vercel *)",
+      "Bash(npx --version)",
+      "mcp__plugin_vercel_vercel__check_domain_availability_and_price",
+      "mcp__plugin_vercel_vercel__get_purchase_quote",
+      "mcp__plugin_vercel_vercel__buy_domain"
     ]
   }
 }

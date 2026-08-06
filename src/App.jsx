@@ -183,7 +183,7 @@ export default function App() {
         {activePage === "statistics" && <RefereeStatistics />}
         {activePage === "games"      && <GamesOrganizer />}
         {activePage === "features"   && <Features onNavigate={setActivePage} />}
-        {activePage === "about"      && <AboutUs />}
+        {activePage === "about"      && <AboutUs onNavigate={setActivePage} />}
         {activePage === "admin"      && <Admin />}
       </div>
     </div>

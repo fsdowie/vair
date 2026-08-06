@@ -25,6 +25,8 @@ const LABEL_STYLE = {
 
 const REQUIRED_STAR = { color: "#ef9a9a", marginLeft: 3 };
 
+const CONTACT_EMAIL = "vaireferee@gmail.com";
+
 const CLARIFYING = {
   suggestion: [
     {
@@ -298,7 +300,7 @@ function FeedbackModal({ onClose }) {
         {status === "error" && (
           <div style={{ fontSize: 13, color: "#ef9a9a", background: "rgba(239,154,154,0.1)", borderRadius: 8, padding: "10px 14px" }}>
             <strong>Submission failed:</strong> {apiError || "Unknown error"}<br/>
-            <span style={{ fontSize: 12, opacity: 0.8 }}>You can also email us directly at fsdowie@gmail.com</span>
+            <span style={{ fontSize: 12, opacity: 0.8 }}>You can also email us directly at {CONTACT_EMAIL}</span>
           </div>
         )}
 
@@ -357,7 +359,7 @@ const btnStyle = {
   cursor: "pointer",
 };
 
-export default function AboutUs() {
+export default function AboutUs({ onNavigate }) {
   const [showForm, setShowForm] = useState(false);
 
   return (
@@ -427,10 +429,16 @@ export default function AboutUs() {
                 {typeof __RELEASE_DATE__ !== 'undefined' ? __RELEASE_DATE__ : 'unknown'}
               </span>
             </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 32 }}>
+              <span style={{ fontSize: 13, color: "rgba(232,245,233,0.5)", textTransform: "uppercase", letterSpacing: "0.08em" }}>Contact</span>
+              <a href={`mailto:${CONTACT_EMAIL}`} style={{ fontSize: 15, fontWeight: 600, color: "#5ecda4", textDecoration: "none" }}>
+                {CONTACT_EMAIL}
+              </a>
+            </div>
           </div>
 
           {/* Feedback button */}
-          <div style={{ borderTop: "1px solid rgba(29,158,117,0.15)", paddingTop: 24, textAlign: "center" }}>
+          <div style={{ borderTop: "1px solid rgba(29,158,117,0.15)", paddingTop: 24, textAlign: "center", display: "flex", flexDirection: "column", gap: 12 }}>
             <button
               onClick={() => setShowForm(true)}
               style={{
@@ -442,6 +450,23 @@ export default function AboutUs() {
             >
               💬 Send Feedback
             </button>
+            {onNavigate && (
+              <button
+                onClick={() => onNavigate("features")}
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(29,158,117,0.3)",
+                  borderRadius: 8,
+                  color: "#5ecda4",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  padding: "10px 24px",
+                  cursor: "pointer",
+                }}
+              >
+                ✨ See What VAiR Can Do
+              </button>
+            )}
           </div>
         </div>
       </div>
