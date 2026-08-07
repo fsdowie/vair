@@ -59,6 +59,7 @@ Deno.serve(async (req) => {
       last_sign_in_at: user.last_sign_in_at,
       email_confirmed_at: user.email_confirmed_at,
       is_admin: profileMap[user.id] ?? false,
+      is_ended: !!user.banned_until && new Date(user.banned_until) > new Date(),
     }));
 
     return new Response(

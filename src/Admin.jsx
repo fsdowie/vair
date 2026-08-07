@@ -61,10 +61,12 @@ export default function Admin() {
 
   // Admin role management
   const [adminChanges, setAdminChanges] = useState({}); // { [user_id]: is_admin }
-  const [pwdModal, setPwdModal] = useState(false);
+  // Shared password-confirmation modal for sensitive user actions:
+  // { type: 'roles' } | { type: 'end_date', user, endDated } | { type: 'delete', user }
+  const [confirmAction, setConfirmAction] = useState(null);
   const [pwdValue, setPwdValue] = useState('');
   const [pwdError, setPwdError] = useState('');
-  const [savingAdmin, setSavingAdmin] = useState(false);
+  const [pwdSaving, setPwdSaving] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in
@@ -301,29 +303,53 @@ export default function Admin() {
     } catch (err) { setError(err.message); }
   };
 
-  const saveAdminRoles = async () => {
+  const runConfirmedAction = async () => {
+    if (!confirmAction) return;
     setPwdError('');
-    setSavingAdmin(true);
+    setPwdSaving(true);
     try {
       const token = (await supabase.auth.getSession()).data.session?.access_token;
-      for (const [user_id, is_admin] of Object.entries(adminChanges)) {
-        const res = await fetch(`${EDGE_BASE}/set-admin-role`, {
+
+      if (confirmAction.type === 'roles') {
+        for (const [user_id, is_admin] of Object.entries(adminChanges)) {
+          const res = await fetch(`${EDGE_BASE}/set-admin-role`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ target_user_id: user_id, is_admin, password: pwdValue }),
+          });
+          const data = await res.json();
+          if (!data.success) throw new Error(data.error || 'Failed to update role');
+        }
+        setAdminChanges({});
+      } else if (confirmAction.type === 'end_date') {
+        const res = await fetch(`${EDGE_BASE}/end-date-user`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ target_user_id: user_id, is_admin, password: pwdValue }),
+          body: JSON.stringify({
+            target_user_id: confirmAction.user.id,
+            end_dated: confirmAction.endDated,
+            password: pwdValue,
+          }),
         });
         const data = await res.json();
-        if (!data.success) throw new Error(data.error || 'Failed to update role');
+        if (!data.success) throw new Error(data.error || 'Failed to update user');
+      } else if (confirmAction.type === 'delete') {
+        const res = await fetch(`${EDGE_BASE}/delete-user`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ target_user_id: confirmAction.user.id, password: pwdValue }),
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Failed to delete user');
       }
-      // Refresh user list to show updated is_admin values
-      setAdminChanges({});
-      setPwdModal(false);
+
+      setConfirmAction(null);
       setPwdValue('');
       await fetchUsers();
     } catch (err) {
       setPwdError(err?.message || String(err));
     } finally {
-      setSavingAdmin(false);
+      setPwdSaving(false);
     }
   };
 
@@ -529,7 +555,7 @@ export default function Admin() {
         {Object.keys(adminChanges).length > 0 && (
           <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
             <button
-              onClick={() => { setPwdModal(true); setPwdError(''); setPwdValue(''); }}
+              onClick={() => { setConfirmAction({ type: 'roles' }); setPwdError(''); setPwdValue(''); }}
               style={{ background: 'linear-gradient(135deg,#0e7a58,#1d9e75)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 22px', cursor: 'pointer' }}
             >
               💾 Save Changes ({Object.keys(adminChanges).length})
