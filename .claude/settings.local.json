@@ -110,7 +110,8 @@
       "Bash(npx --version)",
       "mcp__plugin_vercel_vercel__check_domain_availability_and_price",
       "mcp__plugin_vercel_vercel__get_purchase_quote",
-      "mcp__plugin_vercel_vercel__buy_domain"
+      "mcp__plugin_vercel_vercel__buy_domain",
+      "Bash(echo \"exit:$?\")"
     ]
   }
 }

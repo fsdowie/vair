@@ -628,19 +628,23 @@ export default function Admin() {
         </table>
 
         {/* Password confirmation modal */}
-        {pwdModal && (
-          <div onClick={() => setPwdModal(false)} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+        {confirmAction && (
+          <div onClick={() => setConfirmAction(null)} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
             <div onClick={e => e.stopPropagation()} style={{ background: '#0d2137', border: '1px solid rgba(29,158,117,0.35)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 420 }}>
               <h3 style={{ color: '#5ecda4', marginBottom: 8, fontSize: 18 }}>🔐 Confirm identity</h3>
               <p style={{ color: 'rgba(232,245,233,0.6)', fontSize: 13, marginBottom: 20 }}>
-                Enter your password to apply admin role changes.
+                {confirmAction.type === 'delete'
+                  ? `Enter your password to permanently delete ${confirmAction.user?.email}.`
+                  : confirmAction.type === 'end_date'
+                  ? `Enter your password to ${confirmAction.endDated ? 'end-date' : 're-activate'} ${confirmAction.user?.email}.`
+                  : 'Enter your password to apply admin role changes.'}
               </p>
               <input
                 type="password"
                 autoFocus
                 value={pwdValue}
                 onChange={e => setPwdValue(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && pwdValue && saveAdminRoles()}
+                onKeyDown={e => e.key === 'Enter' && pwdValue && runConfirmedAction()}
                 placeholder="Your password"
                 style={{ width: '100%', background: 'rgba(10,22,40,0.7)', border: `1px solid ${pwdError ? 'rgba(239,83,80,0.6)' : 'rgba(29,158,117,0.3)'}`, borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '11px 14px', outline: 'none', boxSizing: 'border-box', marginBottom: 12 }}
               />
@@ -650,13 +654,13 @@ export default function Admin() {
                 </div>
               )}
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                <button onClick={() => setPwdModal(false)} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '10px 20px', cursor: 'pointer' }}>Cancel</button>
+                <button onClick={() => setConfirmAction(null)} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '10px 20px', cursor: 'pointer' }}>Cancel</button>
                 <button
-                  onClick={saveAdminRoles}
-                  disabled={savingAdmin || !pwdValue}
-                  style={{ background: savingAdmin || !pwdValue ? 'rgba(29,158,117,0.3)' : 'linear-gradient(135deg,#0e7a58,#1d9e75)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 22px', cursor: savingAdmin || !pwdValue ? 'default' : 'pointer' }}
+                  onClick={runConfirmedAction}
+                  disabled={pwdSaving || !pwdValue}
+                  style={{ background: pwdSaving || !pwdValue ? 'rgba(29,158,117,0.3)' : 'linear-gradient(135deg,#0e7a58,#1d9e75)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 22px', cursor: pwdSaving || !pwdValue ? 'default' : 'pointer' }}
                 >
-                  {savingAdmin ? 'Saving…' : 'Confirm'}
+                  {pwdSaving ? 'Saving…' : 'Confirm'}
                 </button>
               </div>
             </div>
