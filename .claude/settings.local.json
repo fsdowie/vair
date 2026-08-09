@@ -111,7 +111,8 @@
       "mcp__plugin_vercel_vercel__check_domain_availability_and_price",
       "mcp__plugin_vercel_vercel__get_purchase_quote",
       "mcp__plugin_vercel_vercel__buy_domain",
-      "Bash(echo \"exit:$?\")"
+      "Bash(echo \"exit:$?\")",
+      "Bash(mkdir -p /c/Users/fsdow/AppData/Local/Temp/claude/C--Users-fsdow-Claude-vair/fdaf6af7-0282-462d-91e7-8c9301fd739a/scratchpad)"
     ]
   }
 }
