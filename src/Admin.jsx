@@ -572,19 +572,23 @@ export default function Admin() {
               <th style={styles.th}>Confirmed</th>
               <th style={styles.th}>User ID</th>
               <th style={{ ...styles.th, textAlign: 'center' }}>Admin</th>
+              <th style={styles.th}>Status</th>
+              <th style={styles.th}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {users.length === 0 ? (
               <tr>
-                <td colSpan="6" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>
+                <td colSpan="8" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>
                   No users found
                 </td>
               </tr>
             ) : (
               users.map((user) => {
                 const isSelf = user.id === session?.user?.id;
+                const isBootstrapAdmin = user.email === BOOTSTRAP_ADMIN_EMAIL;
                 const currentAdmin = user.id in adminChanges ? adminChanges[user.id] : user.is_admin;
+                const protectedUser = isSelf || isBootstrapAdmin;
                 return (
                   <tr key={user.id} style={styles.tr}>
                     <td style={styles.td}>{user.email}</td>
@@ -619,6 +623,31 @@ export default function Admin() {
                         }}
                         style={{ width: 16, height: 16, cursor: isSelf ? 'not-allowed' : 'pointer', accentColor: '#1d9e75', opacity: isSelf ? 0.4 : 1 }}
                       />
+                    </td>
+                    <td style={styles.td}>
+                      <span style={{ color: user.is_ended ? '#ef9a9a' : '#1d9e75', fontWeight: 'bold' }}>
+                        {user.is_ended ? 'Ended' : 'Active'}
+                      </span>
+                    </td>
+                    <td style={styles.td}>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          onClick={() => { setConfirmAction({ type: 'end_date', user, endDated: !user.is_ended }); setPwdError(''); setPwdValue(''); }}
+                          disabled={protectedUser}
+                          title={protectedUser ? "Cannot change this account's status" : undefined}
+                          style={{ background: 'rgba(255,152,0,0.15)', border: '1px solid rgba(255,152,0,0.3)', borderRadius: 6, color: '#ffb74d', fontSize: 12, padding: '6px 10px', cursor: protectedUser ? 'not-allowed' : 'pointer', opacity: protectedUser ? 0.4 : 1 }}
+                        >
+                          {user.is_ended ? 'Reactivate' : 'End Date'}
+                        </button>
+                        <button
+                          onClick={() => { setConfirmAction({ type: 'delete', user }); setPwdError(''); setPwdValue(''); }}
+                          disabled={protectedUser}
+                          title={protectedUser ? "Cannot delete this account" : undefined}
+                          style={{ background: 'rgba(183,28,28,0.15)', border: '1px solid rgba(239,83,80,0.3)', borderRadius: 6, color: '#ef9a9a', fontSize: 12, padding: '6px 10px', cursor: protectedUser ? 'not-allowed' : 'pointer', opacity: protectedUser ? 0.4 : 1 }}
+                        >
+                          🗑 Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
