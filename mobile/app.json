@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "VAIR Referee",
+    "slug": "vair-referee",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "vairreferee",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0a1628",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vaireferee.app",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "VAIR uses your microphone to let you dictate referee questions instead of typing them."
+      }
+    },
+    "android": {
+      "package": "com.vaireferee.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#0a1628",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 220,
+          "resizeMode": "contain",
+          "backgroundColor": "#0a1628"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+      }
+    }
+  }
+}

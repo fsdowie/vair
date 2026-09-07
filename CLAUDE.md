@@ -2,6 +2,18 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> **Note (2026-09):** Most of the rest of this file describes an early,
+> single-file version of the project (`referee-ai.jsx`) that no longer
+> reflects the live app. The site now runs at **vaireferee.com** as a
+> Vite + React app (`src/`) backed by Supabase (auth, Postgres, RLS, edge
+> functions in `supabase/functions/`) — see `src/RefereeLLM.jsx` for the
+> chat UI and `src/Admin.jsx` for the admin panel. There is also now a
+> **`mobile/` directory**: an Expo/React Native app (iOS + Android) exposing
+> the AI Referee and Admin capabilities as a native client of this same
+> Supabase backend — see `mobile/README.md`. Treat the sections below as
+> historical background on the original concept, not as accurate
+> documentation of the current codebase.
+
 ## Project Overview
 
 VAIR (Video Assistant Intelligence Referee) is a single-file React application that provides an AI-powered referee assistant for interpreting the IFAB Laws of the Game 2025/26. The application uses Claude (Anthropic API) to answer questions about football/soccer refereeing decisions based on the complete official rulebook.

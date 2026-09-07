@@ -1,0 +1,38 @@
+{
+  "name": "vair-referee-mobile",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-navigation/bottom-tabs": "^7.18.18",
+    "@react-navigation/native": "^7.3.18",
+    "@react-navigation/native-stack": "^7.18.10",
+    "@supabase/supabase-js": "^2.112.4",
+    "expo": "~57.0.19",
+    "expo-linking": "~57.0.9",
+    "expo-secure-store": "~57.0.3",
+    "expo-splash-screen": "~57.0.8",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-gesture-handler": "~2.32.0",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "react-native-url-polyfill": "^4.0.0"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "gen-assets": "node scripts/gen-assets.js",
+    "build:ios": "npx eas-cli build --platform ios --profile production",
+    "build:android": "npx eas-cli build --platform android --profile production",
+    "submit:ios": "npx eas-cli submit --platform ios --latest",
+    "submit:android": "npx eas-cli submit --platform android --latest"
+  },
+  "private": true,
+  "devDependencies": {
+    "sharp": "^0.35.4"
+  }
+}
