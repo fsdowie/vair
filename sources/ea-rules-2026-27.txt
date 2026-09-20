@@ -1,4 +1,4 @@
-export const EA_RULES = `EA TECHNICAL STANDARDS 2026/27 (Elite Academy League)
+EA TECHNICAL STANDARDS 2026/27 (Elite Academy League)
 
 These standards are reviewed and approved annually by the League Commissioner, Standards Board, and Technical Advisory Group, and guide the overall structure and behavior expected within the league. Everyone who is part of the EA is accountable to these league standards.
 
@@ -141,4 +141,3 @@ REFEREE PAY CHART (per game):
   AR1:              $60       $55       $50   $40
   AR2:              $60       $55       $50   $40
   Single Referee:   $110      $100      $90   $80
-`;

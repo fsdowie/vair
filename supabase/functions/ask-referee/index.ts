@@ -129,7 +129,7 @@ ${LAWS_2025_26}
 ${ECNL_RULES}
 --- END ECNL RULES ---
 
---- EA STANDARDS & RULES 2025/26 (use only when explicitly asked) ---
+--- EA STANDARDS & RULES 2026/27 (use only when explicitly asked) ---
 ${EA_RULES}
 --- END EA RULES ---
 
