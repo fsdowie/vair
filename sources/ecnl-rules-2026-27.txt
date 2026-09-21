@@ -1,4 +1,4 @@
-export const ECNL_RULES = `2026-2027 ECNL COMPETITION RULES
+2026-2027 ECNL COMPETITION RULES
 
 2026-2027 ECNL COMPETITION RULES
 These ECNL Rules and Regulations (the “Regulations”) outline the rules for ECNL Competition (as defined below).
@@ -325,4 +325,4 @@ The following leagues have a different number of Designated Maximum Number of pl
 ●​ ECNL Regional League – Virginia: 4 players per age group U13 – U18 ●​ ECNL Regional League – Twin Cities: 2 players per age group U13 – U18, selected
 from a maximum seasonal pool of 4 players per age group
 
-`;
+

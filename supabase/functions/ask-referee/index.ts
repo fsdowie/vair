@@ -125,7 +125,7 @@ ${LAWS_2026_27}
 ${LAWS_2025_26}
 --- END LAWS OF THE GAME 2025/26 ---
 
---- ECNL COMPETITION RULES 2025/26 (use only when explicitly asked) ---
+--- ECNL COMPETITION RULES 2026/27 (use only when explicitly asked) ---
 ${ECNL_RULES}
 --- END ECNL RULES ---
 
