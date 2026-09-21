@@ -835,6 +835,18 @@ export default function RefereeLLM({ onNavigate } = {}) {
               Get instant answers based on the official IFAB Laws of the Game
             </p>
             <div style={{
+              display: "inline-block",
+              margin: "0 0 28px",
+              padding: "10px 18px",
+              background: "rgba(29,158,117,0.12)",
+              border: "1px solid rgba(29,158,117,0.35)",
+              borderRadius: 10,
+              color: "#8fd9bb",
+              fontSize: 13,
+            }}>
+              ✅ Fully up to date for the 2026/27 season — IFAB Laws of the Game, EA, and ECNL rules
+            </div>
+            <div style={{
               display: "flex",
               flexDirection: "column",
               gap: 12,

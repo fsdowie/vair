@@ -62,6 +62,18 @@ export default function Sidebar({ open, onClose, activePage, onNavigate, userEma
         {/* Logo */}
         <div style={{ padding: "0 24px 24px", borderBottom: "1px solid rgba(29,158,117,0.12)", textAlign: "center" }}>
           <img src="/vair-logo.svg" alt="VAiR" style={{ width: 140, maxWidth: "100%" }} />
+          <div style={{
+            marginTop: 10,
+            fontSize: 11,
+            color: "#8fd9bb",
+            background: "rgba(29,158,117,0.12)",
+            border: "1px solid rgba(29,158,117,0.3)",
+            borderRadius: 8,
+            padding: "6px 10px",
+            lineHeight: 1.4,
+          }}>
+            ✅ Updated for 2026/27 — Laws of the Game, EA & ECNL rules
+          </div>
         </div>
 
         {/* Nav items */}
