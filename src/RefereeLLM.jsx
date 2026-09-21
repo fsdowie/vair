@@ -156,7 +156,8 @@ export default function RefereeLLM({ onNavigate } = {}) {
   const [dailyLimit, setDailyLimit] = useState(5);
   const [isAdmin, setIsAdmin] = useState(false);
   const messagesEndRef = useRef(null);
-  const [sampleQuestions] = useState(() => getRandomQuestions());
+  const [sampleQuestions, setSampleQuestions] = useState(() => getRandomQuestions());
+  const [trendingQuestions, setTrendingQuestions] = useState(false);
 
   const [reportModal, setReportModal] = useState(null); // { question, answer } | null
   const [reportExplanation, setReportExplanation] = useState('');
@@ -255,6 +256,26 @@ export default function RefereeLLM({ onNavigate } = {}) {
     })
       .then(r => r.json())
       .then(d => { if (d.reports) setNotifications(d.reports); })
+      .catch(() => {});
+  }, [session]);
+
+  // Replace the curated random sample questions with real recent questions
+  // from across the platform, once we can fetch them. Falls back to (and
+  // pads out to 3 with) the curated list if there isn't enough real history
+  // yet, since a mostly-empty list still needs example prompts.
+  useEffect(() => {
+    if (!session) return;
+    fetch(`${EDGE_BASE}/get-recent-questions`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    })
+      .then(r => r.json())
+      .then(d => {
+        const real = Array.isArray(d.questions) ? d.questions : [];
+        if (real.length === 0) return;
+        const filler = getRandomQuestions(3 - real.length);
+        setSampleQuestions([...real, ...filler]);
+        setTrendingQuestions(true);
+      })
       .catch(() => {});
   }, [session]);
 
@@ -852,6 +873,18 @@ export default function RefereeLLM({ onNavigate } = {}) {
               gap: 12,
               alignItems: "center",
             }}>
+              {trendingQuestions && (
+                <div style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: "rgba(232,245,233,0.5)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  marginBottom: -4,
+                }}>
+                  🔥 Trending Questions
+                </div>
+              )}
               {sampleQuestions.map((q, i) => (
                 <button
                   key={i}

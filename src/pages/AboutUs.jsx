@@ -421,7 +421,7 @@ export default function AboutUs({ onNavigate }) {
           <div style={{ borderTop: "1px solid rgba(29,158,117,0.15)", paddingTop: 24, display: "flex", flexDirection: "column", gap: 16 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 32 }}>
               <span style={{ fontSize: 13, color: "rgba(232,245,233,0.5)", textTransform: "uppercase", letterSpacing: "0.08em" }}>Author</span>
-              <span style={{ fontSize: 15, fontWeight: 600, color: "#e8f5e9" }}>Federico</span>
+              <span style={{ fontSize: 15, fontWeight: 600, color: "#e8f5e9" }}>AI Referee</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 32 }}>
               <span style={{ fontSize: 13, color: "rgba(232,245,233,0.5)", textTransform: "uppercase", letterSpacing: "0.08em" }}>Release</span>
