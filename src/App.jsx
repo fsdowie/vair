@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import RefereeLLM from "./RefereeLLM";
 import Sidebar from "./Sidebar";
+import MisconductReport from "./pages/MisconductReport";
 import RefereeStatistics from "./pages/RefereeStatistics";
 import GamesOrganizer from "./pages/GamesOrganizer";
 import Features from "./pages/Features";
@@ -180,6 +181,7 @@ export default function App() {
       {/* Main content */}
       <div style={{ position: "relative", zIndex: 1, height: "100vh", overflowY: "auto" }}>
         {activePage === "referee"    && <RefereeLLM onNavigate={setActivePage} />}
+        {activePage === "misconduct" && <MisconductReport />}
         {activePage === "statistics" && <RefereeStatistics />}
         {activePage === "games"      && <GamesOrganizer />}
         {activePage === "features"   && <Features onNavigate={setActivePage} />}

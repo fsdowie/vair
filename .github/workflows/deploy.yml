@@ -54,7 +54,8 @@ jobs:
           # are deployed with --no-verify-jwt so the gateway doesn't also require an apikey header.
           for fn in ask-referee list-users get-question-logs submit-report get-reports \
                     process-report extract-game set-admin-role delete-user \
-                    end-date-user check-registration get-recent-questions; do
+                    end-date-user check-registration get-recent-questions \
+                    generate-misconduct-report; do
             supabase functions deploy "$fn" --no-verify-jwt
           done
           # Functions invoked via supabase.functions.invoke(), which attaches a verified session JWT.
