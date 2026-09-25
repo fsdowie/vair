@@ -1,7 +1,6 @@
 const NAV_ITEMS = [
   { id: "referee",    emoji: "🤖", label: "AI Referee" },
   { id: "misconduct", emoji: "📋", label: "Misconduct Report" },
-  { id: "statistics", emoji: "📈", label: "Referee Statistics" },
   { id: "games",      emoji: "📅", label: "Games Organizer" },
   { id: "features",   emoji: "✨", label: "Features" },
   { id: "about",      emoji: "ℹ️",  label: "About Us" },
