@@ -2,6 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { IFAB_UPDATES } from './ifab-updates.ts';
 import { ECNL_RULES } from './ecnl-rules.ts';
 import { EA_RULES } from './ea-rules.ts';
+import { N1_RULES } from './n1-rules.ts';
 import { LAWS_2026_27 } from './laws-2026-27.ts';
 import { LAWS_2025_26 } from './laws-2025-26.ts';
 
@@ -112,7 +113,8 @@ SPECIAL INSTRUCTIONS:
 - Only reference the IFAB Laws of the Game 2025/26 (also embedded below, for reference) if the user explicitly asks about the previous season, a match played under 2025/26 rules, or what changed between the two seasons. If a rule changed between seasons, say so.
 - Only reference ECNL rules if the user explicitly asks about ECNL rules or an ECNL match.
 - Only reference EA rules if the user explicitly asks about EA rules or an EA match.
-- If an ECNL or EA rule conflicts with IFAB, state the IFAB ruling first, then note "Note: this has been modified by [ECNL/EA] rules: [modification]".
+- Only reference National 1 League (N1) rules if the user explicitly asks about National 1 / N1 rules or an N1 match. The WPL addendum at the end of the N1 rules applies only to N1 matches operated by the WPL (Washington).
+- If an ECNL, EA or N1 rule conflicts with IFAB, state the IFAB ruling first, then note "Note: this has been modified by [ECNL/EA/N1] rules: [modification]".
 
 ${IFAB_UPDATES}
 ${correctionsBlock}
@@ -132,6 +134,10 @@ ${ECNL_RULES}
 --- EA STANDARDS & RULES 2026/27 (use only when explicitly asked) ---
 ${EA_RULES}
 --- END EA RULES ---
+
+--- NATIONAL 1 LEAGUE (N1) HANDBOOK & RULES 2026/27, INCL. WPL ADDENDUM (use only when explicitly asked) ---
+${N1_RULES}
+--- END N1 RULES ---
 
 IMPORTANT: Keep responses SHORT (2-3 sentences):
 1. State the ruling with Law number
@@ -172,7 +178,7 @@ Only provide detailed explanations if user asks for more.`;
         model: 'claude-sonnet-5',
         max_tokens: 300,
         // system is now ~150K+ tokens (both seasons' full Laws text plus
-        // ECNL/EA rules), so it's cached to avoid re-billing and
+        // ECNL/EA/N1 rules), so it's cached to avoid re-billing and
         // re-processing it on every question. 1h TTL since usage is bursty
         // (a handful of questions per user per day) rather than continuous.
         system: [

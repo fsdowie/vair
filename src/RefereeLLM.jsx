@@ -865,7 +865,7 @@ export default function RefereeLLM({ onNavigate } = {}) {
               color: "#8fd9bb",
               fontSize: 13,
             }}>
-              ✅ Fully up to date for the 2026/27 season — IFAB Laws of the Game, EA, and ECNL rules
+              ✅ Fully up to date for the 2026/27 season — IFAB Laws of the Game, EA, ECNL, and National 1 rules
             </div>
             <div style={{
               display: "flex",

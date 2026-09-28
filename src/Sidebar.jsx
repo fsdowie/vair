@@ -72,7 +72,7 @@ export default function Sidebar({ open, onClose, activePage, onNavigate, userEma
             padding: "6px 10px",
             lineHeight: 1.4,
           }}>
-            ✅ Updated for 2026/27 — Laws of the Game, EA & ECNL rules
+            ✅ Updated for 2026/27 — Laws of the Game, EA, ECNL & N1 rules
           </div>
         </div>
 
