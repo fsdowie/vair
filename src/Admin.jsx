@@ -59,6 +59,15 @@ export default function Admin() {
   const [actionLoading, setActionLoading] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null); // correction id
 
+  // Beta-tester invites
+  const [invites, setInvites] = useState([]);
+  const [invitesLoading, setInvitesLoading] = useState(false);
+  const [inviteEmails, setInviteEmails] = useState('');
+  const [inviteName, setInviteName] = useState('');
+  const [inviteNote, setInviteNote] = useState('');
+  const [inviteSending, setInviteSending] = useState(false);
+  const [inviteResult, setInviteResult] = useState(null); // { sent: string[], failed: { email, error }[] }
+
   // Admin role management
   const [adminChanges, setAdminChanges] = useState({}); // { [user_id]: is_admin }
   // Shared password-confirmation modal for sensitive user actions:
@@ -164,6 +173,57 @@ export default function Admin() {
     const interval = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(interval);
   }, [activeTab]);
+
+  const fetchInvites = async () => {
+    setInvitesLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-test-invite', {
+        body: { action: 'list' },
+      });
+      if (error) throw error;
+      setInvites(data?.invites ?? []);
+    } catch (err) {
+      setError(`Could not load invites: ${err?.message ?? String(err)}`);
+    } finally {
+      setInvitesLoading(false);
+    }
+  };
+
+  const parsedInviteEmails = inviteEmails.split(/[\s,;]+/).map(e => e.trim()).filter(Boolean);
+
+  const handleSendInvites = async () => {
+    if (parsedInviteEmails.length === 0) return;
+    setInviteSending(true);
+    setInviteResult(null);
+    try {
+      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      // Raw fetch so the error body is readable on non-2xx (supabase.functions.invoke drops it)
+      const rawRes = await fetch(`${EDGE_BASE}/send-test-invite`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'apikey': 'sb_publishable_SU4BJ5e9RLDl-3iSZHo-3g_mbHpD9cn',
+        },
+        body: JSON.stringify({ action: 'send', emails: parsedInviteEmails, name: inviteName, note: inviteNote }),
+      });
+      const res = await rawRes.json().catch(() => ({}));
+      if (!rawRes.ok || res?.error) throw new Error(res?.error ?? `HTTP ${rawRes.status}`);
+
+      const results = res.results ?? [];
+      const sent = results.filter(r => r.ok).map(r => r.email);
+      const failed = results.filter(r => !r.ok);
+      setInviteResult({ sent, failed });
+      // Keep only the addresses that failed so they can be retried
+      setInviteEmails(failed.map(f => f.email).join('\n'));
+      if (failed.length === 0) { setInviteName(''); setInviteNote(''); }
+      await fetchInvites();
+    } catch (err) {
+      setInviteResult({ sent: [], failed: [{ email: '', error: err?.message ?? String(err) }] });
+    } finally {
+      setInviteSending(false);
+    }
+  };
 
   const fetchReports = async () => {
     setReportsLoading(true);
@@ -539,6 +599,18 @@ export default function Admin() {
             }}
           >
             🔋 Token Usage
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab('invites');
+              if (invites.length === 0) fetchInvites();
+            }}
+            style={{
+              ...styles.tabButton,
+              ...(activeTab === 'invites' ? styles.activeTab : {})
+            }}
+          >
+            ✉️ Invite Testers
           </button>
         </div>
 
@@ -1110,6 +1182,125 @@ export default function Admin() {
                   </tbody>
                 </table>
               </>
+            )}
+          </>
+        )}
+
+        {/* Invite Testers Tab */}
+        {activeTab === 'invites' && (
+          <>
+            <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 6 }}>
+              ✉️ Invite beta testers
+            </h3>
+            <div style={{ fontSize: 13, color: 'rgba(232,245,233,0.5)', marginBottom: 20, lineHeight: 1.5 }}>
+              Sends a personal "you've been hand-picked" invitation that walks through everything VAiR can do
+              and asks for feedback. Replies come straight back to your email. Each recipient gets their own
+              email — they never see each other's addresses.
+            </div>
+
+            <div style={{ ...styles.form, marginBottom: 28 }}>
+              <label style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13, color: 'rgba(232,245,233,0.7)' }}>
+                Email addresses (one per line, or separated by commas)
+                <textarea
+                  value={inviteEmails}
+                  onChange={e => setInviteEmails(e.target.value)}
+                  rows={4}
+                  placeholder={'jane.ref@example.com\nmark@example.com'}
+                  style={{ ...styles.input, fontSize: 14, fontFamily: 'inherit', resize: 'vertical' }}
+                />
+              </label>
+              <label style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13, color: 'rgba(232,245,233,0.7)' }}>
+                First name (optional — only used when inviting one person)
+                <input
+                  value={inviteName}
+                  onChange={e => setInviteName(e.target.value)}
+                  disabled={parsedInviteEmails.length > 1}
+                  placeholder={parsedInviteEmails.length > 1 ? 'Multiple recipients — greeting will be "Hi there"' : 'e.g. Jane'}
+                  style={{ ...styles.input, fontSize: 14, opacity: parsedInviteEmails.length > 1 ? 0.5 : 1 }}
+                />
+              </label>
+              <label style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13, color: 'rgba(232,245,233,0.7)' }}>
+                Personal note (optional — shown highlighted near the top of the email)
+                <textarea
+                  value={inviteNote}
+                  onChange={e => setInviteNote(e.target.value)}
+                  rows={3}
+                  maxLength={1000}
+                  placeholder="e.g. Great working your game last Saturday — would love your take on this."
+                  style={{ ...styles.input, fontSize: 14, fontFamily: 'inherit', resize: 'vertical' }}
+                />
+              </label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <button
+                  onClick={handleSendInvites}
+                  disabled={inviteSending || parsedInviteEmails.length === 0}
+                  style={{
+                    ...styles.button,
+                    padding: '10px 24px',
+                    fontSize: 14,
+                    opacity: inviteSending || parsedInviteEmails.length === 0 ? 0.5 : 1,
+                    cursor: inviteSending || parsedInviteEmails.length === 0 ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {inviteSending
+                    ? 'Sending…'
+                    : `Send ${parsedInviteEmails.length || ''} invite${parsedInviteEmails.length === 1 ? '' : 's'}`}
+                </button>
+                <span style={{ fontSize: 12, color: 'rgba(232,245,233,0.4)' }}>Up to 50 at a time</span>
+              </div>
+
+              {inviteResult && (
+                <div>
+                  {inviteResult.sent.length > 0 && (
+                    <div style={{ ...styles.note, background: 'rgba(29,158,117,0.1)', borderColor: 'rgba(29,158,117,0.3)', color: '#5ecda4', marginBottom: 8 }}>
+                      ✅ Sent to {inviteResult.sent.join(', ')}
+                    </div>
+                  )}
+                  {inviteResult.failed.map((f, i) => (
+                    <div key={i} style={{ ...styles.error, marginBottom: 8 }}>
+                      ❌ {f.email ? `${f.email}: ` : ''}{f.error}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 12 }}>
+              Sent invites
+            </h3>
+            {invitesLoading ? (
+              <div style={{ textAlign: 'center', padding: 24, color: 'rgba(232,245,233,0.6)' }}>Loading invites…</div>
+            ) : (
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.th}>Email</th>
+                    <th style={styles.th}>Name</th>
+                    <th style={styles.th}>Status</th>
+                    <th style={styles.th}>Sent</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {invites.length === 0 ? (
+                    <tr>
+                      <td colSpan="4" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>
+                        No invites sent yet
+                      </td>
+                    </tr>
+                  ) : (
+                    invites.map(inv => (
+                      <tr key={inv.id} style={styles.tr}>
+                        <td style={styles.td}>{inv.email}</td>
+                        <td style={styles.td}>{inv.recipient_name || '—'}</td>
+                        <td style={{ ...styles.td, color: inv.status === 'sent' ? '#5ecda4' : '#ef5350' }} title={inv.error || ''}>
+                          {inv.status === 'sent' ? '✅ Sent' : '❌ Failed'}
+                        </td>
+                        <td style={styles.td}>{new Date(inv.created_at).toLocaleString()}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             )}
           </>
         )}

@@ -5,6 +5,12 @@ const FEATURES = [
     text: "Describe any match situation in plain language and get a clear, decisive answer — no more flipping through a 200-page rulebook mid-argument.",
   },
   {
+    emoji: "📋",
+    title: "Misconduct Reports in Seconds",
+    badge: "NEW",
+    text: "Just the essentials — tap where it happened on the pitch, pick the offence and minute, and add a one-line description. VAiR writes a complete, professionally worded misconduct report, ready to copy into your assignor's site.",
+  },
+  {
     emoji: "📖",
     title: "Grounded in the Official Laws",
     text: "Every answer is generated directly from the complete IFAB Laws of the Game 2026/27 — not general web knowledge — with the exact Law and section cited.",
@@ -91,7 +97,7 @@ export default function Features({ onNavigate }) {
               key={f.title}
               style={{
                 background: "rgba(13,33,55,0.6)",
-                border: "1px solid rgba(29,158,117,0.2)",
+                border: f.badge ? "1px solid rgba(94,205,164,0.6)" : "1px solid rgba(29,158,117,0.2)",
                 borderRadius: 16,
                 padding: "22px 24px",
                 display: "flex",
@@ -99,7 +105,22 @@ export default function Features({ onNavigate }) {
                 gap: 10,
               }}
             >
-              <div style={{ fontSize: 28, lineHeight: 1 }}>{f.emoji}</div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ fontSize: 28, lineHeight: 1 }}>{f.emoji}</div>
+                {f.badge && (
+                  <span style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: 1,
+                    color: "#0a1628",
+                    background: "#5ecda4",
+                    borderRadius: 999,
+                    padding: "3px 10px",
+                  }}>
+                    {f.badge}
+                  </span>
+                )}
+              </div>
               <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0, color: "#5ecda4" }}>{f.title}</h3>
               <p style={{ fontSize: 13.5, color: "rgba(232,245,233,0.7)", lineHeight: 1.55, margin: 0 }}>
                 {f.text}

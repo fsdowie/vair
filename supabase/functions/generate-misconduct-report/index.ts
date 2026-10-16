@@ -44,10 +44,11 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
     const {
-      offenderType, offenderName, team, jerseyNumber,
+      matchId, offenderType, offenderName, team, jerseyNumber,
       offense, reason, fieldSpot, fieldZone, minute, description,
     } = body ?? {};
 
+    if (typeof matchId !== 'string' || !matchId.trim()) return badRequest('matchId is required');
     if (!OFFENDER_TYPES.includes(offenderType)) return badRequest('Invalid offenderType');
     if (typeof offenderName !== 'string' || !offenderName.trim()) return badRequest('offenderName is required');
     if (!TEAMS.includes(team)) return badRequest('Invalid team');
@@ -120,6 +121,7 @@ ${description.trim()}`;
       .from('misconduct_reports')
       .insert({
         user_id: user.id,
+        match_id: matchId.trim(),
         offender_type: offenderType,
         offender_name: offenderName.trim(),
         team,

@@ -78,6 +78,7 @@ const LABEL = {
 };
 
 const BLANK = {
+  matchId: '',
   offenderType: 'player',
   offenderName: '',
   team: 'home',
@@ -85,7 +86,6 @@ const BLANK = {
   offense: 'caution',
   reason: '',
   minute: '',
-  stoppage: '',
   description: '',
 };
 
@@ -96,7 +96,7 @@ export default function MisconductReport() {
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState(null); // generated report text
   const [genError, setGenError] = useState(null);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState(null); // key of the last copied value
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
@@ -154,11 +154,10 @@ export default function MisconductReport() {
     });
   };
 
-  const minuteLabel = form.minute
-    ? `${form.minute}${form.stoppage ? `+${form.stoppage}` : ''}`
-    : '';
+  const minuteLabel = form.minute.trim();
 
-  const canGenerate = form.offenderName.trim()
+  const canGenerate = form.matchId.trim()
+    && form.offenderName.trim()
     && form.reason
     && minuteLabel
     && form.description.trim()
@@ -169,7 +168,7 @@ export default function MisconductReport() {
     setGenerating(true);
     setGenError(null);
     setResult(null);
-    setCopied(false);
+    setCopied(null);
     try {
       const res = await fetch(`${EDGE_BASE}/generate-misconduct-report`, {
         method: 'POST',
@@ -178,6 +177,7 @@ export default function MisconductReport() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          matchId: form.matchId,
           offenderType: form.offenderType,
           offenderName: form.offenderName,
           team: form.team,
@@ -192,7 +192,7 @@ export default function MisconductReport() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
-      setResult(data.report);
+      setResult({ report: data.report, matchId: form.matchId.trim(), fieldSpot: fieldSpot?.label ?? null });
       await fetchHistory();
     } catch (err) {
       setGenError(err.message || 'Failed to generate report');
@@ -206,14 +206,14 @@ export default function MisconductReport() {
     setFieldSpot(null);
     setResult(null);
     setGenError(null);
-    setCopied(false);
+    setCopied(null);
   };
 
-  const copyToClipboard = async (text) => {
+  const copyToClipboard = async (text, key) => {
     try {
       await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setCopied(key);
+      setTimeout(() => setCopied((c) => (c === key ? null : c)), 2000);
     } catch {
       // clipboard API unavailable — nothing more we can do here
     }
@@ -226,6 +226,23 @@ export default function MisconductReport() {
     fontSize: 13, fontWeight: active ? 600 : 400, padding: '9px 16px', cursor: 'pointer',
     flex: 1,
   });
+
+  // Read-only value with a copy button, for pasting into the assignor's site.
+  const copyField = (label, value, key) => (
+    <div>
+      <span style={LABEL}>{label}</span>
+      <div style={{ display: 'flex', gap: 8, maxWidth: 360 }}>
+        <input style={INPUT} value={value || ''} readOnly placeholder="—" onFocus={(e) => e.target.select()} />
+        <button
+          onClick={() => value && copyToClipboard(value, key)}
+          disabled={!value}
+          style={{ ...btn(false), flex: 'none', whiteSpace: 'nowrap', cursor: value ? 'pointer' : 'default' }}
+        >
+          {copied === key ? '✅ Copied' : '📋 Copy'}
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'transparent', color: '#e8f5e9', fontFamily: 'system-ui,-apple-system,sans-serif' }}>
@@ -242,6 +259,12 @@ export default function MisconductReport() {
       <div style={{ flex: 1, padding: '24px 16px', maxWidth: 720, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
         {!result ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {/* Match ID */}
+            <div>
+              <span style={LABEL}>Match ID</span>
+              <input style={{ ...INPUT, maxWidth: 260 }} value={form.matchId} onChange={set('matchId')} placeholder="e.g. 123456" />
+            </div>
+
             {/* Offender type */}
             <div>
               <span style={LABEL}>Offender</span>
@@ -307,16 +330,15 @@ export default function MisconductReport() {
                   }} />
                 )}
               </div>
+              <div style={{ marginTop: 10 }}>
+                {copyField('Field Coordinates', fieldSpot?.label, 'form-spot')}
+              </div>
             </div>
 
             {/* Minute */}
             <div>
-              <span style={LABEL}>Minute {minuteLabel && `— ${minuteLabel}'`}</span>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center', maxWidth: 260 }}>
-                <input style={{ ...INPUT, width: 90 }} type="number" min={1} max={90} value={form.minute} onChange={set('minute')} placeholder="e.g. 82" />
-                <span style={{ fontSize: 13, color: 'rgba(232,245,233,0.5)' }}>+</span>
-                <input style={{ ...INPUT, width: 70 }} type="number" min={1} max={15} value={form.stoppage} onChange={set('stoppage')} placeholder="stoppage" />
-              </div>
+              <span style={LABEL}>Minute</span>
+              <input style={{ ...INPUT, width: 90 }} type="number" min={1} max={130} value={form.minute} onChange={set('minute')} placeholder="e.g. 82" />
             </div>
 
             {/* Description */}
@@ -350,12 +372,16 @@ export default function MisconductReport() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
+              {copyField('Match ID', result.matchId, 'result-match')}
+              {copyField('Field Coordinates', result.fieldSpot, 'result-spot')}
+            </div>
             <div style={{ background: 'rgba(13,33,55,0.6)', border: '1px solid rgba(29,158,117,0.25)', borderRadius: 12, padding: 20, fontSize: 14, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
-              {result}
+              {result.report}
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => copyToClipboard(result)} style={{ ...btn(true), flex: 'none' }}>
-                {copied ? '✅ Copied' : '📋 Copy to Clipboard'}
+              <button onClick={() => copyToClipboard(result.report, 'result-report')} style={{ ...btn(true), flex: 'none' }}>
+                {copied === 'result-report' ? '✅ Copied' : '📋 Copy Report'}
               </button>
               <button onClick={startNew} style={{ ...btn(false), flex: 'none' }}>+ New Report</button>
             </div>
@@ -381,6 +407,7 @@ export default function MisconductReport() {
                   >
                     <div style={{ fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {r.offense === 'send_off' ? '🟥' : '🟨'}{' '}
+                      {r.match_id ? `Match ${r.match_id} · ` : ''}
                       {r.offender_type === 'player' ? `#${r.jersey_number} ` : ''}{r.offender_name} ({r.team}) — {r.minute}'
                     </div>
                     <span style={{ fontSize: 11, color: 'rgba(232,245,233,0.4)', whiteSpace: 'nowrap' }}>
@@ -390,8 +417,14 @@ export default function MisconductReport() {
                   {expandedId === r.id && (
                     <div style={{ marginTop: 10, fontSize: 13, lineHeight: 1.6, whiteSpace: 'pre-wrap', color: 'rgba(232,245,233,0.85)' }}>
                       {r.generated_report}
-                      <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
-                        <button onClick={() => copyToClipboard(r.generated_report)} style={{ ...btn(false), flex: 'none', fontSize: 12, padding: '6px 12px' }}>📋 Copy</button>
+                      <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+                        <button onClick={() => copyToClipboard(r.generated_report, `${r.id}-report`)} style={{ ...btn(false), flex: 'none', fontSize: 12, padding: '6px 12px' }}>{copied === `${r.id}-report` ? '✅ Copied' : '📋 Copy Report'}</button>
+                        {r.match_id && (
+                          <button onClick={() => copyToClipboard(r.match_id, `${r.id}-match`)} style={{ ...btn(false), flex: 'none', fontSize: 12, padding: '6px 12px' }}>{copied === `${r.id}-match` ? '✅ Copied' : `📋 Match ID: ${r.match_id}`}</button>
+                        )}
+                        {r.field_spot && (
+                          <button onClick={() => copyToClipboard(r.field_spot, `${r.id}-spot`)} style={{ ...btn(false), flex: 'none', fontSize: 12, padding: '6px 12px' }}>{copied === `${r.id}-spot` ? '✅ Copied' : `📋 Field: ${r.field_spot}`}</button>
+                        )}
                         <button onClick={() => deleteReport(r.id)} style={{ ...btn(false), flex: 'none', fontSize: 12, padding: '6px 12px', color: '#ef9a9a' }}>🗑 Delete</button>
                       </div>
                     </div>
