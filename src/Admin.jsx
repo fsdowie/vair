@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 
 const BOOTSTRAP_ADMIN_EMAIL = 'fsdowie@yahoo.com';
@@ -43,15 +43,6 @@ export default function Admin() {
   const [corrections, setCorrections] = useState([]);
   const [reportsLoading, setReportsLoading] = useState(false);
 
-  const [profileRequests, setProfileRequests] = useState([]);
-  const [profileRequestsLoading, setProfileRequestsLoading] = useState(false);
-  const [profileRequestAction, setProfileRequestAction] = useState(null); // { type: 'approve'|'reject', req }
-  const [profileRequestNotes, setProfileRequestNotes] = useState('');
-  const [profileRequestActionLoading, setProfileRequestActionLoading] = useState(false);
-  const [generatingProfile, setGeneratingProfile] = useState(null); // referee_name being generated
-  const [genProgress, setGenProgress] = useState(0);
-  const genIntervalRef = useRef(null);
-  const [successNotice, setSuccessNotice] = useState(null); // { profileName, statusUpdateError }
   const [actionModal, setActionModal] = useState(null); // { type: 'accept'|'reject', report }
   const [correctionText, setCorrectionText] = useState('');
   const [correctionNotes, setCorrectionNotes] = useState('');
@@ -67,6 +58,14 @@ export default function Admin() {
   const [inviteNote, setInviteNote] = useState('');
   const [inviteSending, setInviteSending] = useState(false);
   const [inviteResult, setInviteResult] = useState(null); // { sent: string[], failed: { email, error }[] }
+
+  // "What's new" reminders to existing users
+  const [reminders, setReminders] = useState([]);
+  const [remindersLoading, setRemindersLoading] = useState(false);
+  const [reminderSelected, setReminderSelected] = useState({}); // { [user_id]: true }
+  const [reminderNote, setReminderNote] = useState('');
+  const [reminderSending, setReminderSending] = useState(false);
+  const [reminderResult, setReminderResult] = useState(null); // { sent: string[], failed: { email, error }[] }
 
   // Admin role management
   const [adminChanges, setAdminChanges] = useState({}); // { [user_id]: is_admin }
@@ -98,22 +97,6 @@ export default function Admin() {
       }
     });
   }, []);
-
-  useEffect(() => {
-    if (generatingProfile) {
-      setGenProgress(3);
-      genIntervalRef.current = setInterval(() => {
-        setGenProgress(p => {
-          if (p >= 88) return p;
-          return Math.min(p + (88 - p) * 0.06 + 0.5, 88);
-        });
-      }, 220);
-    } else {
-      clearInterval(genIntervalRef.current);
-      setGenProgress(0);
-    }
-    return () => clearInterval(genIntervalRef.current);
-  }, [generatingProfile]);
 
   const fetchUsers = async () => {
     try {
@@ -174,18 +157,49 @@ export default function Admin() {
     return () => clearInterval(interval);
   }, [activeTab]);
 
+  // Raw fetch so the error body is readable on non-2xx (supabase.functions.invoke drops it)
+  const callOutreach = async (body) => {
+    const token = (await supabase.auth.getSession()).data.session?.access_token;
+    const rawRes = await fetch(`${EDGE_BASE}/send-outreach-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'apikey': 'sb_publishable_SU4BJ5e9RLDl-3iSZHo-3g_mbHpD9cn',
+      },
+      body: JSON.stringify(body),
+    });
+    const res = await rawRes.json().catch(() => ({}));
+    if (!rawRes.ok || res?.error) throw new Error(res?.error ?? `HTTP ${rawRes.status}`);
+    return res;
+  };
+
+  const splitResults = (results = []) => ({
+    sent: results.filter(r => r.ok).map(r => r.email),
+    failed: results.filter(r => !r.ok),
+  });
+
   const fetchInvites = async () => {
     setInvitesLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('send-test-invite', {
-        body: { action: 'list' },
-      });
-      if (error) throw error;
-      setInvites(data?.invites ?? []);
+      const res = await callOutreach({ action: 'list', kind: 'invite' });
+      setInvites(res.emails ?? []);
     } catch (err) {
       setError(`Could not load invites: ${err?.message ?? String(err)}`);
     } finally {
       setInvitesLoading(false);
+    }
+  };
+
+  const fetchReminders = async () => {
+    setRemindersLoading(true);
+    try {
+      const res = await callOutreach({ action: 'list', kind: 'reminder' });
+      setReminders(res.emails ?? []);
+    } catch (err) {
+      setError(`Could not load reminders: ${err?.message ?? String(err)}`);
+    } finally {
+      setRemindersLoading(false);
     }
   };
 
@@ -196,32 +210,54 @@ export default function Admin() {
     setInviteSending(true);
     setInviteResult(null);
     try {
-      const token = (await supabase.auth.getSession()).data.session?.access_token;
-      // Raw fetch so the error body is readable on non-2xx (supabase.functions.invoke drops it)
-      const rawRes = await fetch(`${EDGE_BASE}/send-test-invite`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          'apikey': 'sb_publishable_SU4BJ5e9RLDl-3iSZHo-3g_mbHpD9cn',
-        },
-        body: JSON.stringify({ action: 'send', emails: parsedInviteEmails, name: inviteName, note: inviteNote }),
-      });
-      const res = await rawRes.json().catch(() => ({}));
-      if (!rawRes.ok || res?.error) throw new Error(res?.error ?? `HTTP ${rawRes.status}`);
-
-      const results = res.results ?? [];
-      const sent = results.filter(r => r.ok).map(r => r.email);
-      const failed = results.filter(r => !r.ok);
-      setInviteResult({ sent, failed });
+      const res = await callOutreach({ action: 'invite', emails: parsedInviteEmails, name: inviteName, note: inviteNote });
+      const result = splitResults(res.results);
+      setInviteResult(result);
       // Keep only the addresses that failed so they can be retried
-      setInviteEmails(failed.map(f => f.email).join('\n'));
-      if (failed.length === 0) { setInviteName(''); setInviteNote(''); }
+      setInviteEmails(result.failed.map(f => f.email).join('\n'));
+      if (result.failed.length === 0) { setInviteName(''); setInviteNote(''); }
       await fetchInvites();
     } catch (err) {
       setInviteResult({ sent: [], failed: [{ email: '', error: err?.message ?? String(err) }] });
     } finally {
       setInviteSending(false);
+    }
+  };
+
+  // Users who can receive a reminder (end-dated accounts are excluded)
+  const remindableUsers = users.filter(u => !u.is_ended);
+  const lastRemindedAt = {};
+  reminders.forEach(r => {
+    if (r.status === 'sent' && !lastRemindedAt[r.email]) lastRemindedAt[r.email] = r.created_at;
+  });
+
+  const toggleReminderUser = (id) => setReminderSelected(prev => {
+    const next = { ...prev };
+    if (next[id]) delete next[id]; else next[id] = true;
+    return next;
+  });
+
+  const selectReminderUsers = (predicate) => {
+    const next = {};
+    remindableUsers.filter(predicate).forEach(u => { next[u.id] = true; });
+    setReminderSelected(next);
+  };
+
+  const handleSendReminders = async () => {
+    const ids = Object.keys(reminderSelected);
+    if (ids.length === 0) return;
+    setReminderSending(true);
+    setReminderResult(null);
+    try {
+      const res = await callOutreach({ action: 'remind', user_ids: ids, note: reminderNote });
+      const result = splitResults(res.results);
+      setReminderResult(result);
+      if (result.failed.length === 0) { setReminderSelected({}); setReminderNote(''); }
+      await fetchReminders();
+    } catch (err) {
+      setReminderResult({ sent: [], failed: [{ email: '', error: err?.message ?? String(err) }] });
+    } finally {
+      setReminderSending(false);
     }
   };
 
@@ -236,91 +272,6 @@ export default function Admin() {
       setError(err.message);
     } finally {
       setReportsLoading(false);
-    }
-  };
-
-  const fetchProfileRequests = async () => {
-    setProfileRequestsLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('referee_profile_requests')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      setProfileRequests(data || []);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setProfileRequestsLoading(false);
-    }
-  };
-
-  const handleProfileRequestAction = async (type) => {
-    if (!profileRequestAction) return;
-    setProfileRequestActionLoading(true);
-    const req = profileRequestAction.req;
-
-    try {
-      if (type === 'reject') {
-        const { error } = await supabase
-          .from('referee_profile_requests')
-          .update({
-            status: 'rejected',
-            admin_notes: profileRequestNotes.trim() || null,
-            reviewed_by: session.user.id,
-            reviewed_at: new Date().toISOString(),
-          })
-          .eq('id', req.id);
-        if (error) throw error;
-        setProfileRequestAction(null);
-        setProfileRequestNotes('');
-        await fetchProfileRequests();
-        return;
-      }
-
-      // Approve: close modal first, then generate profile via Edge Function
-      setProfileRequestAction(null);
-      setProfileRequestNotes('');
-      setGeneratingProfile(req.referee_name);
-
-      const token = (await supabase.auth.getSession()).data.session?.access_token;
-
-      // Use raw fetch so we can read the error body on non-2xx (supabase.functions.invoke drops it)
-      const rawRes = await fetch(`${EDGE_BASE}/generate-referee-profile`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          'apikey': 'sb_publishable_SU4BJ5e9RLDl-3iSZHo-3g_mbHpD9cn',
-        },
-        body: JSON.stringify({ referee_name: req.referee_name, request_id: req.id }),
-      });
-      const rawText = await rawRes.text();
-      let res;
-      try { res = JSON.parse(rawText); } catch { res = { error: rawText.slice(0, 300) }; }
-
-      if (!rawRes.ok || res?.error) {
-        throw new Error(res?.error ?? `HTTP ${rawRes.status}`);
-      }
-
-      // Show success notice (includes warning if status update had an issue)
-      setSuccessNotice({
-        profileName: res?.profile?.name ?? req.referee_name,
-        statusUpdateError: res?.statusUpdateError ?? null,
-      });
-
-      // Immediately reflect approval in local state so the status is visible without waiting for refetch
-      setProfileRequests(prev => prev.map(r =>
-        r.id === req.id
-          ? { ...r, status: 'approved', reviewed_at: new Date().toISOString(), reviewed_by: session.user.id }
-          : r
-      ));
-      await fetchProfileRequests();
-    } catch (err) {
-      setError(`Profile generation failed: ${err?.message ?? String(err)}`);
-    } finally {
-      setProfileRequestActionLoading(false);
-      setGeneratingProfile(null);
     }
   };
 
@@ -493,21 +444,6 @@ export default function Admin() {
         </div>
       )}
 
-      {/* Fixed-position toast: success after profile generation */}
-      {successNotice && (
-        <div style={{ position: 'fixed', top: error ? 88 : 24, right: 24, zIndex: 9999, maxWidth: 420, width: 'calc(100% - 48px)', boxShadow: '0 8px 32px rgba(0,0,0,0.55)' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '14px 16px', background: 'rgba(4,16,12,0.97)', border: '1px solid rgba(29,158,117,0.5)', borderRadius: successNotice.statusUpdateError ? '12px 12px 0 0' : 12, fontSize: 13, color: '#5ecda4' }}>
-            <span style={{ flexShrink: 0 }}>✅</span>
-            <span style={{ flex: 1 }}>Profile for <strong style={{ color: '#e8f5e9' }}>{successNotice.profileName}</strong> created and added to Referee Statistics.</span>
-            <button onClick={() => setSuccessNotice(null)} style={{ background: 'none', border: 'none', color: '#5ecda4', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: 0, flexShrink: 0 }}>✕</button>
-          </div>
-          {successNotice.statusUpdateError && (
-            <div style={{ display: 'flex', gap: 10, padding: '10px 16px', background: 'rgba(16,10,2,0.97)', border: '1px solid rgba(255,152,0,0.4)', borderTop: 'none', borderRadius: '0 0 12px 12px', fontSize: 12, color: '#ffb74d' }}>
-              ⚠️ Profile created but request status update failed: {successNotice.statusUpdateError}
-            </div>
-          )}
-        </div>
-      )}
 
       <div style={styles.card}>
         <div style={styles.header}>
@@ -516,30 +452,6 @@ export default function Admin() {
             Sign Out
           </button>
         </div>
-
-        {/* Profile generation overlay */}
-        {generatingProfile && (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: 'rgba(0,0,0,0.82)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-            <div style={{ background: '#0d2137', border: '1px solid rgba(29,158,117,0.4)', borderRadius: 20, padding: '40px 44px', width: '100%', maxWidth: 500, textAlign: 'center', boxShadow: '0 24px 80px rgba(0,0,0,0.6)' }}>
-              <div style={{ fontSize: 42, marginBottom: 18, display: 'inline-block', animation: 'spin 2s linear infinite' }}>⚙️</div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: '#e8f5e9', marginBottom: 8 }}>Generating Profile</div>
-              <div style={{ fontSize: 16, color: '#5ecda4', fontWeight: 600, marginBottom: 28 }}>{generatingProfile}</div>
-
-              {/* Progress bar track */}
-              <div style={{ background: 'rgba(29,158,117,0.15)', borderRadius: 10, height: 10, overflow: 'hidden', marginBottom: 10 }}>
-                <div style={{ position: 'relative', height: '100%', width: `${genProgress}%`, background: 'linear-gradient(90deg, #0e7a58, #1d9e75, #5ecda4)', borderRadius: 10, transition: 'width 0.35s ease', overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.22) 50%, transparent 100%)', animation: 'shimmer 1.6s infinite' }} />
-                </div>
-              </div>
-              <div style={{ fontSize: 12, color: 'rgba(29,158,117,0.7)', marginBottom: 20, textAlign: 'right' }}>{Math.round(genProgress)}%</div>
-
-              <div style={{ fontSize: 13, color: 'rgba(232,245,233,0.45)', lineHeight: 1.6 }}>
-                AI is researching and building the referee's full stats profile.<br />
-                This may take up to 30 seconds — please wait.
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Tab Menu */}
         <div style={styles.tabMenu}>
@@ -578,18 +490,6 @@ export default function Admin() {
           </button>
           <button
             onClick={() => {
-              setActiveTab('profile_requests');
-              if (profileRequests.length === 0) fetchProfileRequests();
-            }}
-            style={{
-              ...styles.tabButton,
-              ...(activeTab === 'profile_requests' ? styles.activeTab : {})
-            }}
-          >
-            📋 Profile Requests
-          </button>
-          <button
-            onClick={() => {
               setActiveTab('token_usage');
               if (userTotals.length === 0) fetchUsageStats();
             }}
@@ -611,6 +511,18 @@ export default function Admin() {
             }}
           >
             ✉️ Invite Testers
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab('reminders');
+              if (reminders.length === 0) fetchReminders();
+            }}
+            style={{
+              ...styles.tabButton,
+              ...(activeTab === 'reminders' ? styles.activeTab : {})
+            }}
+          >
+            🔔 Reminders
           </button>
         </div>
 
@@ -949,120 +861,6 @@ export default function Admin() {
           </>
         )}
 
-        {/* Profile Requests Tab */}
-        {activeTab === 'profile_requests' && (
-          <>
-            {profileRequestsLoading ? (
-              <div style={{ textAlign: 'center', padding: 40, color: 'rgba(232,245,233,0.6)' }}>Loading requests…</div>
-            ) : (
-              <>
-                <h3 style={{ color: '#ef9a9a', fontSize: 16, marginBottom: 16 }}>
-                  ⏳ Pending ({profileRequests.filter(r => r.status === 'pending').length})
-                </h3>
-                {profileRequests.filter(r => r.status === 'pending').length === 0 ? (
-                  <div style={{ color: 'rgba(232,245,233,0.4)', fontSize: 13, marginBottom: 32 }}>No pending profile requests.</div>
-                ) : (
-                  profileRequests.filter(r => r.status === 'pending').map(req => (
-                    <div key={req.id} style={{ background: 'rgba(10,22,40,0.6)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: 12, padding: 20, marginBottom: 16 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-                        <span style={{ fontSize: 16, fontWeight: 700, color: '#e8f5e9' }}>{req.referee_name}</span>
-                        <span style={{ fontSize: 11, color: 'rgba(232,245,233,0.4)' }}>{new Date(req.created_at).toLocaleString()}</span>
-                      </div>
-                      <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.45)', marginBottom: 6 }}>Requested by: {req.requester_email}</div>
-                      <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', textTransform: 'uppercase', marginBottom: 4 }}>Reason</div>
-                      <div style={{ fontSize: 13, color: '#e8f5e9', background: 'rgba(29,158,117,0.05)', borderRadius: 8, padding: '8px 12px', marginBottom: req.additional_fields ? 12 : 16 }}>{req.reason}</div>
-                      {req.additional_fields && (
-                        <>
-                          <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', textTransform: 'uppercase', marginBottom: 4 }}>Additional Notes</div>
-                          <div style={{ fontSize: 13, color: 'rgba(232,245,233,0.75)', background: 'rgba(13,33,55,0.5)', borderRadius: 8, padding: '8px 12px', marginBottom: 16 }}>{req.additional_fields}</div>
-                        </>
-                      )}
-                      <div style={{ display: 'flex', gap: 10 }}>
-                        <button onClick={() => { setProfileRequestAction({ type: 'approve', req }); setProfileRequestNotes(''); }} style={{ background: 'linear-gradient(135deg,#0e7a58,#1d9e75)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 18px', cursor: 'pointer' }}>✅ Approve</button>
-                        <button onClick={() => { setProfileRequestAction({ type: 'reject', req }); setProfileRequestNotes(''); }} style={{ background: 'linear-gradient(135deg,#b71c1c,#e53935)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 18px', cursor: 'pointer' }}>❌ Reject</button>
-                      </div>
-                    </div>
-                  ))
-                )}
-
-                <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 16, marginTop: 8 }}>
-                  📋 Reviewed ({profileRequests.filter(r => r.status !== 'pending').length})
-                </h3>
-                {profileRequests.filter(r => r.status !== 'pending').length === 0 ? (
-                  <div style={{ color: 'rgba(232,245,233,0.4)', fontSize: 13 }}>No reviewed requests yet.</div>
-                ) : (
-                  profileRequests.filter(r => r.status !== 'pending').map(req => {
-                    const approved = req.status === 'approved';
-                    return (
-                      <div key={req.id} style={{ background: 'rgba(10,22,40,0.5)', border: `1px solid ${approved ? 'rgba(29,158,117,0.2)' : 'rgba(239,83,80,0.2)'}`, borderRadius: 12, padding: 18, marginBottom: 12, opacity: 0.85 }}>
-                        {/* Status banner */}
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: approved ? 'rgba(29,158,117,0.14)' : 'rgba(183,28,28,0.14)', border: `1px solid ${approved ? 'rgba(29,158,117,0.3)' : 'rgba(239,83,80,0.3)'}`, borderRadius: 20, padding: '4px 14px', marginBottom: 14 }}>
-                          <span style={{ fontSize: 14 }}>{approved ? '✅' : '❌'}</span>
-                          <span style={{ fontSize: 13, fontWeight: 700, color: approved ? '#5ecda4' : '#ef9a9a' }}>
-                            {approved ? 'Profile Approved & Generated' : 'Request Rejected'}
-                          </span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 8 }}>
-                          <div>
-                            <div style={{ fontSize: 15, fontWeight: 700, color: 'rgba(232,245,233,0.75)', marginBottom: 3 }}>{req.referee_name}</div>
-                            <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.35)' }}>Requested by {req.requester_email}</div>
-                          </div>
-                          <div style={{ fontSize: 11, color: 'rgba(232,245,233,0.3)', textAlign: 'right' }}>
-                            {req.reviewed_at ? new Date(req.reviewed_at).toLocaleString() : '—'}
-                          </div>
-                        </div>
-                        {req.admin_notes && (
-                          <div style={{ marginTop: 12, fontSize: 12, color: 'rgba(232,245,233,0.5)', background: 'rgba(13,33,55,0.5)', borderRadius: 8, padding: '8px 12px' }}>
-                            <span style={{ color: 'rgba(232,245,233,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 6 }}>Note:</span>
-                            {req.admin_notes}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })
-                )}
-              </>
-            )}
-
-            {/* Approve / Reject modal */}
-            {profileRequestAction && (
-              <div onClick={() => setProfileRequestAction(null)} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-                <div onClick={e => e.stopPropagation()} style={{ background: '#0d2137', border: `1px solid ${profileRequestAction.type === 'approve' ? 'rgba(29,158,117,0.3)' : 'rgba(239,83,80,0.3)'}`, borderRadius: 16, padding: 28, width: '100%', maxWidth: 480 }}>
-                  <h3 style={{ color: profileRequestAction.type === 'approve' ? '#5ecda4' : '#ef9a9a', marginBottom: 8, fontSize: 18 }}>
-                    {profileRequestAction.type === 'approve' ? '✅ Approve & Generate Profile' : '❌ Reject Profile Request'}
-                  </h3>
-                  <p style={{ color: 'rgba(232,245,233,0.6)', fontSize: 13, marginBottom: 4 }}>
-                    Referee: <strong style={{ color: '#e8f5e9' }}>{profileRequestAction.req.referee_name}</strong>
-                  </p>
-                  {profileRequestAction.type === 'approve' && (
-                    <p style={{ color: 'rgba(94,205,164,0.6)', fontSize: 12, marginBottom: 16 }}>
-                      AI will automatically generate the full profile (bio, leagues, estimated statistics) upon approval.
-                    </p>
-                  )}
-                  <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.5)', marginBottom: 6, textTransform: 'uppercase' }}>Admin Notes (optional)</div>
-                  <textarea
-                    value={profileRequestNotes}
-                    onChange={e => setProfileRequestNotes(e.target.value)}
-                    placeholder={profileRequestAction.type === 'approve' ? 'e.g. Profile will be created within 48h…' : 'Reason for rejection…'}
-                    rows={3}
-                    style={{ width: '100%', background: 'rgba(10,22,40,0.7)', border: '1px solid rgba(29,158,117,0.3)', borderRadius: 8, color: '#e8f5e9', fontSize: 13, padding: '10px 12px', resize: 'vertical', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: 20 }}
-                  />
-                  <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                    <button onClick={() => setProfileRequestAction(null)} style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, color: '#e8f5e9', fontSize: 14, padding: '10px 20px', cursor: 'pointer' }}>Cancel</button>
-                    <button
-                      onClick={() => handleProfileRequestAction(profileRequestAction.type)}
-                      disabled={profileRequestActionLoading}
-                      style={{ background: profileRequestAction.type === 'approve' ? 'linear-gradient(135deg,#0e7a58,#1d9e75)' : 'linear-gradient(135deg,#b71c1c,#e53935)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 600, padding: '10px 22px', cursor: profileRequestActionLoading ? 'default' : 'pointer', opacity: profileRequestActionLoading ? 0.6 : 1 }}
-                    >
-                      {profileRequestActionLoading ? 'Processing…' : profileRequestAction.type === 'approve' ? 'Approve & Generate Profile' : 'Confirm Rejection'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
         {/* Token Usage Tab */}
         {activeTab === 'token_usage' && (
           <>
@@ -1304,6 +1102,125 @@ export default function Admin() {
             )}
           </>
         )}
+
+        {/* Reminders Tab */}
+        {activeTab === 'reminders' && (() => {
+          const selectedCount = Object.keys(reminderSelected).length;
+          const fourteenDaysAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
+          const pillBtn = { background: 'rgba(29,158,117,0.1)', border: '1px solid rgba(29,158,117,0.3)', borderRadius: 999, color: '#5ecda4', fontSize: 12, padding: '5px 12px', cursor: 'pointer' };
+          return (
+            <>
+              <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 6 }}>
+                🔔 Remind users to come back
+              </h3>
+              <div style={{ fontSize: 13, color: 'rgba(232,245,233,0.5)', marginBottom: 20, lineHeight: 1.5 }}>
+                Sends a "What's new in VAiR" email: the Misconduct Report Builder, the 2026/27 Laws update and
+                National 1 League rules, with a button to log in and a request for feedback. Replies come straight
+                back to your email. End-dated accounts are left out.
+              </div>
+
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+                <button style={pillBtn} onClick={() => selectReminderUsers(() => true)}>Select all ({remindableUsers.length})</button>
+                <button style={pillBtn} onClick={() => selectReminderUsers(u => !u.last_sign_in_at || new Date(u.last_sign_in_at).getTime() < fourteenDaysAgo)}>
+                  Not logged in for 14+ days
+                </button>
+                <button style={pillBtn} onClick={() => selectReminderUsers(u => !lastRemindedAt[u.email?.toLowerCase()])}>
+                  Never reminded
+                </button>
+                <button style={pillBtn} onClick={() => setReminderSelected({})}>Clear</button>
+              </div>
+
+              <div style={{ maxHeight: 340, overflowY: 'auto', border: '1px solid rgba(29,158,117,0.2)', borderRadius: 10, marginBottom: 16 }}>
+                <table style={{ ...styles.table, marginBottom: 0 }}>
+                  <thead>
+                    <tr>
+                      <th style={{ ...styles.th, width: 36 }}></th>
+                      <th style={styles.th}>Email</th>
+                      <th style={styles.th}>Last Sign In</th>
+                      <th style={styles.th}>Last Reminded</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {remindableUsers.length === 0 ? (
+                      <tr>
+                        <td colSpan="4" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>
+                          No active users
+                        </td>
+                      </tr>
+                    ) : (
+                      remindableUsers.map(u => {
+                        const reminded = lastRemindedAt[u.email?.toLowerCase()];
+                        return (
+                          <tr key={u.id} style={{ ...styles.tr, cursor: 'pointer' }} onClick={() => toggleReminderUser(u.id)}>
+                            <td style={styles.td}>
+                              <input type="checkbox" checked={!!reminderSelected[u.id]} readOnly style={{ accentColor: '#1d9e75', cursor: 'pointer' }} />
+                            </td>
+                            <td style={styles.td}>{u.email}</td>
+                            <td style={styles.td}>{u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString() : 'Never'}</td>
+                            <td style={{ ...styles.td, color: reminded ? '#e8f5e9' : 'rgba(232,245,233,0.4)' }}>
+                              {reminded ? new Date(reminded).toLocaleDateString() : '—'}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <div style={{ ...styles.form, marginBottom: 28 }}>
+                <label style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13, color: 'rgba(232,245,233,0.7)' }}>
+                  Personal note (optional — shown highlighted near the top of the email)
+                  <textarea
+                    value={reminderNote}
+                    onChange={e => setReminderNote(e.target.value)}
+                    rows={3}
+                    maxLength={1000}
+                    placeholder="e.g. We'd love you to try the new report builder after your game this weekend."
+                    style={{ ...styles.input, fontSize: 14, fontFamily: 'inherit', resize: 'vertical' }}
+                  />
+                </label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <button
+                    onClick={handleSendReminders}
+                    disabled={reminderSending || selectedCount === 0}
+                    style={{
+                      ...styles.button,
+                      padding: '10px 24px',
+                      fontSize: 14,
+                      opacity: reminderSending || selectedCount === 0 ? 0.5 : 1,
+                      cursor: reminderSending || selectedCount === 0 ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {reminderSending
+                      ? 'Sending…'
+                      : `Send reminder${selectedCount === 1 ? '' : 's'}${selectedCount ? ` to ${selectedCount}` : ''}`}
+                  </button>
+                  <span style={{ fontSize: 12, color: 'rgba(232,245,233,0.4)' }}>Up to 50 at a time</span>
+                </div>
+
+                {reminderResult && (
+                  <div>
+                    {reminderResult.sent.length > 0 && (
+                      <div style={{ ...styles.note, background: 'rgba(29,158,117,0.1)', borderColor: 'rgba(29,158,117,0.3)', color: '#5ecda4', marginBottom: 8 }}>
+                        ✅ Sent to {reminderResult.sent.join(', ')}
+                      </div>
+                    )}
+                    {reminderResult.failed.map((f, i) => (
+                      <div key={i} style={{ ...styles.error, marginBottom: 8 }}>
+                        ❌ {f.email ? `${f.email}: ` : ''}{f.error}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {remindersLoading && (
+                <div style={{ textAlign: 'center', padding: 12, color: 'rgba(232,245,233,0.6)', fontSize: 13 }}>Loading reminder history…</div>
+              )}
+            </>
+          );
+        })()}
       </div>
     </div>
   );
@@ -1433,6 +1350,7 @@ const styles = {
   },
   tabMenu: {
     display: 'flex',
+    flexWrap: 'wrap',
     gap: 12,
     marginBottom: 30,
     borderBottom: '2px solid rgba(29,158,117,0.2)',

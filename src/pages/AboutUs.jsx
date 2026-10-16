@@ -128,7 +128,6 @@ function FeedbackModal({ onClose }) {
     if (!form.name.trim()) e.name = "Name is required";
     if (!form.email.trim()) e.email = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Invalid email";
-    if (!form.phone.trim()) e.phone = "Phone number is required";
     if (!form.type) e.type = "Please select a type";
     if (form.type) {
       (CLARIFYING[form.type] || []).forEach(q => {
@@ -158,12 +157,21 @@ function FeedbackModal({ onClose }) {
       .map(q => `${q.label}\n${form.clarifying[q.id] || "N/A"}`)
       .join("\n\n");
 
+    // Vite inlines this at build time — if it's missing from the build
+    // environment, Web3Forms rejects the submission with a cryptic error.
+    if (!import.meta.env.VITE_WEB3FORMS_KEY) {
+      console.error("VITE_WEB3FORMS_KEY is not set in this build");
+      setApiError("The feedback form isn't configured right now.");
+      setStatus("error");
+      return;
+    }
+
     const body = {
       access_key: import.meta.env.VITE_WEB3FORMS_KEY,
       subject: `[VAIR Feedback] ${typeLabel} from ${form.name}`,
       from_name: form.name,
       email: form.email,
-      phone: form.phone,
+      phone: form.phone.trim() || "Not provided",
       type: typeLabel,
       details: clarifyingText,
     };
@@ -231,7 +239,7 @@ function FeedbackModal({ onClose }) {
         </Field>
 
         {/* Phone */}
-        <Field label="Phone number" required>
+        <Field label="Phone number (optional)">
           <input style={INPUT_STYLE} type="tel" value={form.phone} onChange={e => set("phone", e.target.value)} placeholder="+1 555 000 0000" />
           {errors.phone && <span style={errorStyle}>{errors.phone}</span>}
         </Field>
