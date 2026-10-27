@@ -1,25 +1,28 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+  APP_URL, EMAIL_RE, RESEND_API_KEY, accountSetupLink, corsHeaders, escapeHtml, isEnded, json,
+  listAllUsers, renderActionEmail, sendEmail,
+} from "../_shared/email.ts";
 
 // Admin-only outreach emails, sent through Resend (RESEND_API_KEY) and
 // logged to the outreach_emails table:
 //   POST { action: "invite", emails: string[], name?: string, note?: string }
-//     — invite hand-picked beta testers to try VAiR
+//     — invite hand-picked beta testers to try VAiR (new addresses get an
+//       account and a personal "create your password" link)
 //   POST { action: "remind", user_ids: string[], note?: string }
 //     — nudge existing users to log back in and see what's new
 //   POST { action: "list", kind: "invite" | "reminder" }
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
+// Access requests from the public "Request access" form (request-access):
+//   POST { action: "list_requests" }
+//   POST { action: "activate_request", request_ids: string[] }
+//     — create the account and email a link to set a password
+//   POST { action: "remind_request", request_ids: string[] }
+//     — re-send a fresh link to activated users who haven't signed in yet
+//   POST { action: "reject_request", request_ids: string[] }
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-const FROM_EMAIL = Deno.env.get("OUTREACH_FROM_EMAIL") ?? "VAiR <team@vaireferee.com>";
-const APP_URL = Deno.env.get("APP_URL") ?? "https://vaireferee.com";
 const BOOTSTRAP_ADMIN_EMAIL = "fsdowie@yahoo.com";
 const MAX_RECIPIENTS = 50;
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type Feature = { emoji: string; title: string; text: string; isNew?: boolean };
 
@@ -72,12 +75,6 @@ const WHATS_NEW: Feature[] = [
   },
 ];
 
-function escapeHtml(s: string) {
-  return s.replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!)
-  );
-}
-
 type EmailContent = {
   subject: string;
   greeting: string;
@@ -88,6 +85,7 @@ type EmailContent = {
   sectionTitle: string;
   features: Feature[];
   ctaLabel: string;
+  ctaUrl: string;
   ctaSub: string;
   closingTitle: string;
   closing: string; // trusted HTML
@@ -140,7 +138,7 @@ ${noteBlock}
         </td></tr>
 
         <tr><td align="center" style="padding:8px 32px 28px 32px;">
-          <a href="${APP_URL}" style="display:inline-block;background:linear-gradient(135deg,#0e7a58,#1d9e75);color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;padding:14px 34px;border-radius:10px;">
+          <a href="${c.ctaUrl}" style="display:inline-block;background:linear-gradient(135deg,#0e7a58,#1d9e75);color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;padding:14px 34px;border-radius:10px;">
             ${c.ctaLabel}
           </a>
           <div style="font-size:12px;color:#7f9a88;margin-top:10px;">${c.ctaSub}</div>
@@ -171,7 +169,7 @@ ${noteBlock}
     c.sectionTitle.toUpperCase(),
     ...c.features.map((f) => `- ${f.isNew ? "[NEW] " : ""}${f.title}: ${f.text}`),
     "",
-    `${c.ctaLabel.replace(" →", "")}: ${APP_URL}`,
+    `${c.ctaLabel.replace(" →", "")}: ${c.ctaUrl}`,
     "",
     c.closingTitle.replace(/^\S+\s/, "").toUpperCase(),
     c.closingText,
@@ -183,7 +181,9 @@ ${noteBlock}
   return { subject: c.subject, html, text };
 }
 
-function inviteEmail(name: string | null, note: string | null) {
+// setupLink: a personal "create your password" link for a new account, or
+// null when the address already has an account (they just sign in).
+function inviteEmail(name: string | null, note: string | null, setupLink: string | null) {
   return renderEmail({
     subject: "You've been hand-picked to test VAiR — the AI assistant referee",
     greeting: name ? `Hi ${escapeHtml(name)},` : "Hi there,",
@@ -197,7 +197,10 @@ function inviteEmail(name: string | null, note: string | null) {
     sectionTitle: "What you can do with VAiR",
     features: ALL_FEATURES,
     ctaLabel: "Claim your early access →",
-    ctaSub: `Sign up free at ${APP_URL.replace(/^https?:\/\//, "")} with this email address.`,
+    ctaUrl: setupLink ?? APP_URL,
+    ctaSub: setupLink
+      ? "Your account is ready — the button takes you straight to creating your password."
+      : `Sign in at ${APP_URL.replace(/^https?:\/\//, "")} with your existing account.`,
     closingTitle: "🗣️ Your feedback shapes what comes next",
     closing: `Throw your hardest scenarios at it, build a misconduct report from your last game, and tell us
               what's brilliant and what's off. Just <strong style="color:#ffffff;">reply to this email</strong> —
@@ -220,6 +223,7 @@ function reminderEmail(note: string | null) {
     sectionTitle: "What's new",
     features: WHATS_NEW,
     ctaLabel: "Log in to VAiR →",
+    ctaUrl: APP_URL,
     ctaSub: `Sign in at ${APP_URL.replace(/^https?:\/\//, "")} with your existing account.`,
     closingTitle: "🗣️ Tell us what you think",
     closing: `Try building a report from your last game or throw a tricky scenario at the AI Referee, then
@@ -229,35 +233,113 @@ function reminderEmail(note: string | null) {
   });
 }
 
-function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+// Sent when an admin activates an access request (and, as a reminder, to
+// activated users who haven't signed in yet).
+function accountEmail(firstName: string, link: string, reminder: boolean) {
+  const greeting = `Hi ${escapeHtml(firstName)},`;
+  return reminder
+    ? renderActionEmail({
+      subject: "Your VAiR account is waiting for you",
+      greeting,
+      headline: "You haven't connected to VAiR yet — your account is ready whenever you are.",
+      body: `Just a quick reminder: your access request was approved, but you haven't signed in yet.
+             Click below to create your password and start asking the AI Referee your toughest calls.
+             We've sent you a fresh link — it works once and expires soon.`,
+      bodyText: "Just a quick reminder: your access request was approved, but you haven't signed in yet. Use the link below to create your password. We've sent you a fresh link — it works once and expires soon.",
+      ctaLabel: "Create your password →",
+      ctaUrl: link,
+      footnote: "Questions? Just reply to this email.<br>— The VAiR team",
+    })
+    : renderActionEmail({
+      subject: "Your VAiR access is approved",
+      greeting,
+      headline: "Welcome to VAiR — your account is ready.",
+      body: `Thanks for requesting access. Click below to create your password, then you're in:
+             instant, citable rulings on the Laws of the Game, misconduct reports in a few taps, and more.
+             The link works once and expires soon — if it's expired, use <strong style="color:#ffffff;">Forgot password?</strong>
+             on the login page to get a new one.`,
+      bodyText: "Thanks for requesting access. Use the link below to create your password, then you're in. The link works once and expires soon — if it's expired, use \"Forgot password?\" on the login page to get a new one.",
+      ctaLabel: "Create your password →",
+      ctaUrl: link,
+      footnote: "Questions? Just reply to this email.<br>— The VAiR team",
+    });
 }
 
-async function sendOne(to: string, email: { subject: string; html: string; text: string }, replyTo: string) {
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from: FROM_EMAIL,
-        to: [to],
-        reply_to: replyTo,
-        subject: email.subject,
-        html: email.html,
-        text: email.text,
-      }),
-    });
-    if (!res.ok) {
-      const errText = await res.text();
-      return { email: to, ok: false, error: `Resend ${res.status}: ${errText.slice(0, 300)}` };
+type AccessRequest = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  status: string;
+  user_id: string | null;
+  activated_at: string | null;
+  email_count: number;
+};
+
+async function handleRequests(
+  admin: SupabaseClient,
+  caller: { id: string; email?: string },
+  action: string,
+  rawIds: unknown,
+) {
+  const ids: string[] = Array.from(new Set(Array.isArray(rawIds) ? rawIds.map(String) : []));
+  if (ids.length === 0) throw new Error("No requests selected");
+  if (ids.length > MAX_RECIPIENTS) throw new Error(`Select at most ${MAX_RECIPIENTS} requests at a time`);
+
+  const { data: rows, error } = await admin.from("access_requests").select("*").in("id", ids);
+  if (error) throw new Error(error.message);
+  const requests = (rows ?? []) as AccessRequest[];
+
+  if (action === "reject_request") {
+    const pendingIds = requests.filter((r) => r.status === "pending").map((r) => r.id);
+    if (pendingIds.length) {
+      const { error: updErr } = await admin.from("access_requests").update({ status: "rejected" }).in("id", pendingIds);
+      if (updErr) throw new Error(updErr.message);
     }
-    return { email: to, ok: true, error: null };
-  } catch (err) {
-    return { email: to, ok: false, error: String(err) };
+    return requests.map((r) => ({
+      email: r.email,
+      ok: r.status === "pending",
+      error: r.status === "pending" ? null : `Already ${r.status}`,
+    }));
   }
+
+  const reminder = action === "remind_request";
+  const usersByEmail = new Map((await listAllUsers(admin)).map((u) => [u.email?.toLowerCase(), u]));
+
+  return await Promise.all(requests.map(async (r) => {
+    try {
+      if (reminder && r.status !== "activated") throw new Error("Not activated yet");
+      if (!reminder && r.status === "activated") throw new Error("Already activated — use Remind to re-send");
+      const existing = usersByEmail.get(r.email) ?? null;
+      if (existing && isEnded(existing)) throw new Error("Account is end-dated");
+      if (reminder && existing?.last_sign_in_at) throw new Error("Already signed in");
+
+      const { user, link } = await accountSetupLink(
+        admin, r.email, { first_name: r.first_name, last_name: r.last_name }, existing,
+      );
+      const result = await sendEmail(r.email, accountEmail(r.first_name, link, reminder), caller.email);
+
+      const now = new Date().toISOString();
+      await admin.from("access_requests").update({
+        status: "activated",
+        user_id: user.id,
+        ...(r.activated_at ? {} : { activated_at: now, activated_by: caller.id }),
+        ...(result.ok ? { last_emailed_at: now, email_count: (r.email_count ?? 0) + 1 } : {}),
+      }).eq("id", r.id);
+
+      await admin.from("outreach_emails").insert({
+        kind: reminder ? "access_reminder" : "access_invite",
+        email: r.email,
+        recipient_name: `${r.first_name} ${r.last_name}`,
+        sent_by: caller.id,
+        status: result.ok ? "sent" : "failed",
+        error: result.error,
+      });
+      return result;
+    } catch (err) {
+      return { email: r.email, ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  }));
 }
 
 Deno.serve(async (req) => {
@@ -298,43 +380,80 @@ Deno.serve(async (req) => {
       return json({ emails: data ?? [] });
     }
 
+    if (body.action === "list_requests") {
+      const { data, error } = await supabaseAdmin
+        .from("access_requests")
+        .select("id, first_name, last_name, email, status, user_id, created_at, activated_at, last_emailed_at, email_count")
+        .neq("status", "rejected")
+        .order("created_at", { ascending: false })
+        .limit(500);
+      if (error) throw new Error(error.message);
+      // "Connected" = the account has signed in at least once.
+      const users = new Map((await listAllUsers(supabaseAdmin)).map((u) => [u.id, u]));
+      return json({
+        requests: (data ?? []).map((r) => ({
+          ...r,
+          last_sign_in_at: (r.user_id && users.get(r.user_id)?.last_sign_in_at) || null,
+        })),
+      });
+    }
+
+    if (["activate_request", "remind_request", "reject_request"].includes(body.action)) {
+      if (body.action !== "reject_request" && !RESEND_API_KEY) {
+        throw new Error("Email is not configured — set the RESEND_API_KEY secret");
+      }
+      return json({ results: await handleRequests(supabaseAdmin, caller, body.action, body.request_ids) });
+    }
+
     if (body.action !== "invite" && body.action !== "remind") throw new Error("Unknown action");
     if (!RESEND_API_KEY) throw new Error("Email is not configured — set the RESEND_API_KEY secret");
 
     const note = typeof body.note === "string" && body.note.trim() ? body.note.trim().slice(0, 1000) : null;
-    let recipients: string[];
     let name: string | null = null;
-    let email: { subject: string; html: string; text: string };
+    let results: { email: string; ok: boolean; error: string | null }[];
 
     if (body.action === "invite") {
-      recipients = Array.from(new Set(
+      const recipients: string[] = Array.from(new Set(
         (Array.isArray(body.emails) ? body.emails : [])
           .map((e: unknown) => String(e).trim().toLowerCase())
           .filter(Boolean),
       ));
       const invalid = recipients.filter((e) => !EMAIL_RE.test(e));
       if (invalid.length) throw new Error(`Invalid email(s): ${invalid.join(", ")}`);
+      if (recipients.length === 0) throw new Error("No valid recipients");
+      if (recipients.length > MAX_RECIPIENTS) throw new Error(`Send to at most ${MAX_RECIPIENTS} people at a time`);
       // A name only makes sense for a single recipient.
       name = recipients.length === 1 && typeof body.name === "string" && body.name.trim()
         ? body.name.trim().slice(0, 100)
         : null;
-      email = inviteEmail(name, note);
+
+      // Self-service signup is gone, so new testers get an account and a
+      // personal link to create their password; existing users just sign in.
+      const usersByEmail = new Map((await listAllUsers(supabaseAdmin)).map((u) => [u.email?.toLowerCase(), u]));
+      results = await Promise.all(recipients.map(async (to) => {
+        try {
+          const setupLink = usersByEmail.has(to)
+            ? null
+            : (await accountSetupLink(supabaseAdmin, to, name ? { first_name: name } : {}, null)).link;
+          return await sendEmail(to, inviteEmail(name, note, setupLink), caller.email);
+        } catch (err) {
+          return { email: to, ok: false, error: err instanceof Error ? err.message : String(err) };
+        }
+      }));
     } else {
       const ids: string[] = Array.from(new Set(Array.isArray(body.user_ids) ? body.user_ids.map(String) : []));
       // Resolve addresses server-side; skip end-dated (banned) accounts.
       const lookups = await Promise.all(ids.map((id) => supabaseAdmin.auth.admin.getUserById(id)));
-      recipients = lookups
+      const recipients = lookups
         .map((r) => r.data?.user)
-        .filter((u) => u?.email && !(u.banned_until && new Date(u.banned_until) > new Date()))
+        .filter((u) => u?.email && !isEnded(u))
         .map((u) => u!.email!.toLowerCase());
-      email = reminderEmail(note);
+      if (recipients.length === 0) throw new Error("No valid recipients");
+      if (recipients.length > MAX_RECIPIENTS) throw new Error(`Send to at most ${MAX_RECIPIENTS} people at a time`);
+      const email = reminderEmail(note);
+      // One email per recipient so nobody sees anyone else's address.
+      results = await Promise.all(recipients.map((to) => sendEmail(to, email, caller.email)));
     }
-
-    if (recipients.length === 0) throw new Error("No valid recipients");
-    if (recipients.length > MAX_RECIPIENTS) throw new Error(`Send to at most ${MAX_RECIPIENTS} people at a time`);
-
-    // One email per recipient so nobody sees anyone else's address.
-    const results = await Promise.all(recipients.map((to) => sendOne(to, email, caller.email!)));
 
     await supabaseAdmin.from("outreach_emails").insert(results.map((r) => ({
       kind: body.action === "invite" ? "invite" : "reminder",

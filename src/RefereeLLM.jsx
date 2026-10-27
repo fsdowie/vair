@@ -133,13 +133,19 @@ export default function RefereeLLM({ onNavigate } = {}) {
 
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [authView, setAuthView] = useState('login'); // 'login' or 'signup'
+  const [authView, setAuthView] = useState('login'); // 'login' | 'signup' (request access) | 'forgot'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [honeypot, setHoneypot] = useState(''); // hidden field — only bots fill it
+  const [accessRequested, setAccessRequested] = useState(null); // null | 'requested' | 'pending'
   const [authError, setAuthError] = useState(null);
-  const [checkingRegistration, setCheckingRegistration] = useState(false);
-  const [existingAccountEmail, setExistingAccountEmail] = useState(null); // set when signup email already has an account
+  const [existingAccountEmail, setExistingAccountEmail] = useState(null); // set when a requested email already has an account
   const [resetEmailSent, setResetEmailSent] = useState(false);
+  // Arrived from an "access approved" email — same set-password flow as a
+  // reset, but worded as creating a password for a new account.
+  const [isWelcome] = useState(() => new URLSearchParams(window.location.search).has('welcome'));
 
   // Password-recovery flow (user clicked the "reset password" email link)
   const [pendingRecovery, setPendingRecovery] = useState(false);
@@ -329,6 +335,31 @@ export default function RefereeLLM({ onNavigate } = {}) {
     setReportStatus('idle');
   };
 
+  // Public (no-session) edge functions behind the request-access and
+  // forgot-password forms.
+  const callPublicFunction = async (name, body) => {
+    const res = await fetch(`${EDGE_BASE}/${name}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'apikey': SUPABASE_ANON_KEY,
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data?.error) throw new Error(data?.error || `Request failed (${res.status})`);
+    return data;
+  };
+
+  const switchAuthView = (view) => {
+    setAuthView(view);
+    setAuthError(null);
+    setExistingAccountEmail(null);
+    setResetEmailSent(false);
+    setAccessRequested(null);
+  };
+
   const handleAuth = async (e) => {
     e.preventDefault();
     setAuthError(null);
@@ -338,42 +369,25 @@ export default function RefereeLLM({ onNavigate } = {}) {
 
     try {
       if (authView === 'signup') {
-        // Supabase's signUp() intentionally stays silent about whether an
-        // email is already registered (anti-enumeration default), so we
-        // can't tell exists-vs-new from its response. Check explicitly first.
-        setCheckingRegistration(true);
-        let checkData;
-        try {
-          const checkRes = await fetch(`${EDGE_BASE}/check-registration`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-              'apikey': SUPABASE_ANON_KEY,
-            },
-            body: JSON.stringify({ email }),
-          });
-          checkData = await checkRes.json();
-          if (!checkRes.ok) throw new Error(checkData?.error || 'Could not verify email');
-        } finally {
-          setCheckingRegistration(false);
-        }
-
-        if (checkData.ended) {
+        // Self-service signup is replaced by an access request that an admin
+        // activates from the Admin panel (request-access edge function).
+        const data = await callPublicFunction('request-access', {
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          website: honeypot,
+        });
+        if (data.status === 'ended') {
           throw new Error('This account has been deactivated. Please contact the admin.');
         }
-        if (checkData.exists) {
-          setExistingAccountEmail(email);
+        if (data.status === 'exists') {
+          setExistingAccountEmail(email.trim());
           return;
         }
-
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin },
-        });
-        if (error) throw error;
-        alert('Check your email for the confirmation link!');
+        setAccessRequested(data.status);
+      } else if (authView === 'forgot') {
+        await callPublicFunction('request-password-reset', { email });
+        setResetEmailSent(true);
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -390,10 +404,7 @@ export default function RefereeLLM({ onNavigate } = {}) {
     setLoading(true);
     setAuthError(null);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(existingAccountEmail, {
-        redirectTo: window.location.origin,
-      });
-      if (error) throw error;
+      await callPublicFunction('request-password-reset', { email: existingAccountEmail });
       setResetEmailSent(true);
     } catch (error) {
       setAuthError(error.message);
@@ -420,6 +431,7 @@ export default function RefereeLLM({ onNavigate } = {}) {
       setPendingRecovery(false);
       setRecoveryPassword('');
       setRecoveryPassword2('');
+      if (isWelcome) window.history.replaceState(null, '', window.location.pathname);
     } catch (error) {
       setRecoveryError(error.message);
     } finally {
@@ -523,9 +535,11 @@ export default function RefereeLLM({ onNavigate } = {}) {
           <div style={{ textAlign: "center", marginBottom: 28 }}>
             <img src="/vair-logo.svg" alt="VAiR logo" style={{ width: 220, maxWidth: "100%" }} />
           </div>
-          <h2 style={{ textAlign: "center", fontSize: 18, color: "#5ecda4", marginBottom: 8 }}>Set a new password</h2>
+          <h2 style={{ textAlign: "center", fontSize: 18, color: "#5ecda4", marginBottom: 8 }}>
+            {isWelcome ? "Welcome to VAiR" : "Set a new password"}
+          </h2>
           <p style={{ textAlign: "center", fontSize: 13, color: "rgba(232,245,233,0.5)", marginBottom: 24 }}>
-            Choose a new password for your account.
+            {isWelcome ? "Your access is approved — create a password to finish setting up your account." : "Choose a new password for your account."}
           </p>
           <form onSubmit={handleSetNewPassword} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <input
@@ -586,7 +600,7 @@ export default function RefereeLLM({ onNavigate } = {}) {
                 cursor: recoverySaving ? "default" : "pointer",
               }}
             >
-              {recoverySaving ? "Saving…" : "Set new password"}
+              {recoverySaving ? "Saving…" : (isWelcome ? "Create password" : "Set new password")}
             </button>
           </form>
         </div>
@@ -596,6 +610,24 @@ export default function RefereeLLM({ onNavigate } = {}) {
 
   // Show auth form if not logged in
   if (!session) {
+    const authInputStyle = {
+      padding: 12,
+      borderRadius: 8,
+      border: "1px solid rgba(29,158,117,0.3)",
+      background: "rgba(10,30,15,0.5)",
+      color: "#e8f5e9",
+      fontSize: 16,
+      outline: "none",
+    };
+    const authLinkStyle = {
+      background: "transparent",
+      border: "none",
+      color: "#5ecda4",
+      fontSize: 13,
+      cursor: "pointer",
+      textDecoration: "underline",
+    };
+
     return (
       <div style={{
         display: "flex",
@@ -625,23 +657,23 @@ export default function RefereeLLM({ onNavigate } = {}) {
             borderBottom: "1px solid rgba(29,158,117,0.2)",
           }}>
             <button
-              onClick={() => setAuthView('login')}
+              onClick={() => switchAuthView('login')}
               style={{
                 flex: 1,
                 padding: "12px 0",
                 background: "transparent",
                 border: "none",
-                borderBottom: authView === 'login' ? "2px solid #1d9e75" : "none",
-                color: authView === 'login' ? "#1d9e75" : "rgba(232,245,233,0.6)",
+                borderBottom: authView !== 'signup' ? "2px solid #1d9e75" : "none",
+                color: authView !== 'signup' ? "#1d9e75" : "rgba(232,245,233,0.6)",
                 fontSize: 16,
                 cursor: "pointer",
-                fontWeight: authView === 'login' ? "bold" : "normal",
+                fontWeight: authView !== 'signup' ? "bold" : "normal",
               }}
             >
               Login
             </button>
             <button
-              onClick={() => setAuthView('signup')}
+              onClick={() => switchAuthView('signup')}
               style={{
                 flex: 1,
                 padding: "12px 0",
@@ -658,39 +690,95 @@ export default function RefereeLLM({ onNavigate } = {}) {
             </button>
           </div>
 
+          {authView === 'signup' && accessRequested ? (
+            <div style={{
+              padding: 20,
+              borderRadius: 8,
+              background: "rgba(29,158,117,0.1)",
+              border: "1px solid rgba(29,158,117,0.3)",
+              color: "#5ecda4",
+              fontSize: 14,
+              lineHeight: 1.6,
+              textAlign: "center",
+            }}>
+              {accessRequested === 'pending'
+                ? <>✅ We already have your request for <strong>{email.trim()}</strong>. You'll get an email with your invite as soon as it's approved.</>
+                : <>✅ Thanks, {firstName.trim()}! Your request has been sent. You'll get an email at <strong>{email.trim()}</strong> with a link to create your password as soon as it's approved.</>}
+            </div>
+          ) : authView === 'forgot' && resetEmailSent ? (
+            <div style={{
+              padding: 20,
+              borderRadius: 8,
+              background: "rgba(29,158,117,0.1)",
+              border: "1px solid rgba(29,158,117,0.3)",
+              color: "#5ecda4",
+              fontSize: 14,
+              lineHeight: 1.6,
+              textAlign: "center",
+            }}>
+              ✅ If there's a VAiR account for <strong>{email.trim()}</strong>, we've sent it a link to reset the password. Check your inbox (and spam folder).
+            </div>
+          ) : (
           <form onSubmit={handleAuth} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {authView === 'signup' && (
+              <>
+                <div style={{ fontSize: 13, color: "rgba(232,245,233,0.6)", lineHeight: 1.5 }}>
+                  VAiR is invite-only for now. Tell us who you are and we'll email you an invite.
+                </div>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <input
+                    placeholder="First name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                    autoComplete="given-name"
+                    style={{ ...authInputStyle, flex: 1, minWidth: 0 }}
+                  />
+                  <input
+                    placeholder="Last name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                    autoComplete="family-name"
+                    style={{ ...authInputStyle, flex: 1, minWidth: 0 }}
+                  />
+                </div>
+                {/* Honeypot: hidden from people, filled in by bots */}
+                <input
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  style={{ position: "absolute", left: -10000, width: 1, height: 1, opacity: 0 }}
+                />
+              </>
+            )}
+            {authView === 'forgot' && (
+              <div style={{ fontSize: 13, color: "rgba(232,245,233,0.6)", lineHeight: 1.5 }}>
+                Enter your account's email and we'll send you a link to choose a new password.
+              </div>
+            )}
             <input
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              style={{
-                padding: 12,
-                borderRadius: 8,
-                border: "1px solid rgba(29,158,117,0.3)",
-                background: "rgba(10,30,15,0.5)",
-                color: "#e8f5e9",
-                fontSize: 16,
-                outline: "none",
-              }}
+              autoComplete="email"
+              style={authInputStyle}
             />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={{
-                padding: 12,
-                borderRadius: 8,
-                border: "1px solid rgba(29,158,117,0.3)",
-                background: "rgba(10,30,15,0.5)",
-                color: "#e8f5e9",
-                fontSize: 16,
-                outline: "none",
-              }}
-            />
+            {authView === 'login' && (
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                style={authInputStyle}
+              />
+            )}
             {authError && (
               <div style={{
                 padding: 12,
@@ -717,9 +805,25 @@ export default function RefereeLLM({ onNavigate } = {}) {
                 cursor: loading ? "default" : "pointer",
               }}
             >
-              {loading ? (checkingRegistration ? "Checking…" : "Loading...") : (authView === 'login' ? 'Login' : 'Sign Up')}
+              {loading
+                ? (authView === 'login' ? "Loading..." : "Sending…")
+                : ({ login: 'Login', signup: 'Request an invite', forgot: 'Send reset link' })[authView]}
             </button>
+            {authView === 'login' && (
+              <button type="button" onClick={() => switchAuthView('forgot')} style={authLinkStyle}>
+                Forgot password?
+              </button>
+            )}
           </form>
+          )}
+
+          {authView === 'forgot' && (
+            <div style={{ textAlign: "center", marginTop: 16 }}>
+              <button type="button" onClick={() => switchAuthView('login')} style={authLinkStyle}>
+                ← Back to login
+              </button>
+            </div>
+          )}
 
           {existingAccountEmail && (
             <div style={{
@@ -730,7 +834,7 @@ export default function RefereeLLM({ onNavigate } = {}) {
               border: "1px solid rgba(255,193,7,0.3)",
             }}>
               <div style={{ color: "#ffc107", fontSize: 14, marginBottom: 10 }}>
-                An account with <strong>{existingAccountEmail}</strong> already exists.
+                An account with <strong>{existingAccountEmail}</strong> already exists — log in instead, or set a new password if you've forgotten it.
               </div>
               {resetEmailSent ? (
                 <div style={{ color: "#5ecda4", fontSize: 13 }}>

@@ -67,6 +67,12 @@ export default function Admin() {
   const [reminderSending, setReminderSending] = useState(false);
   const [reminderResult, setReminderResult] = useState(null); // { sent: string[], failed: { email, error }[] }
 
+  // Access requests from the public "Sign Up" (request access) form
+  const [accessRequests, setAccessRequests] = useState([]);
+  const [requestsLoading, setRequestsLoading] = useState(false);
+  const [requestBusy, setRequestBusy] = useState({}); // { [request_id]: true } while an action runs
+  const [requestResult, setRequestResult] = useState(null); // { sent: string[], failed: { email, error }[], verb }
+
   // Admin role management
   const [adminChanges, setAdminChanges] = useState({}); // { [user_id]: is_admin }
   // Shared password-confirmation modal for sensitive user actions:
@@ -89,6 +95,7 @@ export default function Admin() {
         setIsAdmin(adminFlag);
         if (adminFlag) {
           fetchUsers();
+          fetchAccessRequests(); // so the tab can show how many are pending
         } else {
           setLoading(false);
         }
@@ -258,6 +265,39 @@ export default function Admin() {
       setReminderResult({ sent: [], failed: [{ email: '', error: err?.message ?? String(err) }] });
     } finally {
       setReminderSending(false);
+    }
+  };
+
+  const fetchAccessRequests = async () => {
+    setRequestsLoading(true);
+    try {
+      const res = await callOutreach({ action: 'list_requests' });
+      setAccessRequests(res.requests ?? []);
+    } catch (err) {
+      setError(`Could not load access requests: ${err?.message ?? String(err)}`);
+    } finally {
+      setRequestsLoading(false);
+    }
+  };
+
+  // action: 'activate_request' | 'remind_request' | 'reject_request'
+  const handleRequestAction = async (action, ids) => {
+    if (ids.length === 0) return;
+    const verb = { activate_request: 'Invite sent to', remind_request: 'Reminder sent to', reject_request: 'Dismissed' }[action];
+    setRequestBusy(prev => ({ ...prev, ...Object.fromEntries(ids.map(id => [id, true])) }));
+    setRequestResult(null);
+    try {
+      const res = await callOutreach({ action, request_ids: ids });
+      setRequestResult({ ...splitResults(res.results), verb });
+      await fetchAccessRequests();
+    } catch (err) {
+      setRequestResult({ sent: [], failed: [{ email: '', error: err?.message ?? String(err) }], verb });
+    } finally {
+      setRequestBusy(prev => {
+        const next = { ...prev };
+        ids.forEach(id => delete next[id]);
+        return next;
+      });
     }
   };
 
@@ -463,6 +503,23 @@ export default function Admin() {
             }}
           >
             👥 Users
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab('requests');
+              fetchAccessRequests();
+            }}
+            style={{
+              ...styles.tabButton,
+              ...(activeTab === 'requests' ? styles.activeTab : {})
+            }}
+          >
+            📥 Access Requests
+            {accessRequests.some(r => r.status === 'pending') && (
+              <span style={{ marginLeft: 8, background: '#ffc107', color: '#0a1628', borderRadius: 999, fontSize: 11, fontWeight: 800, padding: '2px 7px' }}>
+                {accessRequests.filter(r => r.status === 'pending').length}
+              </span>
+            )}
           </button>
           <button
             onClick={() => {
@@ -984,6 +1041,147 @@ export default function Admin() {
           </>
         )}
 
+        {/* Access Requests Tab */}
+        {activeTab === 'requests' && (() => {
+          const pending = accessRequests.filter(r => r.status === 'pending');
+          const activated = accessRequests.filter(r => r.status === 'activated');
+          const notConnected = activated.filter(r => !r.last_sign_in_at);
+          const smallBtn = { ...styles.button, padding: '6px 14px', fontSize: 13 };
+          const ghostBtn = { background: 'transparent', border: '1px solid rgba(232,245,233,0.25)', borderRadius: 8, color: 'rgba(232,245,233,0.7)', fontSize: 13, padding: '6px 12px', cursor: 'pointer' };
+          const fmt = (iso) => (iso ? new Date(iso).toLocaleDateString() : '—');
+          return (
+            <>
+              <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 6 }}>
+                📥 Access requests
+              </h3>
+              <div style={{ fontSize: 13, color: 'rgba(232,245,233,0.5)', marginBottom: 20, lineHeight: 1.5 }}>
+                People who filled in the Sign Up form (each request is also emailed to vaireferee@gmail.com).
+                <strong style={{ color: 'rgba(232,245,233,0.8)' }}> Activate</strong> creates their account and emails them a
+                link to create their password. <strong style={{ color: 'rgba(232,245,233,0.8)' }}>Remind</strong> sends a fresh
+                link to anyone who hasn't connected yet.
+              </div>
+
+              {requestResult && (
+                <div style={{ marginBottom: 16 }}>
+                  {requestResult.sent.length > 0 && (
+                    <div style={{ ...styles.note, background: 'rgba(29,158,117,0.1)', borderColor: 'rgba(29,158,117,0.3)', color: '#5ecda4', marginBottom: 8 }}>
+                      ✅ {requestResult.verb} {requestResult.sent.join(', ')}
+                    </div>
+                  )}
+                  {requestResult.failed.map((f, i) => (
+                    <div key={i} style={{ ...styles.error, marginBottom: 8 }}>
+                      ❌ {f.email ? `${f.email}: ` : ''}{f.error}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
+                <h3 style={{ color: '#5ecda4', fontSize: 15, margin: 0 }}>Pending ({pending.length})</h3>
+                {pending.length > 1 && (
+                  <button style={smallBtn} onClick={() => handleRequestAction('activate_request', pending.slice(0, 50).map(r => r.id))}>
+                    Activate all{pending.length > 50 ? ' (first 50)' : ''}
+                  </button>
+                )}
+              </div>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.th}>Name</th>
+                    <th style={styles.th}>Email</th>
+                    <th style={styles.th}>Requested</th>
+                    <th style={styles.th}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {requestsLoading && accessRequests.length === 0 ? (
+                    <tr><td colSpan="4" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>Loading requests…</td></tr>
+                  ) : pending.length === 0 ? (
+                    <tr><td colSpan="4" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>No pending requests</td></tr>
+                  ) : (
+                    pending.map(r => (
+                      <tr key={r.id} style={styles.tr}>
+                        <td style={styles.td}>{r.first_name} {r.last_name}</td>
+                        <td style={styles.td}>{r.email}</td>
+                        <td style={styles.td}>{fmt(r.created_at)}</td>
+                        <td style={{ ...styles.td, whiteSpace: 'nowrap', textAlign: 'right' }}>
+                          <button
+                            style={{ ...smallBtn, marginRight: 8, opacity: requestBusy[r.id] ? 0.5 : 1 }}
+                            disabled={!!requestBusy[r.id]}
+                            onClick={() => handleRequestAction('activate_request', [r.id])}
+                          >
+                            {requestBusy[r.id] ? 'Working…' : 'Activate'}
+                          </button>
+                          <button
+                            style={{ ...ghostBtn, opacity: requestBusy[r.id] ? 0.5 : 1 }}
+                            disabled={!!requestBusy[r.id]}
+                            onClick={() => handleRequestAction('reject_request', [r.id])}
+                          >
+                            Dismiss
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, margin: '28px 0 12px', flexWrap: 'wrap' }}>
+                <h3 style={{ color: '#5ecda4', fontSize: 15, margin: 0 }}>
+                  Activated ({activated.length}) — {notConnected.length} not connected yet
+                </h3>
+                {notConnected.length > 1 && (
+                  <button style={smallBtn} onClick={() => handleRequestAction('remind_request', notConnected.slice(0, 50).map(r => r.id))}>
+                    Remind all not connected{notConnected.length > 50 ? ' (first 50)' : ''}
+                  </button>
+                )}
+              </div>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.th}>Name</th>
+                    <th style={styles.th}>Email</th>
+                    <th style={styles.th}>Activated</th>
+                    <th style={styles.th}>Last emailed</th>
+                    <th style={styles.th}>Connected</th>
+                    <th style={styles.th}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {activated.length === 0 ? (
+                    <tr><td colSpan="6" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>No activated requests yet</td></tr>
+                  ) : (
+                    activated.map(r => (
+                      <tr key={r.id} style={styles.tr}>
+                        <td style={styles.td}>{r.first_name} {r.last_name}</td>
+                        <td style={styles.td}>{r.email}</td>
+                        <td style={styles.td}>{fmt(r.activated_at)}</td>
+                        <td style={styles.td} title={r.email_count ? `${r.email_count} email${r.email_count === 1 ? '' : 's'} sent` : ''}>
+                          {fmt(r.last_emailed_at)}
+                        </td>
+                        <td style={{ ...styles.td, color: r.last_sign_in_at ? '#5ecda4' : '#ffc107' }}>
+                          {r.last_sign_in_at ? `✅ ${fmt(r.last_sign_in_at)}` : 'Not yet'}
+                        </td>
+                        <td style={{ ...styles.td, textAlign: 'right' }}>
+                          {!r.last_sign_in_at && (
+                            <button
+                              style={{ ...smallBtn, opacity: requestBusy[r.id] ? 0.5 : 1 }}
+                              disabled={!!requestBusy[r.id]}
+                              onClick={() => handleRequestAction('remind_request', [r.id])}
+                            >
+                              {requestBusy[r.id] ? 'Sending…' : 'Remind'}
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </>
+          );
+        })()}
+
         {/* Invite Testers Tab */}
         {activeTab === 'invites' && (
           <>
@@ -992,8 +1190,9 @@ export default function Admin() {
             </h3>
             <div style={{ fontSize: 13, color: 'rgba(232,245,233,0.5)', marginBottom: 20, lineHeight: 1.5 }}>
               Sends a personal "you've been hand-picked" invitation that walks through everything VAiR can do
-              and asks for feedback. Replies come straight back to your email. Each recipient gets their own
-              email — they never see each other's addresses.
+              and asks for feedback. Addresses without an account get one, with a personal link to create their
+              password. Replies come straight back to your email. Each recipient gets their own email — they
+              never see each other's addresses.
             </div>
 
             <div style={{ ...styles.form, marginBottom: 28 }}>
