@@ -421,7 +421,7 @@ export default function AboutUs({ onNavigate }) {
           <div style={{ textAlign: "center" }}>
             <img
               src="/vair-logo.svg"
-              alt="VAiR – Virtual AI Referee"
+              alt="VAiR – Virtual Assistant Intelligence Referee"
               style={{ width: 280, maxWidth: "100%", marginBottom: 8 }}
             />
           </div>

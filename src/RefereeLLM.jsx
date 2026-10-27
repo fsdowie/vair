@@ -914,7 +914,7 @@ export default function RefereeLLM({ onNavigate } = {}) {
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}>
-              ⚽ Virtual AI Referee
+              ⚽ Virtual Assistant Intelligence Referee
             </h1>
             <p style={{
               fontSize: 14,
