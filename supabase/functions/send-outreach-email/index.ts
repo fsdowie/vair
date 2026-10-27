@@ -122,7 +122,7 @@ function renderEmail(c: EmailContent) {
         <tr><td style="background:linear-gradient(135deg,#0a1e0f,#0e7a58);padding:32px;text-align:center;">
           <div style="font-size:40px;line-height:1;margin-bottom:10px;">⚽</div>
           <div style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:0.5px;">VAiR</div>
-          <div style="font-size:13px;color:#bfe8d6;margin-top:4px;">Video Assistant Intelligence Referee</div>
+          <div style="font-size:13px;color:#bfe8d6;margin-top:4px;">Virtual Assistant Intelligence Referee</div>
         </td></tr>
 
         <tr><td style="padding:32px 32px 8px 32px;color:#e8f5e9;">

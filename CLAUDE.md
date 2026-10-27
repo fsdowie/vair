@@ -16,7 +16,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-VAIR (Video Assistant Intelligence Referee) is a single-file React application that provides an AI-powered referee assistant for interpreting the IFAB Laws of the Game 2025/26. The application uses Claude (Anthropic API) to answer questions about football/soccer refereeing decisions based on the complete official rulebook.
+VAIR (Virtual Assistant Intelligence Referee) is a single-file React application that provides an AI-powered referee assistant for interpreting the IFAB Laws of the Game 2025/26. The application uses Claude (Anthropic API) to answer questions about football/soccer refereeing decisions based on the complete official rulebook.
 
 ## Development Setup
 

@@ -8,7 +8,7 @@ export const corsHeaders = {
 };
 
 export const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-export const FROM_EMAIL = Deno.env.get("OUTREACH_FROM_EMAIL") ?? "VAiR <team@vaireferee.com>";
+export const FROM_EMAIL = Deno.env.get("OUTREACH_FROM_EMAIL") ?? "Virtual Assistant Intelligence Referee <team@vaireferee.com>";
 export const APP_URL = Deno.env.get("APP_URL") ?? "https://vaireferee.com";
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -130,7 +130,7 @@ export function renderActionEmail(c: {
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#0d2137;border:1px solid rgba(29,158,117,0.3);border-radius:16px;overflow:hidden;">
         <tr><td style="background:linear-gradient(135deg,#0a1e0f,#0e7a58);padding:28px;text-align:center;">
           <div style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:0.5px;">VAiR</div>
-          <div style="font-size:13px;color:#bfe8d6;margin-top:4px;">Video Assistant Intelligence Referee</div>
+          <div style="font-size:13px;color:#bfe8d6;margin-top:4px;">Virtual Assistant Intelligence Referee</div>
         </td></tr>
 
         <tr><td style="padding:32px 32px 8px 32px;color:#e8f5e9;">

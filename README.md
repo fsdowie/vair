@@ -1,4 +1,4 @@
-# VAIR - Video Assistant Intelligence Referee
+# VAIR - Virtual Assistant Intelligence Referee
 
 AI-powered referee assistant for interpreting IFAB Laws of the Game 2025/26.
 
