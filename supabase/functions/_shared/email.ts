@@ -71,30 +71,39 @@ export async function findUserByEmail(admin: SupabaseClient, email: string): Pro
   return (await listAllUsers(admin)).find((u) => u.email?.toLowerCase() === target) ?? null;
 }
 
-// Make sure an account exists for this email (created already confirmed,
-// with no password) and return a one-time link that signs them in and lands
-// on the "set your password" screen. Used for activated access requests and
-// tester invites; also works to re-send a fresh link once the old expired.
-export async function accountSetupLink(
-  admin: SupabaseClient,
-  email: string,
-  metadata: Record<string, string> = {},
-  // Pass the already-looked-up account (or null for none) to skip a lookup.
-  existing?: User | null,
-): Promise<{ user: User; link: string }> {
-  let user = existing === undefined ? await findUserByEmail(admin, email) : existing;
-  if (!user) {
-    const { data, error } = await admin.auth.admin.createUser({ email, email_confirm: true, user_metadata: metadata });
-    if (error) throw new Error(error.message);
-    user = data.user;
-  }
-  const { data, error } = await admin.auth.admin.generateLink({
-    type: "recovery",
-    email,
-    options: { redirectTo: `${APP_URL}/?welcome=1` },
+export const INVITE_TTL_DAYS = 30;
+
+export async function sha256Hex(s: string) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// Record an invitation (see migration 018) and return the link for the
+// email button: vaireferee.com/?invite=<token>, which opens a pre-filled
+// "create your password" form handled by the accept-invite function. The
+// account itself is only created when they submit that form.
+export async function createInvitation(admin: SupabaseClient, inv: {
+  email: string;
+  kind: "invite" | "access_request";
+  first_name?: string | null;
+  last_name?: string | null;
+  access_request_id?: string | null;
+  invited_by: string;
+}): Promise<string> {
+  const bytes = crypto.getRandomValues(new Uint8Array(32));
+  const token = btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const { error } = await admin.from("invitations").insert({
+    token_hash: await sha256Hex(token),
+    email: inv.email.trim().toLowerCase(),
+    first_name: inv.first_name || null,
+    last_name: inv.last_name || null,
+    kind: inv.kind,
+    access_request_id: inv.access_request_id ?? null,
+    invited_by: inv.invited_by,
+    expires_at: new Date(Date.now() + INVITE_TTL_DAYS * 24 * 60 * 60 * 1000).toISOString(),
   });
   if (error) throw new Error(error.message);
-  return { user, link: data.properties.action_link };
+  return `${APP_URL}/?invite=${token}`;
 }
 
 export function isEnded(user: User) {

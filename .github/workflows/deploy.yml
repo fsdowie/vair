@@ -56,7 +56,7 @@ jobs:
                     process-report extract-game set-admin-role delete-user \
                     end-date-user check-registration get-recent-questions \
                     generate-misconduct-report send-outreach-email \
-                    request-access request-password-reset; do
+                    request-access request-password-reset accept-invite; do
             supabase functions deploy "$fn" --no-verify-jwt
           done
           # Functions invoked via supabase.functions.invoke(), which attaches a verified session JWT.

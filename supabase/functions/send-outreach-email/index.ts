@@ -1,23 +1,23 @@
 import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
-  APP_URL, EMAIL_RE, RESEND_API_KEY, accountSetupLink, corsHeaders, escapeHtml, isEnded, json,
+  APP_URL, EMAIL_RE, RESEND_API_KEY, corsHeaders, createInvitation, escapeHtml, isEnded, json,
   listAllUsers, renderActionEmail, sendEmail,
 } from "../_shared/email.ts";
 
 // Admin-only outreach emails, sent through Resend (RESEND_API_KEY) and
 // logged to the outreach_emails table:
 //   POST { action: "invite", emails: string[], name?: string, note?: string }
-//     — invite hand-picked beta testers to try VAiR (new addresses get an
-//       account and a personal "create your password" link)
+//     — invite hand-picked beta testers to try VAiR (each gets a personal
+//       invitation link to a pre-filled "create your password" form)
 //   POST { action: "remind", user_ids: string[], note?: string }
 //     — nudge existing users to log back in and see what's new
 //   POST { action: "list", kind: "invite" | "reminder" }
 // Access requests from the public "Request access" form (request-access):
 //   POST { action: "list_requests" }
 //   POST { action: "activate_request", request_ids: string[] }
-//     — create the account and email a link to set a password
+//     — email an invitation link to create their account and password
 //   POST { action: "remind_request", request_ids: string[] }
-//     — re-send a fresh link to activated users who haven't signed in yet
+//     — re-send a fresh invitation to activated users who haven't signed in yet
 //   POST { action: "reject_request", request_ids: string[] }
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -181,8 +181,8 @@ ${noteBlock}
   return { subject: c.subject, html, text };
 }
 
-// setupLink: a personal "create your password" link for a new account, or
-// null when the address already has an account (they just sign in).
+// setupLink: a personal invitation link (pre-filled "create your password"
+// form), or null when the address already has an account (they just sign in).
 function inviteEmail(name: string | null, note: string | null, setupLink: string | null) {
   return renderEmail({
     subject: "You've been hand-picked to test VAiR — the AI assistant referee",
@@ -199,7 +199,7 @@ function inviteEmail(name: string | null, note: string | null, setupLink: string
     ctaLabel: "Claim your early access →",
     ctaUrl: setupLink ?? APP_URL,
     ctaSub: setupLink
-      ? "Your account is ready — the button takes you straight to creating your password."
+      ? "No approval needed — the button opens a quick form to create your password. The link is valid for 30 days."
       : `Sign in at ${APP_URL.replace(/^https?:\/\//, "")} with your existing account.`,
     closingTitle: "🗣️ Your feedback shapes what comes next",
     closing: `Throw your hardest scenarios at it, build a misconduct report from your last game, and tell us
@@ -244,8 +244,8 @@ function accountEmail(firstName: string, link: string, reminder: boolean) {
       headline: "You haven't connected to VAiR yet — your account is ready whenever you are.",
       body: `Just a quick reminder: your access request was approved, but you haven't signed in yet.
              Click below to create your password and start asking the AI Referee your toughest calls.
-             We've sent you a fresh link — it works once and expires soon.`,
-      bodyText: "Just a quick reminder: your access request was approved, but you haven't signed in yet. Use the link below to create your password. We've sent you a fresh link — it works once and expires soon.",
+             The link is valid for 30 days.`,
+      bodyText: "Just a quick reminder: your access request was approved, but you haven't signed in yet. Use the link below to create your password. The link is valid for 30 days.",
       ctaLabel: "Create your password →",
       ctaUrl: link,
       footnote: "Questions? Just reply to this email.<br>— The VAiR team",
@@ -256,9 +256,8 @@ function accountEmail(firstName: string, link: string, reminder: boolean) {
       headline: "Welcome to VAiR — your account is ready.",
       body: `Thanks for requesting access. Click below to create your password, then you're in:
              instant, citable rulings on the Laws of the Game, misconduct reports in a few taps, and more.
-             The link works once and expires soon — if it's expired, use <strong style="color:#ffffff;">Forgot password?</strong>
-             on the login page to get a new one.`,
-      bodyText: "Thanks for requesting access. Use the link below to create your password, then you're in. The link works once and expires soon — if it's expired, use \"Forgot password?\" on the login page to get a new one.",
+             The link is valid for 30 days.`,
+      bodyText: "Thanks for requesting access. Use the link below to create your password, then you're in. The link is valid for 30 days.",
       ctaLabel: "Create your password →",
       ctaUrl: link,
       footnote: "Questions? Just reply to this email.<br>— The VAiR team",
@@ -312,17 +311,25 @@ async function handleRequests(
       if (!reminder && r.status === "activated") throw new Error("Already activated — use Remind to re-send");
       const existing = usersByEmail.get(r.email) ?? null;
       if (existing && isEnded(existing)) throw new Error("Account is end-dated");
-      if (reminder && existing?.last_sign_in_at) throw new Error("Already signed in");
+      if (existing?.last_sign_in_at) {
+        throw new Error(reminder ? "Already signed in" : "Already has an account — they can log in");
+      }
 
-      const { user, link } = await accountSetupLink(
-        admin, r.email, { first_name: r.first_name, last_name: r.last_name }, existing,
-      );
+      // The account is created when they submit the invite form (accept-invite).
+      const link = await createInvitation(admin, {
+        email: r.email,
+        kind: "access_request",
+        first_name: r.first_name,
+        last_name: r.last_name,
+        access_request_id: r.id,
+        invited_by: caller.id,
+      });
       const result = await sendEmail(r.email, accountEmail(r.first_name, link, reminder), caller.email);
 
       const now = new Date().toISOString();
       await admin.from("access_requests").update({
         status: "activated",
-        user_id: user.id,
+        ...(existing ? { user_id: existing.id } : {}),
         ...(r.activated_at ? {} : { activated_at: now, activated_by: caller.id }),
         ...(result.ok ? { last_emailed_at: now, email_count: (r.email_count ?? 0) + 1 } : {}),
       }).eq("id", r.id);
@@ -427,14 +434,15 @@ Deno.serve(async (req) => {
         ? body.name.trim().slice(0, 100)
         : null;
 
-      // Self-service signup is gone, so new testers get an account and a
-      // personal link to create their password; existing users just sign in.
+      // Invited testers are pre-approved: their button opens a pre-filled form
+      // to create a password (accept-invite). People who've already signed in
+      // before just get a link to log in.
       const usersByEmail = new Map((await listAllUsers(supabaseAdmin)).map((u) => [u.email?.toLowerCase(), u]));
       results = await Promise.all(recipients.map(async (to) => {
         try {
-          const setupLink = usersByEmail.has(to)
+          const setupLink = usersByEmail.get(to)?.last_sign_in_at
             ? null
-            : (await accountSetupLink(supabaseAdmin, to, name ? { first_name: name } : {}, null)).link;
+            : await createInvitation(supabaseAdmin, { email: to, kind: "invite", first_name: name, invited_by: caller.id });
           return await sendEmail(to, inviteEmail(name, note, setupLink), caller.email);
         } catch (err) {
           return { email: to, ok: false, error: err instanceof Error ? err.message : String(err) };

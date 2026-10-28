@@ -1,6 +1,7 @@
 ﻿/* global __RELEASE_DATE__ */
 import { useState, useRef, useEffect } from "react";
 import { supabase } from './supabaseClient';
+import InviteAccept from './InviteAccept';
 
 const EDGE_BASE = 'https://iunehbdazfzgfclkvvgd.supabase.co/functions/v1';
 const SUPABASE_ANON_KEY = 'sb_publishable_SU4BJ5e9RLDl-3iSZHo-3g_mbHpD9cn';
@@ -143,9 +144,9 @@ export default function RefereeLLM({ onNavigate } = {}) {
   const [authError, setAuthError] = useState(null);
   const [existingAccountEmail, setExistingAccountEmail] = useState(null); // set when a requested email already has an account
   const [resetEmailSent, setResetEmailSent] = useState(false);
-  // Arrived from an "access approved" email — same set-password flow as a
-  // reset, but worded as creating a password for a new account.
-  const [isWelcome] = useState(() => new URLSearchParams(window.location.search).has('welcome'));
+  // Arrived via the button in an Admin-sent invitation (?invite=<token>) —
+  // show the pre-filled "create your password" form instead of login.
+  const [inviteToken, setInviteToken] = useState(() => new URLSearchParams(window.location.search).get('invite'));
 
   // Password-recovery flow (user clicked the "reset password" email link)
   const [pendingRecovery, setPendingRecovery] = useState(false);
@@ -431,7 +432,6 @@ export default function RefereeLLM({ onNavigate } = {}) {
       setPendingRecovery(false);
       setRecoveryPassword('');
       setRecoveryPassword2('');
-      if (isWelcome) window.history.replaceState(null, '', window.location.pathname);
     } catch (error) {
       setRecoveryError(error.message);
     } finally {
@@ -495,6 +495,18 @@ export default function RefereeLLM({ onNavigate } = {}) {
     }
   };
 
+  if (inviteToken) {
+    return (
+      <InviteAccept
+        token={inviteToken}
+        onDone={() => {
+          window.history.replaceState(null, '', window.location.pathname);
+          setInviteToken(null);
+        }}
+      />
+    );
+  }
+
   // Show loading state while checking auth
   if (loading) {
     return (
@@ -536,10 +548,10 @@ export default function RefereeLLM({ onNavigate } = {}) {
             <img src="/vair-logo.svg" alt="VAiR logo" style={{ width: 220, maxWidth: "100%" }} />
           </div>
           <h2 style={{ textAlign: "center", fontSize: 18, color: "#5ecda4", marginBottom: 8 }}>
-            {isWelcome ? "Welcome to VAiR" : "Set a new password"}
+            Set a new password
           </h2>
           <p style={{ textAlign: "center", fontSize: 13, color: "rgba(232,245,233,0.5)", marginBottom: 24 }}>
-            {isWelcome ? "Your access is approved — create a password to finish setting up your account." : "Choose a new password for your account."}
+            Choose a new password for your account.
           </p>
           <form onSubmit={handleSetNewPassword} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <input
@@ -600,7 +612,7 @@ export default function RefereeLLM({ onNavigate } = {}) {
                 cursor: recoverySaving ? "default" : "pointer",
               }}
             >
-              {recoverySaving ? "Saving…" : (isWelcome ? "Create password" : "Set new password")}
+              {recoverySaving ? "Saving…" : "Set new password"}
             </button>
           </form>
         </div>
