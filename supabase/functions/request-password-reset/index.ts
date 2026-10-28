@@ -6,17 +6,26 @@ import { APP_URL, EMAIL_RE, corsHeaders, findUserByEmail, isEnded, json, renderA
 // resetPasswordForEmail(), which depends on the project's auth mailer).
 // Clicking the link signs the user in with a PASSWORD_RECOVERY event, which
 // RefereeLLM.jsx turns into its "Set a new password" screen.
-//   POST { email } → always { ok: true }, so it can't be used to probe
-//   which addresses have accounts.
+//   POST { email, redirect_to? } → always { ok: true }, so it can't be used
+//   to probe which addresses have accounts. redirect_to lets the mobile app
+//   send the link back into itself (vairreferee://reset-password); only the
+//   app's scheme, Expo Go (exp://) or the website are accepted, and Supabase's
+//   Redirect URLs allowlist still applies on top (falling back to Site URL).
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const THROTTLE_MS = 2 * 60 * 1000;
+// Trailing "/" so e.g. https://vaireferee.com.evil.com doesn't match.
+const ALLOWED_REDIRECT_PREFIXES = [`${APP_URL}/`, "vairreferee://", "exp://"];
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const { email: rawEmail } = await req.json();
+    const { email: rawEmail, redirect_to: rawRedirect } = await req.json();
+    const redirectTo = typeof rawRedirect === "string" &&
+        ALLOWED_REDIRECT_PREFIXES.some((prefix) => rawRedirect.startsWith(prefix))
+      ? rawRedirect
+      : APP_URL;
     const email = typeof rawEmail === "string" ? rawEmail.trim().toLowerCase() : "";
     if (!EMAIL_RE.test(email)) throw new Error("Please enter a valid email address");
 
@@ -40,7 +49,7 @@ Deno.serve(async (req) => {
     const { data: link, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
       type: "recovery",
       email,
-      options: { redirectTo: APP_URL },
+      options: { redirectTo },
     });
     if (linkErr) throw new Error(linkErr.message);
 

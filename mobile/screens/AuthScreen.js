@@ -17,16 +17,35 @@ import Screen from '../components/Screen';
 import Banner from '../components/Banner';
 import { colors } from '../theme';
 
-// Mirrors the auth flow in src/RefereeLLM.jsx: on signup, check-registration
-// tells us whether the email already has an account (Supabase's signUp()
-// deliberately won't, to avoid enumeration), and steers an existing account
-// to "send yourself a reset link" instead of silently failing.
+// Public (no-session) edge functions behind the request-access and
+// forgot-password forms — same ones the web app uses.
+async function callPublicFunction(name, body) {
+  const res = await fetch(`${EDGE_BASE}/${name}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      apikey: SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || data?.error) throw new Error(data?.error || `Request failed (${res.status})`);
+  return data;
+}
+
+// Mirrors the auth flow in src/RefereeLLM.jsx: "Sign Up" files an access
+// request (request-access) that an admin activates from the Admin panel —
+// there's no self-service signup. If the email already has an account, it
+// steers them to "send yourself a reset link" instead.
 export default function AuthScreen() {
-  const [view, setView] = useState('login'); // 'login' | 'signup'
+  const [view, setView] = useState('login'); // 'login' | 'signup' (request access)
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [accessRequested, setAccessRequested] = useState(null); // null | 'requested' | 'pending'
   const [loading, setLoading] = useState(false);
-  const [checkingRegistration, setCheckingRegistration] = useState(false);
   const [error, setError] = useState(null);
   const [existingAccountEmail, setExistingAccountEmail] = useState(null);
   const [resetEmailSent, setResetEmailSent] = useState(false);
@@ -36,6 +55,7 @@ export default function AuthScreen() {
     setError(null);
     setExistingAccountEmail(null);
     setResetEmailSent(false);
+    setAccessRequested(null);
   };
 
   const handleAuth = async () => {
@@ -43,40 +63,19 @@ export default function AuthScreen() {
     setLoading(true);
     try {
       if (view === 'signup') {
-        setCheckingRegistration(true);
-        let checkData;
-        try {
-          const checkRes = await fetch(`${EDGE_BASE}/check-registration`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-              apikey: SUPABASE_ANON_KEY,
-            },
-            body: JSON.stringify({ email }),
-          });
-          checkData = await checkRes.json();
-          if (!checkRes.ok) throw new Error(checkData?.error || 'Could not verify email');
-        } finally {
-          setCheckingRegistration(false);
-        }
-
-        if (checkData.ended) {
+        const data = await callPublicFunction('request-access', {
+          first_name: firstName,
+          last_name: lastName,
+          email,
+        });
+        if (data.status === 'ended') {
           throw new Error('This account has been deactivated. Please contact the admin.');
         }
-        if (checkData.exists) {
-          setExistingAccountEmail(email);
+        if (data.status === 'exists') {
+          setExistingAccountEmail(email.trim());
           return;
         }
-
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: Linking.createURL('confirm') },
-        });
-        if (error) throw error;
-        setError(null);
-        alert('Check your email for the confirmation link!');
+        setAccessRequested(data.status);
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -92,10 +91,12 @@ export default function AuthScreen() {
     setLoading(true);
     setError(null);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(targetEmail, {
-        redirectTo: Linking.createURL('reset-password'),
+      // The link opens the app back up at its "set new password" screen
+      // (see lib/authDeepLink.js); without the app it falls back to the website.
+      await callPublicFunction('request-password-reset', {
+        email: targetEmail,
+        redirect_to: Linking.createURL('reset-password'),
       });
-      if (error) throw error;
       setResetEmailSent(true);
     } catch (err) {
       setError(err.message);
@@ -103,6 +104,10 @@ export default function AuthScreen() {
       setLoading(false);
     }
   };
+
+  const canSubmit = view === 'login'
+    ? !!email && !!password
+    : !!email.trim() && !!firstName.trim() && !!lastName.trim();
 
   if (forgotMode) {
     return (
@@ -113,7 +118,9 @@ export default function AuthScreen() {
               <Image source={require('../assets/vair-logo.png')} style={styles.logo} resizeMode="contain" />
               <Text style={styles.heading}>Reset your password</Text>
               {resetEmailSent ? (
-                <Text style={styles.successText}>✅ Check your email for a link to set a new password.</Text>
+                <Text style={styles.successText}>
+                  ✅ If there's a VAiR account for {email.trim()}, we've sent it a link to set a new password. Check your inbox (and spam folder).
+                </Text>
               ) : (
                 <>
                   <Text style={styles.subtext}>Enter the email on your account and we'll send you a reset link.</Text>
@@ -168,39 +175,75 @@ export default function AuthScreen() {
               </TouchableOpacity>
             </View>
 
-            <TextInput
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Email"
-              placeholderTextColor={colors.textFaint}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              style={styles.input}
-            />
-            <TextInput
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Password"
-              placeholderTextColor={colors.textFaint}
-              secureTextEntry
-              style={styles.input}
-            />
+            {view === 'signup' && accessRequested ? (
+              <Text style={[styles.successText, styles.requestedText]}>
+                {accessRequested === 'pending'
+                  ? `✅ We already have your request for ${email.trim()}. You'll get an email with your invite as soon as it's approved.`
+                  : `✅ Thanks, ${firstName.trim()}! Your request has been sent. You'll get an email at ${email.trim()} with a link to create your password as soon as it's approved.`}
+              </Text>
+            ) : (
+              <>
+                {view === 'signup' && (
+                  <>
+                    <Text style={styles.subtext}>
+                      VAiR is invite-only for now. Tell us who you are and we'll email you an invite.
+                    </Text>
+                    <View style={styles.nameRow}>
+                      <TextInput
+                        value={firstName}
+                        onChangeText={setFirstName}
+                        placeholder="First name"
+                        placeholderTextColor={colors.textFaint}
+                        autoComplete="given-name"
+                        style={[styles.input, styles.nameInput]}
+                      />
+                      <TextInput
+                        value={lastName}
+                        onChangeText={setLastName}
+                        placeholder="Last name"
+                        placeholderTextColor={colors.textFaint}
+                        autoComplete="family-name"
+                        style={[styles.input, styles.nameInput]}
+                      />
+                    </View>
+                  </>
+                )}
+                <TextInput
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="Email"
+                  placeholderTextColor={colors.textFaint}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  autoComplete="email"
+                  style={styles.input}
+                />
+                {view === 'login' && (
+                  <TextInput
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder="Password"
+                    placeholderTextColor={colors.textFaint}
+                    secureTextEntry
+                    style={styles.input}
+                  />
+                )}
 
-            {!!error && <Banner variant="error" message={error} onDismiss={() => setError(null)} />}
+                {!!error && <Banner variant="error" message={error} onDismiss={() => setError(null)} />}
 
-            <TouchableOpacity
-              style={[styles.button, (loading || !email || !password) && styles.buttonDisabled]}
-              disabled={loading || !email || !password}
-              onPress={handleAuth}
-            >
-              {loading ? (
-                <ActivityIndicator color={colors.text} />
-              ) : (
-                <Text style={styles.buttonText}>{view === 'login' ? 'Login' : 'Sign Up'}</Text>
-              )}
-            </TouchableOpacity>
-
-            {checkingRegistration && <Text style={styles.subtext}>Checking…</Text>}
+                <TouchableOpacity
+                  style={[styles.button, (loading || !canSubmit) && styles.buttonDisabled]}
+                  disabled={loading || !canSubmit}
+                  onPress={handleAuth}
+                >
+                  {loading ? (
+                    <ActivityIndicator color={colors.text} />
+                  ) : (
+                    <Text style={styles.buttonText}>{view === 'login' ? 'Login' : 'Request an invite'}</Text>
+                  )}
+                </TouchableOpacity>
+              </>
+            )}
 
             {view === 'login' && (
               <TouchableOpacity onPress={() => { setForgotMode(true); resetTransientState(); }} style={styles.linkWrap}>
@@ -211,7 +254,7 @@ export default function AuthScreen() {
             {existingAccountEmail && (
               <View style={styles.existingBox}>
                 <Text style={styles.existingText}>
-                  An account with <Text style={styles.bold}>{existingAccountEmail}</Text> already exists.
+                  An account with <Text style={styles.bold}>{existingAccountEmail}</Text> already exists — log in instead, or set a new password if you've forgotten it.
                 </Text>
                 {resetEmailSent ? (
                   <Text style={styles.successText}>✅ Check your email for a link to set a new password.</Text>
@@ -283,6 +326,9 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,193,7,0.3)',
   },
   existingText: { color: '#ffc107', fontSize: 14, marginBottom: 10 },
+  nameRow: { flexDirection: 'row', gap: 12 },
+  nameInput: { flex: 1, minWidth: 0 },
+  requestedText: { lineHeight: 20, paddingVertical: 8 },
   bold: { fontWeight: '700' },
   successText: { color: colors.greenBright, fontSize: 13, textAlign: 'center', marginBottom: 8 },
 });
