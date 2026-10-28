@@ -3,7 +3,7 @@ const NAV_ITEMS = [
   { id: "misconduct", emoji: "📋", label: "Misconduct Report" },
   { id: "games",      emoji: "📅", label: "Games Organizer" },
   { id: "features",   emoji: "✨", label: "Features" },
-  { id: "about",      emoji: "ℹ️",  label: "About Us" },
+  { id: "about",      emoji: "💬", label: "Send Feedback" },
 ];
 
 export default function Sidebar({ open, onClose, activePage, onNavigate, userEmail, isAdmin }) {

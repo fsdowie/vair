@@ -368,7 +368,8 @@ const btnStyle = {
 };
 
 export default function AboutUs({ onNavigate }) {
-  const [showForm, setShowForm] = useState(false);
+  // Opened from the "Send Feedback" menu item, so start with the form open.
+  const [showForm, setShowForm] = useState(true);
 
   return (
     <div style={{
@@ -393,10 +394,10 @@ export default function AboutUs({ onNavigate }) {
           WebkitTextFillColor: "transparent",
           marginBottom: 4,
         }}>
-          ℹ️ About Us
+          💬 Send Feedback
         </h1>
         <p style={{ fontSize: 13, color: "rgba(232,245,233,0.6)" }}>
-          Project information
+          Tell us what works, what doesn't, and what you'd like to see next
         </p>
       </div>
 
