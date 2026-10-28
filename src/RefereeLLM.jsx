@@ -98,10 +98,13 @@ const ALL_SAMPLE_QUESTIONS = [
   "What happens if both teams score simultaneously?",
 ];
 
-// Get random sample questions
-const getRandomQuestions = (count = 3) => {
+const SUGGESTION_COUNT = 10;
+
+// Get random sample questions, in the same shape as trending questions
+// (answer: null means clicking it asks the AI).
+const getRandomQuestions = (count = SUGGESTION_COUNT) => {
   const shuffled = [...ALL_SAMPLE_QUESTIONS].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
+  return shuffled.slice(0, Math.max(0, count)).map(question => ({ question, answer: null, clicks: 0 }));
 };
 
 export default function RefereeLLM({ onNavigate } = {}) {
@@ -266,10 +269,10 @@ export default function RefereeLLM({ onNavigate } = {}) {
       .catch(() => {});
   }, [session]);
 
-  // Replace the curated random sample questions with real recent questions
-  // from across the platform, once we can fetch them. Falls back to (and
-  // pads out to 3 with) the curated list if there isn't enough real history
-  // yet, since a mostly-empty list still needs example prompts.
+  // Replace the curated random sample questions with real trending questions
+  // from across the platform (most-clicked first), once we can fetch them.
+  // Falls back to (and pads out to 10 with) the curated list if there isn't
+  // enough real history yet, since a mostly-empty list still needs examples.
   useEffect(() => {
     if (!session) return;
     fetch(`${EDGE_BASE}/get-recent-questions`, {
@@ -277,9 +280,13 @@ export default function RefereeLLM({ onNavigate } = {}) {
     })
       .then(r => r.json())
       .then(d => {
-        const real = Array.isArray(d.questions) ? d.questions : [];
+        const real = (Array.isArray(d.questions) ? d.questions : [])
+          .filter(q => q && typeof q.question === 'string');
         if (real.length === 0) return;
-        const filler = getRandomQuestions(3 - real.length);
+        const seen = new Set(real.map(q => q.question.trim().toLowerCase()));
+        const filler = getRandomQuestions(ALL_SAMPLE_QUESTIONS.length)
+          .filter(q => !seen.has(q.question.toLowerCase()))
+          .slice(0, SUGGESTION_COUNT - real.length);
         setSampleQuestions([...real, ...filler]);
         setTrendingQuestions(true);
       })
@@ -444,10 +451,12 @@ export default function RefereeLLM({ onNavigate } = {}) {
     setMessages([]);
   };
 
-  const sendMessage = async () => {
-    if (!input.trim() || chatLoading) return;
+  const sendMessage = () => askQuestion(input);
 
-    const userMessage = { role: "user", content: input };
+  const askQuestion = async (text) => {
+    if (!text.trim() || chatLoading) return;
+
+    const userMessage = { role: "user", content: text };
     setMessages(prev => [...prev, userMessage]);
     setInput("");
     setChatLoading(true);
@@ -492,6 +501,25 @@ export default function RefereeLLM({ onNavigate } = {}) {
       setMessages(prev => prev.slice(0, -1));
     } finally {
       setChatLoading(false);
+    }
+  };
+
+  // Clicking a suggested question: count the click (it drives the trending
+  // order), then replay the answer VAiR already gave — no AI call, no tokens,
+  // doesn't count toward the daily limit. Only questions with no saved
+  // answer yet go to the AI.
+  const handleSuggestionClick = (item) => {
+    if (chatLoading) return;
+    fetch(`${EDGE_BASE}/get-recent-questions`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'click', question: item.question }),
+    }).catch(() => {});
+    if (item.answer) {
+      setError(null);
+      setMessages(prev => [...prev, { role: "user", content: item.question }, { role: "assistant", content: item.answer }]);
+    } else {
+      askQuestion(item.question);
     }
   };
 
@@ -989,22 +1017,24 @@ export default function RefereeLLM({ onNavigate } = {}) {
               gap: 12,
               alignItems: "center",
             }}>
-              {trendingQuestions && (
+              <div style={{ maxWidth: 600, width: "100%", textAlign: "left", marginBottom: 2 }}>
                 <div style={{
                   fontSize: 12,
                   fontWeight: 600,
-                  color: "rgba(232,245,233,0.5)",
+                  color: "rgba(232,245,233,0.55)",
                   textTransform: "uppercase",
                   letterSpacing: "0.08em",
-                  marginBottom: -4,
                 }}>
-                  🔥 Trending Questions
+                  {trendingQuestions ? "🔥 Trending Questions" : "💡 Try a question"}
                 </div>
-              )}
+                <div style={{ fontSize: 13, color: "rgba(232,245,233,0.5)", marginTop: 4 }}>
+                  👆 Tap a question to see its answer{trendingQuestions ? " — ⚡ marks an instant answer other referees already got" : ""}
+                </div>
+              </div>
               {sampleQuestions.map((q, i) => (
                 <button
                   key={i}
-                  onClick={() => setInput(q)}
+                  onClick={() => handleSuggestionClick(q)}
                   style={{
                     maxWidth: 600,
                     width: "100%",
@@ -1017,6 +1047,9 @@ export default function RefereeLLM({ onNavigate } = {}) {
                     textAlign: "left",
                     cursor: "pointer",
                     transition: "all 0.2s",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.background = "rgba(10,30,15,0.5)";
@@ -1027,9 +1060,37 @@ export default function RefereeLLM({ onNavigate } = {}) {
                     e.currentTarget.style.borderColor = "rgba(29,158,117,0.2)";
                   }}
                 >
-                  {q}
+                  <span style={{ flex: 1, minWidth: 0 }}>{q.question}</span>
+                  {(q.answer || q.clicks > 0) && (
+                    <span style={{ display: "flex", gap: 6, flexShrink: 0, fontSize: 12, color: "#8fd9bb" }}>
+                      {q.clicks > 0 && (
+                        <span title={`${q.clicks} ${q.clicks === 1 ? "person" : "people"} opened this question`}>👥 {q.clicks}</span>
+                      )}
+                      {q.answer && <span title="Instant answer">⚡</span>}
+                    </span>
+                  )}
                 </button>
               ))}
+              <div style={{
+                maxWidth: 600,
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                margin: "10px 0 0",
+                color: "rgba(232,245,233,0.45)",
+                fontSize: 12,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+              }}>
+                <div style={{ flex: 1, height: 1, background: "rgba(29,158,117,0.25)" }} />
+                or
+                <div style={{ flex: 1, height: 1, background: "rgba(29,158,117,0.25)" }} />
+              </div>
+              <div style={{ fontSize: 15, color: "#8fd9bb", textAlign: "center" }}>
+                ✍️ Describe your own situation in the box below
+                <div style={{ fontSize: 22, marginTop: 4, animation: "hint-bounce 1.6s ease-in-out infinite" }}>↓</div>
+              </div>
             </div>
           </div>
         )}
@@ -1308,6 +1369,10 @@ export default function RefereeLLM({ onNavigate } = {}) {
         @keyframes pulse {
           0%, 100% { opacity: 0.3; }
           50% { opacity: 1; }
+        }
+        @keyframes hint-bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(6px); }
         }
       `}</style>
     </div>

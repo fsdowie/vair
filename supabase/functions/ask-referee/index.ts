@@ -249,16 +249,30 @@ Only provide detailed explanations if user asks for more.`;
     // Log the question along with the real token usage Anthropic billed for
     // this request, so usage can be broken down per VAIR user later.
     const usage = data.usage ?? {};
-    const { error: logError } = await supabase
+    const logRow = {
+      user_id: user.id,
+      question: userQuestion,
+      input_tokens: usage.input_tokens ?? null,
+      output_tokens: usage.output_tokens ?? null,
+      cache_creation_input_tokens: usage.cache_creation_input_tokens ?? null,
+      cache_read_input_tokens: usage.cache_read_input_tokens ?? null,
+    };
+    // The answer is kept so trending questions can replay it for free
+    // (get-recent-questions); follow-ups are flagged so they're never
+    // offered out of context.
+    let { error: logError } = await supabase
       .from('questions_log')
       .insert({
-        user_id: user.id,
-        question: userQuestion,
-        input_tokens: usage.input_tokens ?? null,
-        output_tokens: usage.output_tokens ?? null,
-        cache_creation_input_tokens: usage.cache_creation_input_tokens ?? null,
-        cache_read_input_tokens: usage.cache_read_input_tokens ?? null,
+        ...logRow,
+        answer: content,
+        is_followup: messages.filter(m => m.role === 'user').length > 1,
       });
+    if (logError) {
+      // Still log the question (it backs the daily limit) if the answer
+      // columns from migration 019 aren't there yet.
+      console.error('Error logging question with answer, retrying without:', logError);
+      ({ error: logError } = await supabase.from('questions_log').insert(logRow));
+    }
 
     if (logError) {
       console.error('Error logging question:', logError);
