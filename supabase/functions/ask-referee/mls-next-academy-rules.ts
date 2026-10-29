@@ -1,0 +1,639 @@
+export const MLS_NEXT_ACADEMY_RULES = `MLS NEXT ACADEMY DIVISION (ALSO KNOWN AS MLS NEXT 2 / MLS NEXT ACADEMY) 2026/27
+Sources: MLS NEXT Academy Division Rules & Regulations 2026-2027 and MLS NEXT Academy Division Technical Standards 2026-2027
+
+=== MLS NEXT ACADEMY DIVISION RULES & REGULATIONS 2026-2027 ===
+
+OVERVIEW
+
+Operators, as licensees of Player Development, L.L.C. (“PDev”) (which is a subsidiary of Major League Soccer, L.L.C. (“MLS”)) operate territories of MLS NEXT Academy Division (the “Program” or “League” operating as “MLS NEXT Academy Division”) with the mission of providing training, development, education, and competition opportunities for select soccer players between the age groups of U13 to U19 across the United States. The Program includes a league, postseason competition, as well as other development-focused initiatives.
+
+II.
+
+DEFINITIONS
+
+Capitalized terms shall have the definitions ascribed to them in this section. Capitalized terms not defined in this section but defined in other sections of these Rules and Regulations or in other Rules and Policies (as defined below) will have the meaning ascribed to them in those sections or documents.
+
+a. Club (or “Member”). Any soccer club whose application for membership in MLS NEXT Academy Division has been accepted, and that has signed a Membership Agreement and paid a specified performance bond.
+
+b. Club Representative. Any Club personnel, including but not limited to, any Club employees, Coaches, trainers, Team administrators, other support or volunteer staff, or any individual who represents themselves as being affiliated with a Club in a manner that is known or should be known to the Club, that assist the Club in connection with the Season.
+
+c. Coach. An individual who performs the duties and services as may be assigned to an individual by a Club regarding the training of youth soccer players, including, but not limited to, (i) conducting and supervising the Team’s practices, training camps, and training sessions, (ii) coaching the Team in all competitions and Matches, (iii) preparing for all Matches played by the Team, including developing Match strategies, (iv) overseeing off-season Player development programs for the Team, (v) consulting and advising with respect to the Team’s Roster, (vi) directing and supervising the Team’s coaching staff, (vii) enforcing Club and League rules, and/or (viii) participating in promotional, sponsorship, and public relations activities.
+
+d. Competitive Season. The period of time between the first official Match scheduled by Operator for the Conference in which the Club is registered and the final official Match scheduled by that Operator (including MLS NEXT Cup).
+
+e. Conference. The grouping of Teams that compete against each other in the Regular Season and whose performance and standings are tracked and reported together.
+
+f. Facility. A venue for Team training and Matches, including all parking, structures, and grounds on or immediately surrounding the venue.
+
+g. FIFA. The Fédération Internationale de Football Association (International Federation of Association Football), the international governing body of association soccer.
+h. Fixture. A set of scheduled Matches of multiple age groups versus one opponent.
+i. Forfeit. A 3-0 loss for the team that is issued the forfeiture for a Match.
+j. Infraction. Any violation or alleged violation of the Rules and Policies, or any action or alleged action that is against the spirit of the Rules and Policies.
+k. Lifetime Ban. Permanently prohibiting an individual from being a Participant.
+l. Match/Game. Any soccer match played between two Clubs or any match organized by an Operator as part of an MLS NEXT Academy Division Competition.
+m. Match Day Roster. The official match day roster that each Team must create and submit to the referee prior to a Match, which for U13 through U19 lists 20 Players from the Roster who will be eligible to participate in that Match as well as all individuals who will be in the Club’s technical area at any point during the Match.
+n. Match Decision. Events or matters that have a direct effect on Matches, excluding disciplinary matters, including, but not limited to, the eligibility of Players, the state of the field, accessory Match equipment, crowd behavior, and stadium installations.
+o. Match Official. The referee, assistant referees, fourth official, Match commissioner, referee inspector, the person in charge of safety, and/or any other persons appointed by Operator and/or Professional Referee Organization (“PRO”) to assume responsibility in connection with a Match.
+p. Match Report. A form submitted by a Match Official that records Match data on the field of play, including, but not limited to, a win, loss, tie, goals scored for, goals scored against, total points achieved, misconduct, suspensions, and injuries.
+q. Match Suspension. A ban that prevents a Player, Club Representative (in the technical area), or other Participant from taking part in any future Match or MLS NEXT Academy Division Competition, including, but not limited to, being present in the area immediately surrounding the field of play. The suspension is imposed in terms of Matches, days, or months.
+r. Membership Agreement. The document that details the rights and obligations of each Club; a fully executed Membership Agreement is required for a Club to become a valid member of MLS NEXT Academy Division.
+s. MLS NEXT Academy Division Competition. The MLS NEXT Academy Division schedule, collectively referring to friendly matches, Regular Season matches, MLS
+
+NEXT Fest, MLS NEXT Academy Division Regional Events, and MLS NEXT Cup (each as applicable), featuring at least one Club and organized by Operator and/or PDev.
+
+t. MLS NEXT Academy Division Events. This definition includes, but is not limited to, MLS NEXT Academy Division-sanctioned tournaments, leagues, showcases, Talent IDs, and camps run by Operators and/or PDev, including local affiliate organizations (if the event is sanctioned by Operator or PDev). While Operator or PDev may not have authority or control over non-sanctioned events operated or organized by Clubs, any conduct prohibited by the Rules and Policies even at non-sanctioned events may serve as an independent basis for disciplinary action if it calls into question a Participant’s fitness to participate in MLS NEXT Academy Division Events or Competitions.
+
+u. MLS NEXT Academy Division Participation Agreement and Waiver. The waiver and
+
+release agreement that all Players (and, to the extent applicable, Players’ parents/legal
+
+guardians), Club Representatives, or any other Participant must sign before they may
+
+participate
+
+in
+
+MLS
+
+NEXT
+
+Academy
+
+Division.
+
+v. MLS NEXT Academy Division Regional Events: MLS NEXT Academy Division Competitions held regionally by an Operator across select age groups. Unless otherwise stated by Operator, Club participation is required at MLS NEXT Academy Division Regional Events, which are part of the Regular Season.
+
+w. MLS NEXT Academy Division Technical Standards. All rules and guidelines related to the technical soccer standards of any MLS NEXT Academy Division Competition as well as training standards. These include, but are not limited to, substitutions, field size, and coach licensing and certification.
+
+x. MLS NEXT Academy Division Website. The official MLS NEXT Academy Division website.
+
+y. MLS NEXT Cup. The MLS NEXT Academy Division Competition held at the conclusion of the Regular Season among the qualifying Teams from the U15 through U19 age groups, culminating in a champion in the U15, U16, U17, and U19 age groups.
+
+z. Operator. The entity provided a license by PDev to host, operate, oversee, manage, support, and be responsible for MLS NEXT Academy Division Conference in an assigned territory.
+
+aa. Participant. Any Player, Club, Club Representative, Operator employee that does not otherwise fall under the definition of Program Staff, Match Official, parent, spectator, volunteer, independent contractor (including, but not limited to, security or medical personnel including an athletic trainer that does not fall under Club Representative), or other individual that attends or contributes to an MLS NEXT Academy Division Event.
+
+bb. Player. An individual who has completed the MLS NEXT Academy Division Registration process and is eligible to be added to a Roster.
+cc. Post-Season. The MLS NEXT Cup.
+dd. Pre-Season. The three-to-four week period before the start of the MLS NEXT Academy Division Regular Season.
+ee. Program Staff. Those individuals who work on behalf of Operator to execute all MLS NEXT Homegrown Division Events.
+ff. Protest. An objection of any kind related to a Match Decision.
+gg. Registration. The process by which each Player, Club, and Club Representative submits required information and agrees to abide by the Rules and Policies. Registration is currently done online.
+hh. Regular Season. The time period beginning on a date set by Operator (typically in September) and concluding on a date specified by Operator before the beginning of the MLS NEXT Cup during which MLS NEXT Academy Division Competition between Clubs occurs, inclusive of regional and winter MLS NEXT Academy Division Events, and counting towards points for regular season standings. Excluded from the Regular Season is any breaks for high school season in a given Conference.
+ii. Roster. The list of Players and Club Representatives registered to participate on a Team.
+jj. Rules and Policies. Collectively, these MLS NEXT Academy Division Rules and Regulations, along with each Club’s Membership Agreement, the MLS NEXT Academy Division Commercial Marketing Guidelines, the MLS NEXT Academy Division Style Guide, the MLS NEXT Academy Division Disciplinary Code, the MLS NEXT Academy Division Code of Conduct, the MLS NEXT Academy Division Safety and Wellbeing Policy, the MLS Privacy Policy, and any other rules, regulations, policies, guidelines, procedures, or directives of Operator and/or PDev, as they exist on the date hereof and as they may be amended, restated, supplemented, or otherwise modified from time to time).
+kk. Sanction. A penalty or other means to enforce compliance with Rules and Policies.
+ll. Season. The entire year of competitive and non-competitive programming organized by Operator as MLS NEXT Academy Division Events, including, but not limited to, PreSeason, Regular Season, and Post-Season.
+mm. Team. Any grouping of Players by age by a Club to play in MLS NEXT Academy Division Competitions.
+
+NN. USSF (the “Federation” or “U.S. Soccer”). The United States Soccer Federation, the official governing body of the sport of soccer in the United States.
+III. SAFESPORT, ANTI-ABUSE, ANTI-DISCRIMINATION, AND SAFETY COMPLIANCE FRAMEWORK
+The MLS NEXT Academy Division Safety and Wellbeing Policy, which incorporates policies mandated by federal law, the U.S. Center for SafeSport (the “Center), as well as the U.S. Soccer Federation, represents a foundational structure for building a soccer community where all participants, be they athletes, coaches, referees, parents, administrators, or volunteers, play an active role in creating a soccer atmosphere free of all forms of emotional, physical, and sexual misconduct.
+In addition, the MLS NEXT Academy Division Safety and Wellbeing Policy prohibits engaging in any conduct that amounts to unfair, adverse, discriminatory, or unequal treatment based on an individual’s Protected Status, including, without limitation, racism, or sexism. Operators are committed to maintaining an environment at all MLS NEXT Academy Division Events that is free from all forms of Discrimination.
+The MLS NEXT Academy Division Safety and Wellbeing Policy is incorporated into all Rules and Policies and can be found on the MLS NEXT Academy Division Website. Failure of any Participant to comply with the MLS NEXT Academy Division Safety and Wellbeing Policy or the MLS NEXT Academy Division Code of Conduct will subject the non-compliant Club and/or Participant to discipline in accordance with the MLS NEXT Academy Division Disciplinary Code and the MLS NEXT Academy Division Safety and Wellbeing Policy.
+IV. GOVERNANCE AND ORGANIZATION
+a. Authority & Discretion
+MLS NEXT Academy Division is managed and administered by Operators. By signing the MLS NEXT Academy Division Membership Agreement, Clubs agree that the decision-making and policy-setting of Operator for the Conference (along with licensor PDev in limited circumstances), shall be made in the sole and absolute discretion of Operator.
+b. Discipline
+Any and all Infractions may subject a Club or a Participant to discipline under the MLS NEXT Academy Division Disciplinary Code. Should a Club or Participant be found in violation of any of the Rules and Policies, penalties may vary based on the type and frequency of the Infraction and may result in fines, denied participation in MLS NEXT Academy Division Competitions and Events, expulsion from the Program, among other potential penalties in Operator’s sole and absolute discretion (along with licensor PDev in limited circumstances). The Clubs may bear the financial costs of any training mandated as a result of any rule violation. For more information, please see the MLS NEXT Academy Division Disciplinary Code.
+
+V.
+
+MLS NEXT ACADEMY DIVISION MEMBERSHIP
+
+a. Consideration For Membership
+
+Each Club that wishes to participate in MLS NEXT Academy Division must submit a completed application prior to the application deadline determined by PDev to be considered for admission into the Program. The precise criteria that will be applied in assessing applicant clubs will be determined by PDev in its sole and absolute discretion. However, it is expected that the following factors, among others, may be considered, with the weight of each factor to be decided by PDev in its sole and absolute discretion:
+
+i. Club philosophy
+
+ii. Leadership and governance
+
+iii. History of elite player development
+
+iv. Strength of current and potential player pool
+
+v. Expertise and credentials of coaches and technical staff
+
+vi. Daily performance environment, including training, matches, facilities, staff support, non-soccer programs, etc.
+
+vii. Ability to reduce or eliminate costs for players
+
+viii. Geography
+
+ix. Disciplinary history (including criminal or Safety & Wellbeing violations)
+
+x. Evidence of non-discriminatory, inclusive policies, processes and practices
+
+xi. Participation and standing in MLS NEXT Homegrown Division
+
+PDev will aim to review and evaluate each application every calendar year. Once PDev has reviewed the submitted applications, PDev will conduct live (virtual) interviews with clubs under consideration and gather feedback from local and national references.
+
+PDev will make the final determination regarding which clubs are accepted and offered the opportunity to become Members of MLS NEXT Academy Division. An accepted Club will not become a Member until the Club has agreed to abide by all MLS NEXT Academy Division Rules and Policies, provided the required performance-bond payment, and entered into a fully-executed MLS NEXT Academy Division Membership Agreement.
+
+b. Maintaining Eligibility
+To remain in good standing, Clubs must be in full compliance with the Rules and Policies. In addition, Operator reserves the right to conduct evaluations of Clubs at any time; such evaluations may include review of both technical and administrative criteria (including as set forth above in Section V(a)), as determined by Operator in its sole discretion, as well as a review of the Club’s compliance with the Rules and Policies.
+c. Change of Ownership
+A Club must give Operator and PDev written notice if the Club wants to change ownership, merge with another Club, change the location of the Club, or change the structure of the Club. PDev reserves the right to deny the Club’s request, conduct a review of the Club prior to any such change, or determine whether the Club will remain in good standing. If Operator determines that a Club is not in compliance with such criteria or any of the Rules and Policies, the Club may be subject to discipline, up to and including removal from MLS NEXT Academy Division.
+d. Withdrawal of a Club
+In the event a Club withdraws from MLS NEXT Academy Division without finishing its scheduled Season, the Club shall forfeit its Membership and performance bond, and the following will apply:
+i. If at least half of the full schedule of Matches for the Club in question has been played, all resulting scores stand as validated by Operator;
+ii. If less than half of the full schedule of Matches for the Club in question has been played, these completed Matches will be deleted from the standings; and
+iii. In the sole and absolute discretion of Operator, any remaining Matches shall either be recorded as a Forfeit victory for the opponent and/or rescheduled, as may be appropriate.
+e. Termination
+Pursuant to the MLS NEXT Academy Division Membership Agreement, Operator reserves the right to terminate any Club’s Membership at any time for failure to meet MLS NEXT Academy Division Technical Standards, violation of any of the Rules and Policies, or taking or failing to stop any action that frustrates the purpose or intent of any Rules and Policies, in each case such determination shall be in accordance with the MLS NEXT Academy Division Disciplinary Code.
+VI. CLUB NON-FINANCIAL RESPONSIBILITIES
+a. Compliance with and Policies
+All Clubs and Participants are required to comply with the Rules and Policies. In order to comply, Clubs must adopt the Rules and Policies on behalf of their employees and all other Club
+
+Representatives. Operator reserves the right to decide how to enforce the Rules and Policies, in its sole and absolute discretion. Should a Club or any Participant associated with that Club be found in violation of any of the Academy Division Rules and Policies, the Club’s standing and Membership in MLS NEXT Academy Division, or the individual’s participation in MLS NEXT Academy Division, may be jeopardized, as further described below. In addition, the Rules and Policies are subject to change from time to time. Although Operator and PDev make every effort not to modify the Rules and Policies mid-season, Operator and PDev reserve the right, in their sole and absolute discretion, to amend or enact new policies at any time, particularly to the extent required by applicable law, recommended by the U.S. Olympic and Paralympic Committee or the Center, or otherwise where they believe it is in the best interest of MLS NEXT Academy Division and/or the safety of its Players. In the event of a change of these Rules and Policies, Operator will make best efforts to provide Clubs with advance notice.
+Subject to any applicable laws, Operator may use any information in determining disqualifications for participation in MLS NEXT Academy Division. Such information may include, without limitation, conviction of any felony, gross misdemeanors, violation of Rules and Policies, or driving offenses, including, but not limited to: loss of license, reckless driving, impaired driving, or a DUI.
+Any person accused of physical or sexual misconduct or otherwise violating the MLS NEXT Academy Division Safety and Wellbeing Policy may be terminated, suspended, or placed in an alternate position by Operator until the matter is resolved. A person who is accused, but later cleared, of charges/allegations may apply to be reinstated in MLS NEXT Academy Division. Reinstatement is not a right, and no guarantee is made that they will be reinstated to their former position or any other position within the MLS NEXT ecosystem.
+b. Reporting Obligations
+All Clubs and Covered Persons (as defined in the MLS NEXT Academy Division Safety and Wellbeing Policy to mean any individual age eighteen or older (“Adult”) that is a Participant who has Regular Contact (which means, recurring, repeated or periodic contact between an Adult and anyone under the lesser of (1) the age of 18, or (2) the age of majority in the applicable state or province (“Minor”), or a person with supervisory or decision-making authority over an Adult who has recurring, repeated or periodic contact with Minors, including but not limited to overseeing, supervising, chaperoning, or otherwise interacting) with any Player or Match Official, who is a Minor, in connection with Covered Programs (as defined in the Safety and Wellbeing Policy)) must comply with all reporting obligations set forth in the Rules and Policies. Failure by Clubs or Covered Persons to promptly report violations of the MLS NEXT Academy Division Safety and Wellbeing Policy and SafeSport Code constitutes a violation of the Rules and Policies. Clubs, Covered Persons, and all Participants should report pertinent situations that appear to be in noncompliance with the Rules and Policies to Operator. Reporting non-compliance on the part of other Clubs should not be viewed as a negative, but rather as a positive attempt to maintain consistent standards that ensure professionalism, safety, and fairness, both on and off the field.
+
+c. Conduct
+Each Club must, upon Operator’s renewal of a Club’s membership in MLS NEXT Academy Division, execute and deliver its annual Membership Agreement to Operator prior to the start of the upcoming season. In the event a Club does not renew its Membership by executing the annual Membership Agreement and paying the performance bond as directed by Operator, such Club will not be permitted to participate in MLS NEXT Academy Division Events for that year. In the event a Club does not provide adequate notice (at least thirty (30) days) of such non-renewal, the Club will forfeit its performance bond. Each Club shall be responsible for the conduct of all its Participants, including, but not limited to, its Club Representatives, Players, parents, volunteers, and spectators.
+d. Development
+i. Heading:
+1. Players aged 10 and younger are prohibited from heading the ball regardless of the age group in which they play.
+2. Players who are 11, 12, and 13, regardless of the age group in which they play, may head the ball during Matches; however, these players must limit heading practice to a maximum of 30 minutes per week with no more than 15–20 headers per player, per week.
+e. Scholarships
+i. Requirements:
+1. Each Club in MLS NEXT Academy Division is required to issue a minimum of one (1) full scholarship equivalent per season.
+2. The full scholarship equivalent must be a financial amount equal to the cost of participating on an MLS NEXT Academy Division team, excluding travel (i.e., cost of tuition).
+a. The financial support that results in a full scholarship equivalent may be issued across multiple families (e.g., instead of providing a single player/family one (1) full scholarship, a Club may issue financial assistance to four (4) families that is equal to 25% of a full scholarship).
+ii. Recommendations (not required):
+1. Club financial support to families is “need-based.”
+2. Clubs issue financial support across several age groups.
+
+VII. OUTSIDE COMPETITION
+a. Permissible Outside Competition
+Subject to approval by Operator (and in the event of international tournament participation, additional USSF approvals may be required), Clubs may participate in tournaments and competitions outside of the MLS NEXT Academy Division Program. Clubs will only be permitted to participate in approved competitions and events that follow the MLS NEXT Academy Division Technical Standards and are in compliance with the standards outlined in the MLS NEXT Academy Division Outside Competition Standards. A list of previously approved sanctioned tournaments are included below. Clubs must receive prior approval from Operator for all sanctioned tournaments outside of the MLS NEXT Academy Division Program each season. Club participation in outside competition without prior approval may result in discipline.
+To request permission, the Club must submit to Operator an MLS NEXT Academy Division Outside Competition Application, including a roster and all necessary background information. All applications will be reviewed within 72 hours of submission; however, if additional information is required, allow 14 business days for review. In the event the Team plans to travel internationally, the Club must also submit the appropriate documentation to the USSF (if the Club is based in the U.S.). Clubs will ensure that they receive required permission and secure necessary participant excess medical coverage.
+The MLS NEXT Academy Division Safety and Wellbeing Policy and the prevention policies therein remain applicable to any Club traveling internationally.
+b. Player Participation in Outside Competitions
+Players must meet all attendance and participation requirements under the Rules and Policies and under any individual Club requirements with respect to training and Matches for their Club during the Season. Absent extenuating circumstances (to be determined by Operator and the Club), the failure to meet those requirements should result in the Player’s removal from the Club. Operator strongly encourages Clubs to ensure that Players meet the attendance and participation requirements—Clubs that do not take appropriate action to ensure that such attendance and participation requirements are met may be subject to Sanctions.
+Clubs may not permit any Player to participate in outside competition with another Club during the Season, except as set forth in this Section and in connection with a Player’s National Team duty and/or Youth National Team Identification Center participation. Clubs will be held accountable for the actions of their Players and Club Representatives, as well as the Club’s parents, spectators, and volunteers. Players will be subject to discipline by both their own Club and Operator.
+
+VIII. EXPECTATIONS OF CLUBS
+a. Training and Match Expectations
+All Clubs are required to complete their entire Regular Season schedule and to attend all MLS NEXT Academy Division Events scheduled for their age groups. As further detailed in the MLS NEXT Academy Division Membership Agreement, failure to field a Team for a scheduled Match resulting in a Forfeit will cause the Club to be fined. All Forfeits are subject to additional fines and disciplinary action at Operator’s sole and absolute discretion. Any Club forfeiting a Match due to failing to field a Team during its membership in MLS NEXT Academy Division may be removed from the Program in PDev’s sole and absolute discretion.
+Clubs are responsible for fielding teams that provide meaningful competition for other Members. In the event a Club is not able to field consistently competitive teams in MLS NEXT Academy Division, Operator will notify the Club of the concern and work in good faith on solutions and timelines to improve the Club’s competitiveness. In the event the Club is unable to become more competitive, such that the Club is providing meaningful Matches for other Members, the Club may be subject to removal from the Program.
+Clubs are responsible for adhering to all Match Day policies and procedures outlined and explained in the MLS NEXT Academy Division Technical Standards. Clubs should make efforts to acquire the best facilities possible as outlined below. Clubs must train and play home Matches within reasonable geographic proximity to their Club’s home location unless approved by Operator. If a Club is unable to provide a home field that meets MLS NEXT Academy Division minimum standards (70 x 105 yards for U15 and older; 65 x 100 yards for U14; and 64 x 84 yards for U13), the Club may be asked to relocate to an alternate location or may lose the right to host Matches.
+b. Inclusion and Non-Discrimination
+MLS NEXT Academy Division is an inclusive and non-discriminatory Program. MLS NEXT Academy Division does not and will not tolerate any racist, discriminatory or inappropriately exclusive behavior by any Participant, including any Club.
+MLS NEXT Academy Division has set out to create an inclusive development environment. To that end, Clubs shall make all efforts to establish a positive and safe environment for all Participants, without regard to race, ethnicity, income level, culture, sexual orientation, and gender. As outlined in the MLS NEXT Academy Division Safety and Wellbeing Policy, it is recommended that each Club provide inclusion and awareness training for its Participants. To promote a positive and inclusive culture, Clubs should use best efforts to provide training on an annual basis and ensure that their Players and Club Representatives complete such training prior to the beginning of the Regular Season (and more frequently if needed).
+c. Non-Technical Facility Requirements
+Clubs should acquire Facilities that (if feasible): (1) have separate locker rooms for Players on different teams; (2) have separate and functionally equivalent changing areas for different genders, as well as separate restrooms for Adults and Minors; and (3) the field must be designed for soccer
+
+use and adequately maintained and repaired. In addition, prior to the use of a field, the field must be inspected as set forth in the MLS NEXT Academy Division Safety and Wellbeing Policy.
+d. Mandatory Meeting Attendance
+The Club must send at least one (1) Club director and one (1) Club administrator to each mandatory MLS NEXT Academy Division meeting or conference call as scheduled by Operator, unless otherwise notified.
+e. Recruiting Players/Territories
+No Club has exclusive territory rights. Clubs may recruit Players for participation on Clubs from any geographic region. Players cannot move back and forth between Clubs more than once in a given Season.
+IX. CLUB FINANCIAL RESPONSIBILITIES
+a. Performance Bond
+As further described in the MLS NEXT Academy Division Membership Agreement, each Club will be required to post a performance bond of $2,000 prior to being declared an official Member. In the event PDev does not approve the Club for renewed membership, Operator will return the Club’s performance bond. In the event a Club is removed from MLS NEXT Academy Division for any reason outlined in the Rules and Policies, the performance bond shall be forfeited by the Club and the Club shall have no further rights regarding the performance bond.
+b. Travel Costs
+All costs associated with travel to MLS NEXT Academy Division Competitions are the responsibility of the individual Club.
+c. Training/Coaching Costs
+All costs associated with the training and coaching of a Club are the responsibility of the individual Club.
+d. Administrative Costs
+All costs associated with running a Club, including, without limitation, all insurance premiums deductibles, and/or self insured retentions required by the Rules and Policies or otherwise, are the responsibility of the individual Club.
+e. Registration Costs
+All Players and Club Representatives who will be allowed on any Team’s technical area during a Match must register with Operator to participate in MLS NEXT Academy Division. As detailed in the MLS NEXT Academy Division Membership Agreement, registration fees for the upcoming
+
+season shall be $65 per participating individual. Additionally, there will be a $95 Player Safety and Technology fee due upon registration per participating player. The registration fee and Safety and Technology fee will come to a total fee of $160 per participating player for the 2026-27 Season.
+Coaches and Club Representatives do not need to pay more if coaching across different age groups or serving in multiple roles, each individual only needs to be accounted for once. Fees are subject to change upon reasonable notice to Clubs. Clubs must pay registration fees for all players and staff members before Operator will approve them for participation in MLS NEXT Academy Division.
+f. Team Registration Costs
+As detailed in the MLS NEXT Academy Division Membership Agreement, team registration fees for the upcoming season shall be $700 per participating team.
+g. Regional Event Costs
+The registration cost to attend the mandatory MLS Next Academy Division Regional Event as scheduled by Operator will be $1,500 per participating team.
+h. Background Check Costs
+The Club will cover all costs associated with the background checks required in the Rules and Policies and conducted through the Registration system by Operator’s selected vendor.
+i. ImPACT Baseline Tests Costs
+The League will cover all costs associated with administration and delivery of individual ImPACT Baseline Concussion testing required in the Rules and Policies.
+j. Equipment Costs
+Other than equipment that Operator elects to provide in its sole discretion, all costs associated with equipment are the responsibility of the individual Club.
+k. Facility Costs
+All costs associated with securing a Facility for training and home Matches are the responsibility of the individual Club. The host Club is responsible for covering Facility parking fees (if applicable) for the Match Officials, visiting Club Representatives, and Team transportation (e.g., bus/van) for Matches.
+l. Match Officials Fees
+The home Team will cover referee, assistant referee, and assignor fees for all age groups in Matches during the Regular Season that are scheduled by Operator. The home and visiting Teams
+
+will split previously stated referee fees for all age groups at Matches that are not part of the Regular Season, including the MLS NEXT Academy Division Showcases, MLS NEXT Academy Division Regional Events, MLS NEXT Cup, and any other MLS NEXT Academy Division event requiring match officials. Operator reserves the right to assess sanctions for outstanding Match Official Fees.
+
+m. Fines/Penalties
+
+Operator reserves the right to assess fines and/or sanctions for Infractions, as outlined in the MLS NEXT Academy Division Disciplinary Code. All of the money collected in fines will be provided to the MLS GO PLAY FUND, Major League Soccer’s initiative to make soccer more accessible for all children.
+
+n. Certificate of Insurance
+
+Each Club shall carry and maintain liability insurance and, upon request by Operator and at Club’s insurance renewals, shall provide Operator with certificate(s) of insurance evidencing the Club’s insurance coverage in the amounts and for the coverages required by Operator and the Rules and Policies. For further information, see the MLS NEXT Academy Division Membership Agreement.
+
+o. Other
+
+Unless otherwise expressly addressed in these regulations, all expenses related to a Club and the Club’s participation in MLS NEXT Academy Division are the sole responsibility of the participating Club.
+
+X.
+
+SECONDARY PLAYER MEDICAL INSURANCE
+
+Operator provides secondary medical accident insurance for each Player. This medical accident insurance is secondary to (i.e., excess over) the Player’s personal health insurance and only covers injuries occurring during MLS NEXT Academy Division Competition, MLS NEXT Academy Division training, MLS NEXT Academy Division tryouts, and approved Outside Competition. For the avoidance of doubt, this medical insurance does not cover Coaches, other staff, or spectators. Further, Operator will not cover health insurance for Players that drop their primary health insurance after joining Operator for the purpose of making this insurance the Player’s primary medical insurance policy. Sublimits, deductibles, coinsurance, and other conditions may apply.
+
+XI. REGISTRATION
+
+a. General
+
+Operator will collect the personal information of all Players and certain Club Representatives via online registration system software, to the extent such information is necessary to enable Operator to provide services (e.g., match execution).
+
+Operator shall have the authority to establish additional procedures, including deadlines, for Registration of Players through the registration software.
+
+b. Club and Club Representative Registration
+i. Club Registration
+All Clubs must register through the online Registration process via the registration platform designated by Operator, which shall include the following:
+• Registration of Club in Operator’s designated soccer registration software; and
+• Paying a $65 registration fee for each individual that will be on the field or sideline for a Club during a Match (or in another amount specified in Section IX.e).
+• Paying a $95 Safety & Technology fee for each Player that will participate with a Club.
+• Paying a $700 registration fee for each team that will be participating in MLS NEXT Academy Division.
+• Individuals who have not cleared the background check process or received approval from Operator or its designated third-party vendor cannot participate in any MLS NEXT Academy Division activity.
+• Any Club that allows an unapproved/unregistered individual to participate in any MLS NEXT Academy Division activity may be subject to sanctions including, but not limited to, a fine or termination of its MLS NEXT Academy Division Membership, and will be considered in breach of its MLS NEXT Academy Division Membership Agreement.
+ii. Club Representative Registration
+All Club Representatives seeking to work with any Player, including, without limitation, any Covered Person as defined in the MLS NEXT Academy Division Safety and Wellbeing Policy, Club academy directors, registered Health Care Professionals (“HCP”), Certified Athletic Trainers (“ATC”) at any practice, Match, or other MLS NEXT Academy Division Event must be fully registered. Names and photos are created digitally through the MLS NEXT Academy Division registration software and will be used to check in Club Representatives who will be in the Club’s technical area via the Match Day Roster. A maximum of five (5) Coaches/staff members (not including Qualified Medical Professional (“QMP”) or other HCP/ATC, video analyst, videographer, Club Sporting Director, or Club General Manager) from a Club may be in the technical area during a Match and all must have a photo within the Match Day Roster.
+To request approval, all Club Representatives must complete the online Registration process through Operator’s platform by:
+• Completing the Operator-mandated background check (and for new hires a reference check conducted by the Club as well);
+• Uploading a photo of themselves;
+
+• Completing the U.S. Center for SafeSport’s Core Training (“Core Training”) (for initial approval) or, if the Core training has already been completed, the official SafeSport refresher course for each subsequent season (available in your training account at www.safesport.org);
+• Acknowledge all provided Rules and Policies;
+• Completing the CDC HEADS UP concussion training; and
+• Submitting a signed MLS NEXT Academy Division Participant Agreement and Waiver for the applicable season.
+NOTE: Individuals subject to disciplinary sanction by the Center or Operator, whether a temporary or final measure, may not be permitted to participate in MLS NEXT Academy Division. Clubs must consult the on-line disciplinary records at www.safesport.org (https://uscenterforsafesport.org/response-and-resolution/centralized-disciplinary-database/) as part of their employment background screening process.
+All Coaches and Club directors are required to complete annual equity and inclusion training, as directed by Operator.
+c. Player Registration
+All individuals seeking to play for a must be fully registered. Names and photos are created digitally through the MLS NEXT Academy Division registration software and will be used to check in Players who will be in the Club’s technical area via the Match Day Roster.
+All Players must complete the online registration process through Operator via the designated registration platform, including the following:
+i. Execute the MLS NEXT Academy Division Participant Agreement and Waiver and the Player Authorization for the Release of Health Information;
+ii. Upload a photo;
+iii. Complete an ImPACT Baseline Test;
+iv. Provide medical insurance information;
+v. Provide required medical clearance information;
+vi. Acknowledge and agree to comply with the MLS NEXT Academy Division Code of Conduct, MLS Privacy Policy, the MLS NEXT Academy Division Rules and Regulations, and MLS NEXT Academy Division Safety & Wellbeing Policy;
+
+vii. Complete all aspects of the MLS NEXT Academy Division Registration process and affirm you are not subject to suspension; and
+viii. Complete mandated SafeSport training, if applicable.
+d. Compliance with Registration Process
+i. MLS NEXT Academy Division may disapprove, deny registration to, and/or disqualify any individual, and/or deny Membership to or otherwise discipline any Club, which employs or utilizes any individual who either fails to comply with the registration procedures, falsifies information, violates the Rules and Policies, or as a result of such procedures is determined by MLS NEXT Academy Division to be unfit to continue in their current position.
+ii. Anyone who forges a document or falsifies an authentic document or uses a forged or falsified document to deceive may be Sanctioned.
+XII. PLAYER ELIGIBILITY AND ROSTERING
+a. Eligible Players
+To be considered an eligible Player, any Player listed on any Club Roster must meet the age requirement for their Club, have completed the registration process outlined in Section XI(c), have paid the registration fee, and must not be subject to a Suspension (to serve a suspension, a Player is required to sit for the entire subsequent match day; the Player is not eligible to play with an older age group on the day the Player serves the suspension).
+Players can only be approved and made eligible by Operator.
+Players not listed on a Club’s Roster or any Player listed on a Club’s Roster but not eligible to play, due to reasons such as missing MLS NEXT Academy Division registration forms, awaiting international clearance, serving a suspension, or not being listed on the official Match Day Roster and line-up sheet, shall be considered an ineligible Player. A Club using an ineligible Player during an MLS NEXT Academy Division Competition may be subject to a Sanction as determined by MLS NEXT Academy Division and/or a Forfeit (by a 0-3 margin) of any Matches in which the ineligible Player participated.
+Each participating Club shall ensure the following when selecting its Players for each age group in an MLS NEXT Academy Division Competition:
+i. All Players remain subject to Operator’s jurisdiction;
+ii. All Players shall be eligible for participation in accordance with the relevant MLS NEXT Academy Division and FIFA regulations; and
+iii. All Players shall meet the applicable age requirements:
+
+Age Group
+
+Born Between or After
+
+U13
+
+Aug 1, 2013 – July 31, 2014
+
+U14
+
+Aug 1, 2012 – July 31, 2013
+
+U15
+
+Aug 1, 2011 – July 31, 2012
+
+U16
+
+Aug 1, 2010 – July 31, 2011
+
+U17
+
+Aug 1, 2009 – July 31, 2010
+
+U19
+
+Aug 1, 2007 – July 31, 2009
+
+b. MLS NEXT Academy Division Club Roster
+
+i. Match Day Rosters:
+
+Each Team must create and submit via a digital form a Match Day Roster to the referee prior to a Match. Each Match Day Roster must include all Players and Match Day Club Representatives. Clubs are responsible for verifying the accuracy of Match Day Rosters and signing a completed copy from the Match Officials after the match. Operator will update the MLS NEXT Academy Division Rosters weekly on the MLS NEXT Academy Division Registration website to reflect any suspensions, additions or drops, or other eligibility issues. Any violations of the provisions outlined below may result in Sanctions for the Club for use of ineligible players (e.g., Forfeit of Matches, Fines, suspension of Club staff).
+
+ii. General:
+
+The date by which each Club must provide an initial MLS NEXT Academy Division Roster for the 2026–2027 season is August 28, 2026. Each Club’s Roster consists of a maximum of twentyeight (28) Players with a minimum of 14 Players. There is no limit to the number of Rostered Players that do not have United States citizenship.
+
+iii. Injured Players:
+
+If a Club is operating at the Roster maximum, it may replace a Player with a serious injury (as supported by written documentation from a medical professional detailing the injury) with a new Player in their Roster spot. If the injured Player is medically cleared to return during the Season, the Club may allow him/her/them to replace the Player that took his/her/their Roster spot.
+
+iv. Match Roster Size:
+
+For U13 through U19 Matches, only twenty (20) Players from the Roster will be eligible to participate in each Match, and these Players must be placed on the Match Day Roster (showing Players that will start and Players eligible for substitution).
+
+v. Bench and Technical Area:
+The bench and technical area are reserved for Players and Club Representatives listed on the Team’s Match Day Roster (a maximum of twenty (20) Players, including nine (9) subs on bench). In addition, a maximum of five (5) registered Club Representatives may sit in the technical area, not including a QMP or other registered HCP or ATC. Any person in the technical area during a Match must be registered as a Player or Club Representative and listed on the Match Day Roster, other than a QMP or other HCP or ATC that is not employed by the Club. Any person in the technical area during a Match that is not registered as a Player or Club Representative will be subject to sanctions.
+c. Younger Players Playing Up
+Players on the U13, U14, U15, U16 and U17 MLS NEXT Academy Division Teams may be selected for the U14, U15, U16, U17 and U19 Match Day Rosters, respectively. Clubs that have Players playing up must abide by the playing time requirements for that respective age group as outlined in the MLS NEXT Academy Division Technical Standards. Players playing up can only compete in cumulative minutes equaling one full match (i.e., 90 minutes for U17 and U19 Players) per day split across two (2) Matches.
+d. International Clearance
+Per FIFA’s Regulations on the Status and Transfer of Players, as it may be amended or restated from time to time, the international clearance process is required when any foreign-born Player over the age of 10 attempts to register with an affiliated club in the United States, regardless of that Player’s ability or citizenship.1 FIFA regulations require Operator to obtain appropriate clearances on behalf of these Players before they can register and participate in MLS NEXT Academy Division.
+1 According to FIFA, these Regulations serve an important function in protecting minors: “Young footballers are vulnerable to potential exploitation and abuse when they are in a foreign country without proper controls. While international transfers might, in specific cases, be favourable to a young player’s sporting career, they are likely to be contrary to the best interests of the vast majority of players as minors. For FIFA, protecting the appropriate and stable development of a minor as a whole should prevail over purely sporting interests. In the past, the trafficking of young players to clubs, mainly in Europe, by unscrupulous persons led to some minors, whose talent may not have met the expectations of the respective clubs, being virtually abandoned on the streets in foreign countries. In these cases, minor players often do not know the language or culture and have no means to return to their home countries. It is also necessary to mention that, in some cases, what is questioned is not necessarily the quality of the training and overall education provided to the minors by this or that club, but the methods used to bring the minors into the club. Today, although FIFA’s approach may appear harsh in an individual case, it is only by enforcing the rules consistently and strictly that the abuses of the past can be avoided, and a proper and safe development of minor players secured.”
+
+XIII. COMPETITION
+a. Overview
+Operator will place Clubs into geographically-based Conferences and set a schedule. Operator reserves the right to adjust Match scheduling.
+b. Schedule
+Operator manages the MLS NEXT Academy Division competition schedule, inclusive of the PostSeason. MLS NEXT Cup typically will be held at the end of the Regular Season. If a Club would like to change a Fixture date, it must contact Operator four (4) weeks in advance of the Fixture date. All changes are subject to the approval of Operator.
+c. Venue/Kick-off Times/Turnaround Time
+Operator shall set the dates of all MLS NEXT Academy Division Competitions. The venues and specific kick-off times of the Matches shall be proposed by the home Team, subject to the approval of. The home Team shall submit venues and specific kick-off times to Operator for all Matches by a date determined each year by Operator, so visiting Teams can make the appropriate arrangements or offer objections for Operator’s consideration. All Clubs must provide a turf or synthetic alternative in the event of inclement weather. Evening Matches may only be played at venues with appropriate lighting installations.
+i. Double Fixture weekends may be played; however, a minimum of eighteen (18) hours must be provided between both kick-off times to allow for necessary travel and recovery.
+1. For instance, if a Saturday Fixture kick-off is 6:00 pm local time, the Sunday Fixture may not kick-off earlier than 12:00 pm local time unless authorized by Operator.
+ii. Clubs may not request to schedule three (3) Matches in four (4) days during Regular Season competition.
+iii. Matches may not kick off earlier than 9:00 am local time without permission from Program Staff.
+iv. When scheduling home Matches, Clubs should adhere to the following guidelines with regard to kick-off times and order of Matches:
+1. The home Team determines kick-off order.
+2. Operator recommends that Matches be played from oldest to youngest when possible.
+
+3. When scheduling multiple Matches on the same field, please allow for at least thirty (30) minutes of warm-up time prior to each kickoff.
+4. Less than thirty (30) minutes between each match is permitted if there is adequate warm-up space on an adjacent field.
+v. Moving a Fixture venue or kick-off time for any reason within fourteen (14) days of the scheduled Fixture may result in fines and/or Sanctions that will be levied in accordance with the MLS NEXT Academy Division Disciplinary Code.
+d. Facility Set-Up
+The home Team shall be responsible for setting up its venue to include the appropriate lines, goals, nets, corner flags, benches, and water set up for both Teams and ensuring a clean and wellmaintained field in accordance with the MLS NEXT Academy Division Safety and Wellbeing Policy. The home Team will also provide the official adidas match balls.
+All spectators must sit on the spectator sideline directly across from the team for which the spectator is associated. All Clubs are responsible for ensuring that their spectators are seated in the appropriate section.
+e. Abandonment
+If a Club refuses to play a Match or to continue playing one that has begun, and there is no rationale under the Rules and Policies detailing why this action would be permissible, it may be Sanctioned by forfeiting the Match. Additional Sanctions may be imposed against the Club in Operator’s sole discretion. In serious cases, the Club may also be disqualified from the MLS NEXT Academy Division Competition in progress and its MLS NEXT Academy Division Membership may be revoked.
+f. Postponement
+All postponements and cancellations for any reason other than the health and safety of Participants must be approved by Operator. A Club may postpone any Match in the event the Club believes in good faith that proceeding with a Match would pose a significant risk to the health and safety of any Participants.
+g. Rescheduling a Postponed Match
+Provided the postponement is approved by Operator or is made in accordance with the exceptions provided for herein, the Clubs in question are given the first opportunity to arrange a reschedule date for a postponed Match. If there is no rescheduled date within seven (7) days after the postponed Fixture, Operator will choose the date, location, and time for the rescheduled Match and each Club will be required to participate, subject to any health and safety guidelines released by Operator. Fees associated with that date will be the responsibility of the involved Club(s).
+
+h. Rescheduling Considerations
+
+U13 Matches must reach the 50th minute to be considered a completed Match. U14 Matches must reach the 60th minute to be considered a completed Match. U15, U16, U17, and U19 Matches must reach the 75th minute to be considered a completed Match. If a Match does not reach the designated threshold, Operator at its sole discretion shall have the authority to review all of the facts (including fault on the part of either Team, unavoidable conditions, expense for both Teams, and requests by a Team to take a particular action in the best interests of MLS NEXT Academy Division, the Clubs, and the Club’s teams) in determining whether and when a Match should be rescheduled, who should bear the financial burden as a result of cancellation or rescheduling, whether the Match should be forfeited or cancelled permanently, or whether other fines should be levied. Unless the Sanction or remedy is set forth specifically in any Rules and Policies, Operator shall decide what action to take, and Operator’s decision shall be final (subject to the MLS NEXT Academy Division Disciplinary Code).
+
+i. Schedule Completion
+
+Every Team must play every Match on its schedule. Teams that fail to play every Match may face a Forfeit or may be subject to a fine. Further, Operator at its sole discretion may exclude any Club/Team from Post-Season participation for failure to play every scheduled Match.
+
+j. Facility Clearances
+
+Once a Club has submitted its venues and kick-off times, Operator assumes that a Team’s home Facility is available for all dates on its schedule. If the home Facility is not available, an alternative location must be provided by the home Team. For the avoidance of doubt, all facilities remain subject to approval by Operator and must comply with all Rules and Policies. Operator reserves the right to reject approval for any facility at Operator’s sole and reasonable discretion.
+
+k. Standings
+
+Operator assumes the responsibility of posting the official MLS NEXT Academy Division league standings on the MLS NEXT Academy Division Website for the U15 – U19 ages. The official MLS NEXT Academy Division league standings include wins, losses, ties, goals scored for, goals scored against, points per match, and total league points.
+
+Result
+
+Points
+
+Win
+
+Tie
+
+Loss
+
+Forfeit
+
+0–3 loss
+
+All standings are generated by the Match Report submitted online by the referee within twentyfour (24) hours of the completion of the Match. Teams have forty-eight (48) hours to verify their Match Results with Operator.
+l. Conference Tiebreakers
+If two (2) or more Clubs finish the Regular Season with an equal number of Points per Match the following procedure (in order of priority) will be used to break the tie and determine the final standings (“MLS NEXT ACADEMY DIVISION Regular Season Tiebreaker”):
+In the event of a three-way tie, once the initial tiebreaker reduces the group to two remaining tied teams, those teams will continue through the list of tiebreakers. At no point will the process revert back to the head-to-head tiebreaker.
+i. Head-to-head (only applicable to tie of two (2) Clubs).
+ii. Number of Wins per Match.
+iii. Goal differential per Match.
+iv. Goals for per Match.
+v. Away goal differential per Match
+vi. Away goals for per Match
+vii. Home goal differential per Match
+viii. Home goals for per Match
+ix. Fewest Disciplinary points:
+1. One (1) point will be assessed for every Yellow Card received during the competition.
+2. Three (3) points will be assessed for every Red Card received during the competition.
+3. Five (5) points will be assessed for any ejections of staff or players from the technical area during the competition.
+x. Coin toss (tie of two (2) Clubs) or drawing of lots (tie of three (3) or more Clubs).
+After the winner of the Regular Season Tiebreaker advances, any remaining tied Clubs who did not advance from the first round Regular Season Tiebreaker shall go through a second round Regular Season Tiebreaker in order to determine the next advancing Club. The MLS NEXT
+
+Academy Division Regular Season Tiebreaker system will continue until qualification/seeding has been determined.
+XIV. MATCHES, LAWS OF THE GAME, DISCIPLINARY MATTERS, DISPUTES, PROTESTS, AND APPEALS
+a. Laws of the Game
+Unless otherwise provided in the Rules and Policies, all Matches shall be played in accordance with the Laws of the Game in force at the time of the MLS NEXT Academy Division Competition and as promulgated by the International Football Association Board, which can be found here.2 In the case of any discrepancy in the interpretation of the Laws of the Game, the English version shall be authoritative.
+b. Disciplinary Matters
+• Incidents and events requiring disciplinary action are handled in compliance with the MLS NEXT Academy Division Disciplinary Code. The Players and Clubs participating in MLS NEXT Academy Division agree to comply with the Laws of the Game (as described above) and all Rules and Policies. The Players, Coaches, Club Representatives, and Clubs agree to comply with all further directives set forth by Operator from time to time, including, without limitation, any health and safety requirements or protocols.
+• Any Coach/Club Representative who has received a Match Suspension cannot be present at the Club facilities (including the soccer fields or Club offices) and cannot attend any Club approved activity including, but not limited to, a Match, MLS NEXT Academy Division Tournament, or other MLS NEXT Academy Division Event during the pendency of the Sanction. Any suspended Coach/Club Representative who is found to have violated this prohibition will receive an additional Match Suspension of two (2) Fixtures. o Additionally, if the Coach/Club Representative received a Red Card during the Match that leads to the Match Suspension then that individual must vacate the facility upon receiving that Red Card.
+• Reporting Egregious Fouls After the Fact
+a. Clubs have 72 hours following a Match to report any egregious in-match fouls, not acknowledged by the referee, to Operator after noticing the egregious foul during film review.
+
+https://www.theifab.com/downloads/laws-of-the-game-2025-26?l=en
+
+c. Protests of Officiating Decisions
+If a Match Decision is subject to Protest, it shall be submitted to the jurisdiction of Operator.
+i. Time: Unless otherwise stipulated in this article, Protests shall be submitted in writing to Operator within 12 hours of the conclusion of the Match in question and followed up immediately with a full written report, including a copy of the original Protest, to be sent in writing to Operator; otherwise, they will be disregarded.
+ii. Eligibility: Protests regarding the eligibility of Matches shall be submitted in writing to Operator no later than 24 hours after the Match.
+iii. Field Conditions: Protests regarding the state of the field, its surroundings, markings, or accessory items (e.g., goals, flag posts, or soccer balls) shall be made to the referee before the start of the Match by the Coach or administrator lodging the Protest and should be included in the referee’s post-Match Report. Operator must be notified in writing of the Protest prior to kick-off. If the field’s playing surface becomes unplayable during a Match, the referee shall consult Operator and both parties shall have the joint right to determine whether to delay, postpone, or cancel the Match in compliance with the MLS NEXT Academy Division Safety and Wellbeing Policy.
+iv. After a Match: Protests against any incidents that occur during the course of a Match shall be made to Operator immediately following the completion of the Match.
+v. Referee’s Decisions: No Protests may be made about the referee’s decisions regarding facts connected with play; such decisions are final.
+vi. Frivolous Protests: If an unfounded or irresponsible Protest is lodged, Operator may dismiss the Protest.
+vii. For the avoidance of doubt, all violations of Rules and Policies other than Match Decisions remain subject to the MLS NEXT Academy Division Disciplinary Code.
+d. Match Integrity Policy
+MLS NEXT Academy Division prohibits match manipulation of any kind. Clubs that condone or contemplate match manipulation will be subject to immediate expulsion from MLS NEXT Academy Division and may face additional Sanctions.
+Operator applies the FIFA Code of Ethics and prohibits involvement in soccer sports betting by any Club Representatives or Players, regardless of whether sports betting may be legal in such jurisdiction.
+
+e. Disputes
+Any Participant, Club, Club Representative, or individual or entity affiliated with any Club that is involved in a dispute with Operator or a Club must first make a good faith effort to resolve such dispute through negotiation before taking any other action. All disputes arising out of or related to the MLS NEXT Academy Division Membership Agreement or the MLS NEXT Academy Division Participant Agreement and Waiver shall be resolved by arbitration in accordance with the terms in those agreements.
+XV. COMMERCIAL RIGHTS AND EQUIPMENT
+All Participants acknowledge that MLS is the owner of all marks and that use of said marks is limited to what is expressly permitted and limited to the term during which the particular Participant is affiliated with a Member or is itself a Club.
+a. Uniforms
+i. Players, Coaches, and Club Representatives are not allowed to display any image or writing in any language or form on their playing or Team uniforms, equipment (including bags, beverage containers, medical bags, etc.), or body for the duration of official Matches, except for inoffensive Team names and logos, sponsorships, and Player names, which are all subject to review by Operator and PDev in advance of being displayed during Matches. Players, Coaches, and Club Representatives with offensive, obscene, distracting, or age -inappropriate tattoos may be asked to cover them for the duration of a Match. Clubs are required to have one white (or similarly light-colored) uniform and one dark uniform. Home Teams will always wear white/light -color uniforms and visiting Teams will be required to wear their dark/contrasting uniforms on single-Fixture weekends. Clubs are required to apply the MLS NEXT Academy Division uniform patch on the left sleeve of their match uniform. In the event the Club cannot reasonably apply the patch on the left sleeve, the Club must contact Operator for guidance on an alternate location. In the event Clubs are not provided an MLS NEXT Academy Division patch for the beginning of the 2025–2026 Season, Clubs must cover up the U.S. Soccer Development Academy (or other national league) patch on their match uniform. The Club is responsible for any costs associated with the MLS NEXT Academy Division uniform patches and costs associated with the application of its patch to its uniforms.
+b. Soccer Balls
+i. All Matches are to be played with the official Match ball. No Match can be played without properly inflated Match balls. There shall be a minimum of three (3) Match balls at each match which shall be inspected and subject to
+
+approval by the referee. The U13 age group will play with size 4 balls. All other age groups will play with size 5 balls, filled to 9.0–10.5 psi.
+c. Commercial Rights
+Clubs shall have the right to commercialize certain items in connection with their MLS NEXT Academy Division participation, as outlined in the MLS NEXT Academy Division Commercial Marketing Guidelines. Any Club that wishes to obtain sponsors in connection with its Club must ensure that all such sponsorships comply with the MLS NEXT Academy Division Commercial Marketing Guidelines. All decisions regarding the MLS NEXT Academy Division Commercial Marketing Guidelines and any interpretation of the provisions of the guidelines shall be at the sole and absolute discretion of PDev.
+XVI. REFEREE AND MATCH INFORMATION
+a. Overview
+The referees, assistant referees, and fourth officials (when applicable) will be assigned for each Match by Operator utilizing a designated Referee Management Group.
+b. Fees
+Referee fees will be paid as set forth in Section IX(l).
+c. Match Report
+After each Match, the referee shall complete the official Match Report form. The referee shall enter the game data using the online reporting system designated by Operator within 24 hours of the Match. The Clubs will be responsible for reviewing the online Match Report and submitting corrections to the appropriate Member in a timely matter. The Match Report will be used to generate standings, track suspensions, and record statistics.
+d. Match Information
+On the Match Report, the referee shall note all occurrences of significance, such as injury (serious, any suspected head injury, or any injury that requires emergency medical attention), misconduct of Players leading to caution or expulsion, unsporting behavior by supporters and/or by Club Representatives, or any other person acting on behalf of a Club at the Match and any other incident happening before, during, and after the Match in as much detail as possible.
+e. Post-Match Reporting
+After each Match, the Head Coach of each team shall complete the official post-Match reporting form. The Head Coach shall enter the information requested on the form using the reporting system designated by Operator (i.e., FairWhistle) within 24 hours of the Match.
+
+Each Club is responsible for providing Operator with the appropriate contact for each team participating in MLS NEXT Academy Division that is responsible for completing the post-Match reporting form. If an individual participating team at the Club fails to complete 90% of the postMatch reporting forms issued, that team may be subject to Sanctions.
+XVII. MISCELLANEOUS
+a. Special Circumstances
+Operator, in its sole and absolute discretion, will issue any instructions necessitated by special circumstances that may arise. These instructions shall form an integral part of these Rules and Regulations and may, in exceptional circumstances, override a specific regulation.
+b. Matters Not Provided For
+Matters not provided for in these Rules and Regulations, and cases of force majeure shall be decided by Operator and/or PDev. All decisions will be final.
+c. Audit of Club
+Operator reserves the right, in its sole discretion, to audit a Club to ensure compliance with any and all Rules and Policies.
+CERTIFICATION
+I certify, on behalf of myself and my Club that I have read, understand, and agree to abide by all of the information contained in these MLS NEXT Academy Division Rules and Regulations. I certify that if I have not understood any information contained in these Rules, I have sought and received an explanation of the information prior to signing this statement. I further certify that I will ensure that all relevant Club Representatives will be required to read these Rules.
+
+__________________________________ _____________________________
+
+Name
+
+Date
+
+__________________________________ _____________________________
+
+Signature
+
+Club
+
+=== MLS NEXT ACADEMY DIVISION TECHNICAL STANDARDS 2026-2027 ===
+
+I. GENERAL
+a. Age Groups
+MLS NEXT Academy Division Age Groups for the 2026-2027 Season are as follows, U13, U14, U15, U16, U17, and U19.
+
+Playoff Age Groups are as follows, U13, U14, U15, U16, U17, and U19.
+
+b. High School Soccer Participation
+High school soccer participation is permitted by Players in the MLS NEXT Academy Division.
+
+c. College Player Participation
+Players who have participated or are participating in any college program at any level (i.e. NCAA Division I, junior college) are not permitted to participate in MLS NEXT Academy Division.
+
+d. Professional Player Participation
+Players who have participated or are participating professionally at any level are not permitted to participate in the MLS NEXT Academy Division.
+
+e. Outside Competition
+
+i.
+
+Event Participation
+
+MLS NEXT Academy Division Team may only participate in approved outside
+
+tournaments, showcases, or events.
+
+Requests can be made by completing the Outside Competition Form. MLS NEXT Academy Division League Operator will evaluate each request according to their consistency with these Technical Standards, schedule, and commercial conflicts.
+
+ii. League Participation All MLS NEXT Academy Division players are permitted to participate in outside leagues with their current MLS NEXT club.
+
+iii. Talent Identification Primary Players may only participate in approved outside talent identification events with U.S. Soccer, Canadian Soccer, and all other FIFA recognized international federations. Players can participate in any National Team call-up at any time.
+
+II. ROSTERS a. Minimums & Maximums
+
+The minimum number of players on an MLS NEXT Academy Division roster is 14 players per Team.
+The maximum number of players on an MLS NEXT Academy Division roster is 28 players per Team.
+b. Matchday The maximum number of players on an MLS NEXT Academy Division matchday roster for regular season matches is 20 players per team.
+c. Start Percentage It is recommended, for all age groups, that all Primary Players start in 25% of official matches. For the U13 age group, it is required that each player on the matchday roster must play at least one (1) period uninterrupted. For the U14 and U15 age groups, it is recommended that all players participate in 50% of minutes per week.
+d. Playing Up Players are eligible to play in an older age group while being rostered in their younger age group, so long as they meet competition standards and play only 90 minutes per day across a maximum of two (2) matches.
+e. Player Designations
+i. Overage Player (O) Each MLS NEXT Academy Division Club is permitted to register a maximum of three (3) overage players (e.g. school year of 8/1/2006-7/31/2007) on the U19 roster at one time.
+ii. Trapped Players (T) At the U14 age group, an unlimited number of U15 8th grade players are eligible to be rostered on the U14 team during the club’s High School season. A maximum of three (3) Trapped Players are eligible to be selected on any U14 Matchday Roster. These players do not count toward the total roster number for the U14 team. Trapped Players must participate with the U15 team during MLS NEXT Cup and/or an MLS NEXT Cup Qualifier.
+f. Roster Adds
+
+MLS NEXT Academy Division teams are permitted to add an unlimited number of players during the MLS NEXT Academy Division season.
+i. MLS NEXT Cup Qualifier and MLS NEXT Cup Eligibility
+Clubs with both Homegrown Division and Academy Division teams cannot transition players down to the Academy Division within two (2) weeks of that club’s MLS NEXT Cup Qualifier. Additionally, these clubs are not permitted to transition players down to the Academy Division within two (2) weeks of MLS NEXT Cup.
+ii. Roster Freeze
+There is no roster freeze within the MLS NEXT Academy Division.
+iii. Player Movement
+During the MLS NEXT Academy Division season, Player Movement will not be permitted between clubs within the Academy Division or between clubs within the Homegrown Division and the Academy Division. Please refer to the MLS NEXT Academy Division Player Movement Guidelines for additional regulations.
+g. Staff Technical Standards
+i. Registration Requirements
+Any Club Staff members that will be working with MLS NEXT Academy Division players, will be traveling to away matches and MLS NEXT Academy Division Events, and/or will be in the technical area during MLS NEXT Academy Division matches are required to complete the entire registration process in the MLS NEXT Academy Division registration platform.
+All Academy Directors must complete the entire registration process as is outlined in the MLS NEXT Academy Division Rules & Regulations.
+ii. Coaching License Requirements
+MLS NEXT Academy Division Academy Directors must have a USSF Academy Directors Course, EFCL Certificate, or USSF/CSA B License or equivalent.
+MLS NEXT Academy Division Head Coaches must have a C License or equivalent.
+Any exceptions to the coaching license requirements outlined above must be approved by the MLS NEXT General Manager.
+iii. Staff Recommendations
+
+It is recommended that Head Coaches have additional Assistant Coaches, especially if coaching more than one team. Additionally, it is recommended that a coach shouldn’t be the Head Coach for more than one team but instead should be a Head Coach for one team and an Assistant Coach for the other teams.
+iv. Matchday
+A maximum of five (5) coaching staff members are permitted in the technical area and must be listed on the Digital Match Roster within the MLS NEXT Academy Division matchday management platform. This maximum does NOT include a Qualified Medical Professional as is outlined in the MLS NEXT Academy Division Safety & Wellbeing Policy.
+There must be a minimum of one (1) registered staff member in the technical area for each MLS NEXT Academy Division match.
+III. COMPETITION
+a. Match Timeframe
+i. Matchday Roster
+Each team is permitted to have a maximum of 20 players and must have a minimum of 14 players per matchday roster.
+Players are permitted to play in only 90 minutes per day across a maximum of two (2) in any competition, including Outside Competition.
+Players are not permitted to appear in more than two (2) consecutive MLS NEXT Academy Division matchdays.
+ii. Match Length
+The U13 age group will consist of 3x25-minute periods and 2x5-minute intermissions.
+The U14 age group will consist of 2x40-minute halves and one 10-minute halftime.
+The U15, U16, U17, and U19 age groups will consist of 2x45-minute halves and one 10minute halftime.
+iii. Warm-Up Periods
+Teams must be provided with an appropriate warm-up area 30 minutes before kick-off.
+iv. Age Group Order
+It is recommended that older age groups play first to accommodate younger players playing up in older age groups.
+
+v. Kick Off Times
+Regular season matches are not permitted to start earlier than 9:00 AM local time without approval from MLS NEXT Academy Division League Operator.
+vi. Time Between Matches
+There must be a minimum of 18 hours between regular season matches if playing on consecutive days, unless otherwise approved by the MLS NEXT Academy Division League Operator.
+vii. Match Changes
+MLS NEXT Academy Division League Operator must approve of any request for schedule changes. Any requests for substantial changes in time or location received within two (2) weeks of the scheduled match may result in a fine.
+b. Substitutions
+The U13 age group will consist of two (2) substitution moments per period, substitutions are unrestricted, and intermissions do NOT count as a moment.
+The U14 age group will consist of three (3) substitution moment per half, substitutions are unrestricted, and halftime does NOT count as a moment.
+The U15, U16, U17, and U19 age groups will consist of three (3) substitution moment per half, there is NO re-entry permitted in the half, and halftime does NOT count as a moment.
+There are exceptions to the above substitution provisions in accordance with the MLS NEXT Academy Division Concussion Protocol as outlined in the MLS NEXT Academy Division Safety & Wellbeing Policy.
+c. Match Ball
+The U13 age group must use a Size 4 match ball for all MLS NEXT Academy Division matches. It is recommended that an adidas match ball is used.
+The U14, U15, U16, U17, and U19 age groups must use a Size 5 match ball for all MLS NEXT Academy Division matches. It is recommended that an adidas match ball is used.
+d. Hydration
+The home club must provide adequate hydration for both teams.
+e. Technical Area
+
+The home club must provide adequate seating (e.g. benches) for both teams.
+f. Qualified Medical Professional
+The home club must provide a Qualified Medical Professional (QMP) as is outlined in the MLS NEXT Academy Division Safety & Wellbeing Policy for all venues.
+If both teams arrive at the field and the home team does not provide a QMP, the match must not be played, and the home team will receive a forfeit and a fine as is outlined in the MLS NEXT Academy Division Safety & Wellbeing Policy.
+g. Match Video
+The home club must upload match video for all matches to the MLS NEXT Academy Division video exchange platform by 12:00 PM EST on Tuesday following the match. If the home club fails to upload match video by the deadline, the club may be fined in accordance with the MLS NEXT Academy Division Fine Structure. The camera must be to the level that it records with sound.
+h. Spectators
+The home club must ensure that no spectator or parent is in the technical area or on the technical sideline. Each club is responsible for the behavior of its spectators. Additionally, as is outlined in the MLS NEXT Academy Division Rules & Regulations, all spectators must sit across from their own club’s bench.
+IV. DISCIPLINE
+Please refer to the MLS NEXT Academy Division Disciplinary Code for additional understanding of all discipline provisions.
+a. Red Cards
+Red Card accumulation will follow an MLS NEXT Academy Division player and staff member across all age groups and must be served in the player or staff member’s primary age group.
+Red Card accumulation for MLS NEXT Academy Division staff is as follows: • 1st Offense will result in a minimum two (2)-match suspension
+• 2nd Offense is subject to additional discipline beyond a two (2)-match suspension.
+• 3rd Offense is subject to a long-term suspension determined by MLS NEXT Academy Division League Operator.
+
+Red Cards received in a friendly match, scrimmage, or outside competition will only result in a suspension from MLS NEXT Academy Division activities if deemed egregious by the League Operator and/or PDev.
+b. Yellow Cards
+Yellow Card accumulation will follow an MLS NEXT Academy Division player and staff member across all age groups and must be served in the player or staff member’s primary age group. In the event a player or staff member receives two (2) Yellow Cards in the same match, resulting in a Red Card, only the first Yellow Card will count toward Yellow Card accumulation.
+Yellow Card accumulation for MLS NEXT Academy Division players is as follows: • Eight (8) Yellow Cards will result in a one (1) match suspension
+• Ten (10) Yellow Cards will result in a two (2) match suspension
+• Twelve (12) Yellow Cards will result in a three (3) match suspension
+Yellow Card accumulation for MLS NEXT Academy Division staff is as follows: • Three (3) Yellow Cards will result in a one (1) match suspension
+• Five (5) Yellow Cards will result in a two (2) match suspension • Seven (7) Yellow Cards will result in a three (3) match suspension
+c. Fixture
+When two (2) MLS NEXT Academy Division clubs play against each other across multiple age groups over one weekend, then all matches between the two (2) clubs are considered part of the MLS NEXT Academy Division Fixture.
+i. Discipline Within Fixture
+If a player or staff member receives a Yellow Card in two (2) different MLS NEXT Academy Division matches within the same Fixture, both Yellow Cards will count toward that player or staff member’s Yellow Card accumulation.
+If a player or staff member receives a Red Card in the first match of the MLS NEXT Academy Division split Fixture, then that player or staff member is not permitted to participate in the remaining matches of that Fixture.
+d. Serving Suspension
+MLS NEXT Academy Division players and staff members are not permitted to participate in MLS NEXT Academy Division matches with any age group(s) until that individual has completed its suspension with their primary age group.
+
+V. FACILITIES & TRAINING a. Match Field Standards It is the expectation that MLS NEXT Academy Division clubs will provide appropriate,
+high-quality fields to host MLS NEXT Academy Division Matches. The minimum field sizes for each age group are as follows: • The U13 age group must utilize a minimum field size of 65x84 yards. • The U14 age group must utilize a minimum field size of 65x100 yards. • The U15, U16, U17, and U19 age groups must utilize a minimum field size of 70x110 yards. Any field outside of the standards outlined above must be approved by MLS NEXT
+Academy Division League Operator before the season begins. b. Match Locations Clubs are permitted to utilize multiple locations for MLS NEXT Academy Division
+Regular Season matches, subject to League Operator approval. MLS NEXT Academy Division encourages the use of neutral sites when applicable to prevent overnight stays.
+c. Training Standards i. Sessions Per Week
+All age groups must train a minimum of three (3) times per week. The content and breakdown of these training sessions is up to Club discretion.
+ii. Rest Day Individual players must be given at least one (1) day off per week.
+`;
