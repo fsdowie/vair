@@ -974,6 +974,28 @@ export default function RefereeLLM({ onNavigate } = {}) {
         overflowY: "auto",
         padding: "24px",
       }}>
+        {messages.length > 0 && (
+          <div style={{ maxWidth: 700, margin: "0 auto 16px" }}>
+            <button
+              onClick={() => { setMessages([]); setError(null); }}
+              disabled={chatLoading}
+              title="Start over and go back to the trending questions"
+              style={{
+                padding: "8px 14px",
+                borderRadius: 8,
+                border: "1px solid rgba(29,158,117,0.3)",
+                background: "rgba(10,22,40,0.6)",
+                color: "#5ecda4",
+                fontSize: 14,
+                cursor: chatLoading ? "default" : "pointer",
+                opacity: chatLoading ? 0.5 : 1,
+              }}
+            >
+              ← Back to questions
+            </button>
+          </div>
+        )}
+
         {messages.length === 0 && (
           <div style={{
             maxWidth: 700,
