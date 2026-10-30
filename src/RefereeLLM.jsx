@@ -100,6 +100,70 @@ const ALL_SAMPLE_QUESTIONS = [
 
 const SUGGESTION_COUNT = 10;
 
+// Rulesets the AI Referee knows, shown beside the landing page on wide
+// screens (hidden below 1200px — see .vair-ruleset-logos in the <style> at
+// the bottom). The National 1 logo is navy, so it's shown in white here to
+// read on the dark background. Each logo links to the league's site in a
+// new tab, never replacing the VAiR window.
+const RULESET_LOGOS = {
+  left: [
+    { src: "/logos/ea.png", name: "Elite Academy League (EA)", caption: "EA", href: "https://eliteacademyleague.com/" },
+    { src: "/logos/national1.png", name: "National 1 League", caption: "National 1", toWhite: true, href: "https://national1league.org/" },
+  ],
+  right: [
+    { src: "/logos/ifab.svg", name: "IFAB Laws of the Game", caption: "IFAB Laws of the Game", href: "https://www.theifab.com/" },
+    { src: "/logos/ecnl.svg", name: "ECNL", caption: "ECNL", href: "https://www.theecnl.com/" },
+    { src: "/logos/mls-next.png", name: "MLS NEXT Academy Division (MLS NEXT 2)", caption: "MLS NEXT Academy", href: "https://www.mlssoccer.com/mlsnext/academy-division/" },
+  ],
+};
+
+function RulesetLogoColumn({ side }) {
+  return (
+    <div className="vair-ruleset-logos" style={{
+      position: "absolute",
+      top: 0,
+      // A fixed band rather than the full landing height, so the logos stay
+      // beside the intro and first questions instead of scrolling away.
+      height: 720,
+      [side]: 0,
+      width: "calc((100% - 700px) / 2)",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-around",
+      alignItems: "center",
+      padding: side === "left" ? "140px 0 0" : "40px 0 0",
+      boxSizing: "border-box",
+      pointerEvents: "none",
+    }}>
+      {RULESET_LOGOS[side].map(logo => (
+        <a
+          key={logo.src}
+          href={logo.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          title={`Includes ${logo.name} rules — opens ${logo.href.replace(/^https:\/\/(www\.)?/, "").replace(/\/$/, "")} in a new tab`}
+          style={{ textAlign: "center", width: 170, pointerEvents: "auto", textDecoration: "none", display: "block" }}
+        >
+          <img
+            src={logo.src}
+            alt={logo.name}
+            style={{
+              height: 84,
+              maxWidth: 160,
+              objectFit: "contain",
+              opacity: 0.9,
+              filter: logo.toWhite ? "brightness(0) invert(1)" : "none",
+            }}
+          />
+          <div style={{ fontSize: 11, color: "rgba(232,245,233,0.45)", marginTop: 8, letterSpacing: "0.04em" }}>
+            {logo.caption}
+          </div>
+        </a>
+      ))}
+    </div>
+  );
+}
+
 // Get random sample questions, in the same shape as trending questions
 // (answer: null means clicking it asks the AI).
 const getRandomQuestions = (count = SUGGESTION_COUNT) => {
@@ -997,6 +1061,9 @@ export default function RefereeLLM({ onNavigate } = {}) {
         )}
 
         {messages.length === 0 && (
+          <div style={{ position: "relative" }}>
+          <RulesetLogoColumn side="left" />
+          <RulesetLogoColumn side="right" />
           <div style={{
             maxWidth: 700,
             margin: "0 auto",
@@ -1114,6 +1181,7 @@ export default function RefereeLLM({ onNavigate } = {}) {
                 <div style={{ fontSize: 22, marginTop: 4, animation: "hint-bounce 1.6s ease-in-out infinite" }}>↓</div>
               </div>
             </div>
+          </div>
           </div>
         )}
 
@@ -1391,6 +1459,9 @@ export default function RefereeLLM({ onNavigate } = {}) {
         @keyframes pulse {
           0%, 100% { opacity: 0.3; }
           50% { opacity: 1; }
+        }
+        @media (max-width: 1199px) {
+          .vair-ruleset-logos { display: none !important; }
         }
         @keyframes hint-bounce {
           0%, 100% { transform: translateY(0); }
