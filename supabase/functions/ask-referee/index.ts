@@ -1,17 +1,12 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { IFAB_UPDATES } from './ifab-updates.ts';
-import { ECNL_RULES } from './ecnl-rules.ts';
-import { EA_RULES } from './ea-rules.ts';
-import { N1_RULES } from './n1-rules.ts';
-import { MLS_NEXT_ACADEMY_RULES } from './mls-next-academy-rules.ts';
-import { LAWS_2026_27 } from './laws-2026-27.ts';
-import { LAWS_2025_26 } from './laws-2025-26.ts';
+import { buildSystem } from './prompt.ts';
 
 const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY')!;
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const ADMIN_EMAIL = 'fsdowie@yahoo.com';
 const DAILY_LIMIT = 5;
+const MODEL = 'claude-sonnet-5';
 
 function numOrNull(value: string | null): number | null {
   if (value === null) return null;
@@ -98,81 +93,6 @@ Deno.serve(async (req) => {
       .eq('is_active', true)
       .order('created_at', { ascending: true });
 
-    const correctionsBlock = corrections && corrections.length > 0
-      ? `\n--- VERIFIED CORRECTIONS (admin-reviewed, take precedence over default answers) ---\n` +
-        corrections.map(c =>
-          `[${c.version_label}]${c.notes ? ` (${c.notes})` : ''}\n${c.correction_text}`
-        ).join('\n\n') +
-        `\n--- END CORRECTIONS ---\n`
-      : '';
-
-    const systemPrompt = `You are an expert football/soccer referee assistant with deep knowledge of IFAB Laws of the Game 2026/27.
-
-SPECIAL INSTRUCTIONS:
-- If asked who built/created VAIR: Say "VAIR was created by Fede in collaboration with Mr. Claude"
-- IFAB Laws of the Game 2026/27 (the current, default ruleset, embedded in full below) are ALWAYS the default ruleset for all answers.
-- Only reference the IFAB Laws of the Game 2025/26 (also embedded below, for reference) if the user explicitly asks about the previous season, a match played under 2025/26 rules, or what changed between the two seasons. If a rule changed between seasons, say so.
-- Only reference ECNL rules if the user explicitly asks about ECNL rules or an ECNL match.
-- Only reference EA rules if the user explicitly asks about EA rules or an EA match.
-- Only reference National 1 League (N1) rules if the user explicitly asks about National 1 / N1 rules or an N1 match. The WPL addendum at the end of the N1 rules applies only to N1 matches operated by the WPL (Washington).
-- Only reference MLS NEXT Academy Division rules if the user explicitly asks about MLS NEXT Academy / MLS NEXT Academy Division / MLS NEXT 2 rules or a match in that division. MLS NEXT 2 and MLS NEXT Academy are other names for the MLS NEXT Academy Division. These rules cover only the Academy Division, not the MLS NEXT Homegrown Division.
-- If an ECNL, EA, N1 or MLS NEXT Academy rule conflicts with IFAB, state the IFAB ruling first, then note "Note: this has been modified by [ECNL/EA/N1/MLS NEXT Academy] rules: [modification]".
-
-${IFAB_UPDATES}
-${correctionsBlock}
-
---- IFAB LAWS OF THE GAME 2026/27 (current, default ruleset) ---
-${LAWS_2026_27}
---- END LAWS OF THE GAME 2026/27 ---
-
---- IFAB LAWS OF THE GAME 2025/26 (previous season, reference only) ---
-${LAWS_2025_26}
---- END LAWS OF THE GAME 2025/26 ---
-
---- ECNL COMPETITION RULES 2026/27 (use only when explicitly asked) ---
-${ECNL_RULES}
---- END ECNL RULES ---
-
---- EA STANDARDS & RULES 2026/27 (use only when explicitly asked) ---
-${EA_RULES}
---- END EA RULES ---
-
---- NATIONAL 1 LEAGUE (N1) HANDBOOK & RULES 2026/27, INCL. WPL ADDENDUM (use only when explicitly asked) ---
-${N1_RULES}
---- END N1 RULES ---
-
---- MLS NEXT ACADEMY DIVISION (MLS NEXT 2) RULES & REGULATIONS AND TECHNICAL STANDARDS 2026/27 (use only when explicitly asked) ---
-${MLS_NEXT_ACADEMY_RULES}
---- END MLS NEXT ACADEMY DIVISION RULES ---
-
-IMPORTANT: Keep responses SHORT (2-3 sentences):
-1. State the ruling with Law number
-2. Brief explanation
-3. If relevant, mention recent IFAB clarifications above
-4. Include the specific Law link from this list:
-
-Law 1: https://www.theifab.com/laws/latest/the-field-of-play/
-Law 2: https://www.theifab.com/laws/latest/the-ball/
-Law 3: https://www.theifab.com/laws/latest/the-players/
-Law 4: https://www.theifab.com/laws/latest/the-players-equipment/
-Law 5: https://www.theifab.com/laws/latest/the-referee/
-Law 6: https://www.theifab.com/laws/latest/the-other-match-officials/
-Law 7: https://www.theifab.com/laws/latest/the-duration-of-the-match/
-Law 8: https://www.theifab.com/laws/latest/the-start-and-restart-of-play/
-Law 9: https://www.theifab.com/laws/latest/the-ball-in-and-out-of-play/
-Law 10: https://www.theifab.com/laws/latest/determining-the-outcome-of-a-match/
-Law 11: https://www.theifab.com/laws/latest/offside/
-Law 12: https://www.theifab.com/laws/latest/fouls-and-misconduct/
-Law 13: https://www.theifab.com/laws/latest/free-kicks/
-Law 14: https://www.theifab.com/laws/latest/the-penalty-kick/
-Law 15: https://www.theifab.com/laws/latest/the-throw-in/
-Law 16: https://www.theifab.com/laws/latest/the-goal-kick/
-Law 17: https://www.theifab.com/laws/latest/the-corner-kick/
-
-For specific sections, add anchors (e.g., Law 4 safety: #safety, #colours, #jewellery, etc.)
-
-Only provide detailed explanations if user asks for more.`;
-
     const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -181,19 +101,11 @@ Only provide detailed explanations if user asks for more.`;
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-5',
+        model: MODEL,
         max_tokens: 300,
-        // system is now ~150K+ tokens (both seasons' full Laws text plus
-        // ECNL/EA/N1/MLS NEXT Academy rules), so it's cached to avoid re-billing and
-        // re-processing it on every question. 1h TTL since usage is bursty
-        // (a handful of questions per user per day) rather than continuous.
-        system: [
-          {
-            type: 'text',
-            text: systemPrompt,
-            cache_control: { type: 'ephemeral', ttl: '1h' },
-          },
-        ],
+        // Cached in blocks (see prompt.ts): Laws 2026/27 always, other
+        // rulebooks only when the conversation mentions them, corrections last.
+        system: buildSystem(messages, corrections),
         messages: messages,
         // Claude Sonnet 5 runs adaptive thinking by default when this is
         // omitted, which prepends a `thinking` content block before the
@@ -266,16 +178,21 @@ Only provide detailed explanations if user asks for more.`;
     // The answer is kept so trending questions can replay it for free
     // (get-recent-questions); follow-ups are flagged so they're never
     // offered out of context.
+    const answerRow = {
+      ...logRow,
+      answer: content,
+      is_followup: messages.filter(m => m.role === 'user').length > 1,
+    };
+    // Still log the question (it backs the daily limit) if the columns from
+    // migration 020 (model) or 019 (answer, is_followup) aren't there yet.
     let { error: logError } = await supabase
       .from('questions_log')
-      .insert({
-        ...logRow,
-        answer: content,
-        is_followup: messages.filter(m => m.role === 'user').length > 1,
-      });
+      .insert({ ...answerRow, model: MODEL });
     if (logError) {
-      // Still log the question (it backs the daily limit) if the answer
-      // columns from migration 019 aren't there yet.
+      console.error('Error logging question with model, retrying without:', logError);
+      ({ error: logError } = await supabase.from('questions_log').insert(answerRow));
+    }
+    if (logError) {
       console.error('Error logging question with answer, retrying without:', logError);
       ({ error: logError } = await supabase.from('questions_log').insert(logRow));
     }
