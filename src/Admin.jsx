@@ -24,6 +24,17 @@ function formatNum(n) {
   return (n ?? 0).toLocaleString();
 }
 
+function formatUsd(n) {
+  const v = n ?? 0;
+  // Sub-cent costs are common (a cached question is ~$0.02), so show more
+  // precision below a dollar.
+  return (v < 0 ? '-$' : '$') + Math.abs(v).toFixed(Math.abs(v) < 1 && v !== 0 ? 3 : 2);
+}
+
+function formatDay(iso) {
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+}
+
 export default function Admin() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,6 +48,11 @@ export default function Admin() {
   const [userTotals, setUserTotals] = useState([]);
   const [rateLimit, setRateLimit] = useState(null);
   const [usageLoading, setUsageLoading] = useState(false);
+  const [billing, setBilling] = useState(null);
+  const [payDate, setPayDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [payAmount, setPayAmount] = useState('');
+  const [payNote, setPayNote] = useState('');
+  const [billingSaving, setBillingSaving] = useState(false);
   const [now, setNow] = useState(Date.now());
 
   const [reports, setReports] = useState([]);
@@ -149,11 +165,33 @@ export default function Admin() {
       if (error) throw error;
       setUserTotals(data?.userTotals || []);
       setRateLimit(data?.rateLimit || null);
+      setBilling(data?.billing || null);
       setUsageLoading(false);
     } catch (err) {
       setError(err.message);
       setUsageLoading(false);
     }
+  };
+
+  // Add/remove a credit payment or change the renewal day, then reload.
+  const updateBilling = async (body) => {
+    setBillingSaving(true);
+    try {
+      const { error } = await supabase.functions.invoke('get-usage-stats', { body });
+      if (error) throw error;
+      await fetchUsageStats();
+      return true;
+    } catch (err) {
+      setError(err.message);
+      return false;
+    } finally {
+      setBillingSaving(false);
+    }
+  };
+
+  const addPayment = async () => {
+    const ok = await updateBilling({ action: 'add_payment', paid_on: payDate, amount: Number(payAmount), note: payNote });
+    if (ok) { setPayAmount(''); setPayNote(''); }
   };
 
   // Tick every second while the Token Usage tab is open so the reset
@@ -979,11 +1017,12 @@ export default function Admin() {
                             { label: 'Output', value: highlighted.output_tokens },
                             { label: 'Cache Write', value: highlighted.cache_creation_input_tokens },
                             { label: 'Cache Read', value: highlighted.cache_read_input_tokens },
-                            { label: 'Total', value: highlighted.total_tokens, emphasize: true },
+                            { label: 'Total', value: highlighted.total_tokens },
+                            { label: 'Cost', value: highlighted.cost, usd: true, emphasize: true },
                           ].map(c => (
                             <div key={c.label} style={{ flex: '1 1 130px', background: c.emphasize ? 'rgba(29,158,117,0.16)' : 'rgba(29,158,117,0.08)', border: `1px solid ${c.emphasize ? 'rgba(29,158,117,0.4)' : 'rgba(29,158,117,0.2)'}`, borderRadius: 12, padding: '14px 16px' }}>
                               <div style={{ fontSize: 11, color: 'rgba(232,245,233,0.55)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>{c.label}</div>
-                              <div style={{ fontSize: 20, fontWeight: 700, color: c.emphasize ? '#5ecda4' : '#e8f5e9' }}>{formatNum(c.value)}</div>
+                              <div style={{ fontSize: 20, fontWeight: 700, color: c.emphasize ? '#5ecda4' : '#e8f5e9' }}>{c.usd ? formatUsd(c.value) : formatNum(c.value)}</div>
                             </div>
                           ))}
                         </div>
@@ -995,6 +1034,7 @@ export default function Admin() {
                 <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 16 }}>
                   📊 Token Usage by User
                 </h3>
+                <div style={{ overflowX: 'auto' }}>
                 <table style={styles.table}>
                   <thead>
                     <tr>
@@ -1005,12 +1045,13 @@ export default function Admin() {
                       <th style={{ ...styles.th, textAlign: 'right' }}>Cache Write</th>
                       <th style={{ ...styles.th, textAlign: 'right' }}>Cache Read</th>
                       <th style={{ ...styles.th, textAlign: 'right' }}>Total</th>
+                      <th style={{ ...styles.th, textAlign: 'right' }}>Cost</th>
                     </tr>
                   </thead>
                   <tbody>
                     {userTotals.length === 0 ? (
                       <tr>
-                        <td colSpan="7" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>
+                        <td colSpan="8" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>
                           No token usage recorded yet
                         </td>
                       </tr>
@@ -1030,12 +1071,128 @@ export default function Admin() {
                           <td style={{ ...styles.td, textAlign: 'right' }}>{formatNum(u.output_tokens)}</td>
                           <td style={{ ...styles.td, textAlign: 'right' }}>{formatNum(u.cache_creation_input_tokens)}</td>
                           <td style={{ ...styles.td, textAlign: 'right' }}>{formatNum(u.cache_read_input_tokens)}</td>
-                          <td style={{ ...styles.td, textAlign: 'right', fontWeight: 700, color: '#5ecda4' }}>{formatNum(u.total_tokens)}</td>
+                          <td style={{ ...styles.td, textAlign: 'right' }}>{formatNum(u.total_tokens)}</td>
+                          <td style={{ ...styles.td, textAlign: 'right', fontWeight: 700, color: '#5ecda4' }}>{formatUsd(u.cost)}</td>
                         </tr>
                       ))
                     )}
                   </tbody>
                 </table>
+                </div>
+                <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.4)', marginTop: 8, marginBottom: 32 }}>
+                  Cost is estimated from the logged tokens at Anthropic's list prices for the model that answered (Claude Sonnet 5: $2 input, $10 output, $4 cache write, $0.20 cache read per million tokens), before tax.
+                </div>
+
+                {billing && (() => {
+                  const balance = billing.periods[0]?.balance ?? 0;
+                  const fieldStyle = { background: 'rgba(10,22,40,0.7)', border: '1px solid rgba(29,158,117,0.3)', borderRadius: 8, color: '#e8f5e9', fontSize: 13, padding: '8px 10px', outline: 'none' };
+                  return (
+                    <>
+                      <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 6 }}>
+                        🗓️ Usage by Billing Period
+                      </h3>
+                      <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.4)', marginBottom: 12, lineHeight: 1.5 }}>
+                        Periods start on day{' '}
+                        <select
+                          value={billing.renewalDay}
+                          disabled={billingSaving}
+                          onChange={e => updateBilling({ action: 'set_renewal_day', renewal_day: Number(e.target.value) })}
+                          style={{ ...fieldStyle, padding: '2px 6px', fontSize: 12 }}
+                        >
+                          {Array.from({ length: 28 }, (_, i) => i + 1).map(d => <option key={d} value={d}>{d}</option>)}
+                        </select>{' '}
+                        of each month (your Claude Pro renewal). The $20 Claude Pro fee covers Claude.ai, not the API. VAiR&apos;s questions are paid from API credits, so only the credit payments below count toward the balance.
+                      </div>
+                      <div style={{ overflowX: 'auto' }}>
+                      <table style={styles.table}>
+                        <thead>
+                          <tr>
+                            <th style={styles.th}>Period</th>
+                            <th style={{ ...styles.th, textAlign: 'right' }}>Questions</th>
+                            <th style={{ ...styles.th, textAlign: 'right' }}>Tokens</th>
+                            <th style={{ ...styles.th, textAlign: 'right' }}>Cost</th>
+                            <th style={{ ...styles.th, textAlign: 'right' }}>Credits added</th>
+                            <th style={{ ...styles.th, textAlign: 'right' }}>Credit balance</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {billing.periods.length === 0 ? (
+                            <tr>
+                              <td colSpan="6" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>
+                                No usage or payments recorded yet
+                              </td>
+                            </tr>
+                          ) : billing.periods.map((p, i) => (
+                            <tr key={p.start} style={i === 0 ? { ...styles.tr, background: 'rgba(29,158,117,0.1)' } : styles.tr}>
+                              <td style={{ ...styles.td, fontWeight: i === 0 ? 700 : 400 }}>
+                                <span style={{ whiteSpace: 'nowrap' }}>{formatDay(p.start)} –</span> <span style={{ whiteSpace: 'nowrap' }}>{formatDay(p.end)}</span>{i === 0 ? ' (current)' : ''}
+                              </td>
+                              <td style={{ ...styles.td, textAlign: 'right' }}>{formatNum(p.questions)}</td>
+                              <td style={{ ...styles.td, textAlign: 'right' }}>{formatNum(p.tokens)}</td>
+                              <td style={{ ...styles.td, textAlign: 'right' }}>{formatUsd(p.cost)}</td>
+                              <td style={{ ...styles.td, textAlign: 'right' }}>{p.payments ? formatUsd(p.payments) : '—'}</td>
+                              <td style={{ ...styles.td, textAlign: 'right', fontWeight: 700, color: p.balance < 0 ? '#ef5350' : '#5ecda4' }}>{formatUsd(p.balance)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      </div>
+                      <div style={{ fontSize: 12, color: 'rgba(232,245,233,0.4)', marginTop: 8, marginBottom: 32, lineHeight: 1.5 }}>
+                        Balance = credit payments minus VAiR&apos;s tracked cost. It can differ from the Anthropic console: questions asked before token tracking began (Aug 4, 2026) and any other use of the API key aren&apos;t counted. Add a negative adjustment payment to line it up with the console.
+                      </div>
+
+                      <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 12 }}>
+                        💳 API Credit Payments <span style={{ fontSize: 13, fontWeight: 400, color: 'rgba(232,245,233,0.5)' }}>· estimated balance {formatUsd(balance)}</span>
+                      </h3>
+                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+                        <input type="date" value={payDate} onChange={e => setPayDate(e.target.value)} style={fieldStyle} />
+                        <input type="number" step="0.01" value={payAmount} onChange={e => setPayAmount(e.target.value)} placeholder="Amount (USD, before tax)" style={{ ...fieldStyle, width: 190 }} />
+                        <input value={payNote} onChange={e => setPayNote(e.target.value)} placeholder="Note (e.g. extra credits)" style={{ ...fieldStyle, flex: '1 1 160px' }} />
+                        <button
+                          onClick={addPayment}
+                          disabled={billingSaving || !payDate || !Number(payAmount)}
+                          style={{ ...styles.button, padding: '8px 16px', fontSize: 13, opacity: billingSaving || !payDate || !Number(payAmount) ? 0.5 : 1 }}
+                        >
+                          Add payment
+                        </button>
+                      </div>
+                      <table style={styles.table}>
+                        <thead>
+                          <tr>
+                            <th style={styles.th}>Date</th>
+                            <th style={{ ...styles.th, textAlign: 'right' }}>Amount</th>
+                            <th style={styles.th}>Note</th>
+                            <th style={styles.th}></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {billing.payments.length === 0 ? (
+                            <tr>
+                              <td colSpan="4" style={{ ...styles.td, textAlign: 'center', color: 'rgba(232,245,233,0.5)' }}>
+                                No credit payments added yet
+                              </td>
+                            </tr>
+                          ) : [...billing.payments].reverse().map(p => (
+                            <tr key={p.id} style={styles.tr}>
+                              <td style={styles.td}>{formatDay(p.paid_on)}</td>
+                              <td style={{ ...styles.td, textAlign: 'right' }}>{formatUsd(Number(p.amount))}</td>
+                              <td style={{ ...styles.td, color: 'rgba(232,245,233,0.7)' }}>{p.note || '—'}</td>
+                              <td style={{ ...styles.td, textAlign: 'right' }}>
+                                <button
+                                  onClick={() => updateBilling({ action: 'delete_payment', id: p.id })}
+                                  disabled={billingSaving}
+                                  style={{ background: 'transparent', border: '1px solid rgba(232,245,233,0.25)', borderRadius: 8, color: 'rgba(232,245,233,0.7)', fontSize: 12, padding: '4px 10px', cursor: 'pointer' }}
+                                >
+                                  Remove
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </>
+                  );
+                })()}
               </>
             )}
           </>
