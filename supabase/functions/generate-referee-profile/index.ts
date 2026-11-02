@@ -99,6 +99,9 @@ Deno.serve(async (req) => {
             content: `Generate a complete profile for referee "${referee_name}". Return a JSON object matching exactly this schema:\n${PROFILE_SCHEMA}`,
           },
         ],
+        // Claude Sonnet 5 runs adaptive thinking by default, which puts a
+        // `thinking` block before the JSON text and eats into max_tokens.
+        thinking: { type: 'disabled' },
       }),
     });
 
@@ -108,7 +111,8 @@ Deno.serve(async (req) => {
     }
 
     const claudeData = await claudeRes.json();
-    const rawText = claudeData.content?.[0]?.text ?? '';
+    const rawText = claudeData.content
+      ?.find((block: { type: string }) => block.type === 'text')?.text ?? '';
 
     let profile: Record<string, unknown>;
     try {

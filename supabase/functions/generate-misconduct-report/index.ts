@@ -100,6 +100,10 @@ ${description.trim()}`;
         max_tokens: 500,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
+        // Claude Sonnet 5 runs adaptive thinking by default, which puts a
+        // `thinking` block before the text and eats into max_tokens. A short
+        // factual paragraph doesn't need it.
+        thinking: { type: 'disabled' },
       }),
     });
 
@@ -111,8 +115,10 @@ ${description.trim()}`;
     }
 
     const anthropicData = await anthropicResponse.json();
-    const generatedReport = anthropicData.content?.[0]?.text?.trim();
+    const generatedReport = anthropicData.content
+      ?.find((block: { type: string }) => block.type === 'text')?.text?.trim();
     if (!generatedReport) {
+      console.error('Anthropic response had no text block:', JSON.stringify(anthropicData));
       return new Response(JSON.stringify({ error: 'Empty response from model' }),
         { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }

@@ -66,7 +66,8 @@ Deno.serve(async (req) => {
     const aiData = await res.json();
     if (!res.ok) throw new Error(aiData.error?.message || 'Claude API error');
 
-    const text = aiData.content?.[0]?.text || '';
+    const text = aiData.content
+      ?.find((block: { type: string }) => block.type === 'text')?.text || '';
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('Could not parse game details from image');
 
