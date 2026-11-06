@@ -9,8 +9,9 @@ import {
 //   POST { action: "invite", emails: string[], name?: string, note?: string }
 //     — invite hand-picked beta testers to try VAiR (each gets a personal
 //       invitation link to a pre-filled "create your password" form)
-//   POST { action: "remind", user_ids: string[], note?: string }
-//     — nudge existing users to log back in and see what's new
+//   POST { action: "remind", user_ids: string[], emails?: string[], note?: string }
+//     — nudge existing users to log back in and see what's new; `emails` are
+//       invited testers, who get a fresh setup link if they haven't signed in
 //   POST { action: "list", kind: "invite" | "reminder" }
 // Access requests from the public "Request access" form (request-access):
 //   POST { action: "list_requests" }
@@ -230,6 +231,31 @@ function reminderEmail(note: string | null) {
               <strong style="color:#ffffff;">reply to this email</strong> with what works and what doesn't —
               every message is read personally.`,
     closingText: "Try building a report from your last game or throw a tricky scenario at the AI Referee, then reply to this email with what works and what doesn't.",
+  });
+}
+
+// Reminder for an invited tester who hasn't created their account yet: same
+// pitch as the invite, with a fresh setup link (the old one may have expired).
+function testerReminderEmail(name: string | null, note: string | null, setupLink: string) {
+  return renderEmail({
+    subject: "Your VAiR early access is still waiting for you",
+    greeting: name ? `Hi ${escapeHtml(name)},` : "Hi there,",
+    headline: "You were hand-picked to test VAiR, and your spot is still saved.",
+    intro: `A little while ago we invited you to try VAiR, the AI assistant referee, before it opens more widely.
+            You haven't set up your account yet, so here's a fresh link. It takes less than a minute,
+            and we'd really value <strong style="color:#ffffff;">your</strong> honest take on it.`,
+    introText: "A little while ago we invited you to try VAiR, the AI assistant referee, before it opens more widely. You haven't set up your account yet, so here's a fresh link. It takes less than a minute, and we'd really value your honest take on it.",
+    note,
+    sectionTitle: "What you can do with VAiR",
+    features: ALL_FEATURES,
+    ctaLabel: "Claim your early access →",
+    ctaUrl: setupLink,
+    ctaSub: "The button opens a quick form to create your password. The link is valid for 30 days.",
+    closingTitle: "🗣️ Your feedback shapes what comes next",
+    closing: `Throw your hardest scenarios at it, build a misconduct report from your last game, and tell us
+              what's brilliant and what's off. Just <strong style="color:#ffffff;">reply to this email</strong> —
+              every message is read personally.`,
+    closingText: "Throw your hardest scenarios at it, build a misconduct report from your last game, and tell us what's brilliant and what's off. Just reply to this email.",
   });
 }
 
@@ -456,11 +482,50 @@ Deno.serve(async (req) => {
         .map((r) => r.data?.user)
         .filter((u) => u?.email && !isEnded(u))
         .map((u) => u!.email!.toLowerCase());
-      if (recipients.length === 0) throw new Error("No valid recipients");
-      if (recipients.length > MAX_RECIPIENTS) throw new Error(`Send to at most ${MAX_RECIPIENTS} people at a time`);
+
+      // Invited testers (by email) who haven't signed in yet get a fresh
+      // setup link instead; anyone who has signed in since gets the normal one.
+      const usersByEmail = new Map((await listAllUsers(supabaseAdmin)).map((u) => [u.email?.toLowerCase(), u]));
+      const testers: string[] = Array.from(new Set(
+        (Array.isArray(body.emails) ? body.emails : [])
+          .map((e: unknown) => String(e).trim().toLowerCase())
+          .filter((e: string) => EMAIL_RE.test(e)),
+      ));
+      const pendingTesters: string[] = [];
+      for (const to of testers) {
+        const existing = usersByEmail.get(to);
+        if (existing && isEnded(existing)) continue;
+        if (existing?.last_sign_in_at) recipients.push(to);
+        else pendingTesters.push(to);
+      }
+      const allRecipients = Array.from(new Set([...recipients, ...pendingTesters]));
+      if (allRecipients.length === 0) throw new Error("No valid recipients");
+      if (allRecipients.length > MAX_RECIPIENTS) throw new Error(`Send to at most ${MAX_RECIPIENTS} people at a time`);
+
+      // Greet testers by the name used on their invite, when there was one.
+      const { data: invited } = pendingTesters.length
+        ? await supabaseAdmin.from("outreach_emails").select("email, recipient_name, created_at")
+          .eq("kind", "invite").in("email", pendingTesters).order("created_at", { ascending: false })
+        : { data: [] };
+      const inviteName = new Map<string, string>();
+      (invited ?? []).forEach((r) => {
+        if (r.recipient_name && !inviteName.has(r.email)) inviteName.set(r.email, r.recipient_name);
+      });
+
       const email = reminderEmail(note);
       // One email per recipient so nobody sees anyone else's address.
-      results = await Promise.all(recipients.map((to) => sendEmail(to, email, caller.email)));
+      results = await Promise.all([
+        ...Array.from(new Set(recipients)).map((to) => sendEmail(to, email, caller.email)),
+        ...pendingTesters.filter((to) => !recipients.includes(to)).map(async (to) => {
+          try {
+            const testerName = inviteName.get(to) ?? null;
+            const link = await createInvitation(supabaseAdmin, { email: to, kind: "invite", first_name: testerName, invited_by: caller.id });
+            return await sendEmail(to, testerReminderEmail(testerName, note, link), caller.email);
+          } catch (err) {
+            return { email: to, ok: false, error: err instanceof Error ? err.message : String(err) };
+          }
+        }),
+      ]);
     }
 
     await supabaseAdmin.from("outreach_emails").insert(results.map((r) => ({

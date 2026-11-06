@@ -269,8 +269,17 @@ export default function Admin() {
     }
   };
 
-  // Users who can receive a reminder (end-dated accounts are excluded)
-  const remindableUsers = users.filter(u => !u.is_ended);
+  // Users who can receive a reminder (end-dated accounts are excluded), plus
+  // invited testers who haven't created an account yet (keyed "invite:<email>")
+  const userEmails = new Set(users.map(u => u.email?.toLowerCase()));
+  const invitedOnly = [];
+  invites.forEach(inv => {
+    const email = inv.email?.toLowerCase();
+    if (inv.status !== 'sent' || !email || userEmails.has(email)) return;
+    userEmails.add(email);
+    invitedOnly.push({ id: `invite:${email}`, email, last_sign_in_at: null, invited_at: inv.created_at });
+  });
+  const remindableUsers = [...users.filter(u => !u.is_ended), ...invitedOnly];
   const lastRemindedAt = {};
   reminders.forEach(r => {
     if (r.status === 'sent' && !lastRemindedAt[r.email]) lastRemindedAt[r.email] = r.created_at;
@@ -289,12 +298,14 @@ export default function Admin() {
   };
 
   const handleSendReminders = async () => {
-    const ids = Object.keys(reminderSelected);
-    if (ids.length === 0) return;
+    const selected = Object.keys(reminderSelected);
+    if (selected.length === 0) return;
+    const ids = selected.filter(id => !id.startsWith('invite:'));
+    const emails = selected.filter(id => id.startsWith('invite:')).map(id => id.slice('invite:'.length));
     setReminderSending(true);
     setReminderResult(null);
     try {
-      const res = await callOutreach({ action: 'remind', user_ids: ids, note: reminderNote });
+      const res = await callOutreach({ action: 'remind', user_ids: ids, emails, note: reminderNote });
       const result = splitResults(res.results);
       setReminderResult(result);
       if (result.failed.length === 0) { setReminderSelected({}); setReminderNote(''); }
@@ -611,6 +622,7 @@ export default function Admin() {
             onClick={() => {
               setActiveTab('reminders');
               if (reminders.length === 0) fetchReminders();
+              if (invites.length === 0) fetchInvites();
             }}
             style={{
               ...styles.tabButton,
@@ -1472,7 +1484,8 @@ export default function Admin() {
               <div style={{ fontSize: 13, color: 'rgba(232,245,233,0.5)', marginBottom: 20, lineHeight: 1.5 }}>
                 Sends a "What's new in VAiR" email: the Misconduct Report Builder, the 2026/27 Laws update and
                 National 1 League rules, with a button to log in and a request for feedback. Replies come straight
-                back to your email. End-dated accounts are left out.
+                back to your email. End-dated accounts are left out. Invited testers who haven&apos;t created
+                their account yet get a reminder of their invitation with a fresh link to set their password.
               </div>
 
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
@@ -1512,7 +1525,13 @@ export default function Admin() {
                               <input type="checkbox" checked={!!reminderSelected[u.id]} readOnly style={{ accentColor: '#1d9e75', cursor: 'pointer' }} />
                             </td>
                             <td style={styles.td}>{u.email}</td>
-                            <td style={styles.td}>{u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString() : 'Never'}</td>
+                            <td style={styles.td}>
+                              {u.last_sign_in_at
+                                ? new Date(u.last_sign_in_at).toLocaleDateString()
+                                : u.invited_at
+                                  ? <span style={{ color: 'rgba(232,245,233,0.6)' }}>Invited {new Date(u.invited_at).toLocaleDateString()}, no account yet</span>
+                                  : 'Never'}
+                            </td>
                             <td style={{ ...styles.td, color: reminded ? '#e8f5e9' : 'rgba(232,245,233,0.4)' }}>
                               {reminded ? new Date(reminded).toLocaleDateString() : '—'}
                             </td>
