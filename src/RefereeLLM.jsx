@@ -201,7 +201,11 @@ export default function RefereeLLM({ onNavigate } = {}) {
 
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [authView, setAuthView] = useState('login'); // 'login' | 'signup' (request access) | 'forgot'
+  // 'login' | 'signup' (request access) | 'forgot'. A ?signup link (sent in
+  // Admin "Invite by text" messages) opens straight on the request form.
+  const [authView, setAuthView] = useState(() => (
+    new URLSearchParams(window.location.search).has('signup') ? 'signup' : 'login'
+  ));
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');

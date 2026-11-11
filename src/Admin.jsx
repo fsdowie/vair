@@ -74,6 +74,15 @@ export default function Admin() {
   const [inviteNote, setInviteNote] = useState('');
   const [inviteSending, setInviteSending] = useState(false);
   const [inviteResult, setInviteResult] = useState(null); // { sent: string[], failed: { email, error }[] }
+  // Invite by text — sent from the admin's own phone via sms: links
+  const [smsInput, setSmsInput] = useState('');
+  const [smsLog, setSmsLog] = useState([]);
+  const [smsDone, setSmsDone] = useState({}); // phone -> 'texted' | 'copied' (this session)
+  const [twilioReady, setTwilioReady] = useState(null); // null = unknown, true/false from send-sms config
+  const [smsWhen, setSmsWhen] = useState('now'); // 'now' | 'later'
+  const [smsSendAt, setSmsSendAt] = useState(''); // datetime-local value
+  const [smsSending, setSmsSending] = useState(false);
+  const [smsResult, setSmsResult] = useState(null); // { sent: string[], failed: { phone, error }[] }
 
   // "What's new" reminders to existing users
   const [reminders, setReminders] = useState([]);
@@ -233,6 +242,111 @@ export default function Admin() {
       setError(`Could not load invites: ${err?.message ?? String(err)}`);
     } finally {
       setInvitesLoading(false);
+    }
+  };
+
+  const callSms = async (body) => {
+    const token = (await supabase.auth.getSession()).data.session?.access_token;
+    const rawRes = await fetch(`${EDGE_BASE}/send-sms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'apikey': 'sb_publishable_SU4BJ5e9RLDl-3iSZHo-3g_mbHpD9cn',
+      },
+      body: JSON.stringify(body),
+    });
+    const res = await rawRes.json().catch(() => ({}));
+    if (!rawRes.ok || res?.error) throw new Error(res?.error ?? `HTTP ${rawRes.status}`);
+    return res;
+  };
+
+  const fetchSmsLog = async () => {
+    try {
+      const [list, config] = await Promise.all([callSms({ action: 'list' }), callSms({ action: 'config' })]);
+      setSmsLog(list.messages ?? []);
+      setTwilioReady(Boolean(config.twilio));
+    } catch (err) {
+      setError(`Could not load text messages: ${err?.message ?? String(err)}`);
+    }
+  };
+
+  // Lines like "Jane, 555-123-4567", "Jane 555 123 4567" or just "+44 7700 900123".
+  // 10-digit numbers are treated as US/Canada (+1).
+  const parsedSmsRecipients = smsInput.split('\n').map(line => line.trim()).filter(Boolean).map(line => {
+    const match = line.match(/\+?\(?\d[\d\s().-]{6,}\d/);
+    const raw = match ? match[0] : '';
+    const digits = raw.replace(/\D/g, '');
+    let phone = null;
+    if (raw.trim().startsWith('+')) phone = `+${digits}`;
+    else if (digits.length === 10) phone = `+1${digits}`;
+    else if (digits.length === 11 && digits.startsWith('1')) phone = `+${digits}`;
+    if (phone && !/^\+\d{8,15}$/.test(phone)) phone = null;
+    const name = line.replace(raw, '').replace(/[,;:\-–\s]+$/, '').replace(/^[,;:\-–\s]+/, '').trim();
+    return { line, phone, name: name.split(/\s+/)[0] || '' };
+  });
+
+  // Texts sent from VAiR's Twilio number carry the opt-out line carriers require;
+  // texts sent from the admin's own phone don't need it.
+  const smsMessage = (name, viaTwilio = false) =>
+    `${viaTwilio ? 'VAiR: ' : ''}${name ? `Hi ${name}! ` : 'Hi! '}You're invited to beta test VAiR, the AI ` +
+    `assistant for soccer referees: instant Laws of the Game rulings and misconduct reports. ` +
+    `Request access: https://vaireferee.com/?signup` +
+    (viaTwilio ? '\nReply STOP to opt out' : '\n- The VAiR team');
+
+  const logSms = (recipient, how) => {
+    setSmsDone(prev => ({ ...prev, [recipient.phone]: how }));
+    callSms({ action: 'log_manual', phone: recipient.phone, name: recipient.name, body: smsMessage(recipient.name) })
+      .then(fetchSmsLog)
+      .catch(err => setError(`Could not record the text to ${recipient.phone}: ${err?.message ?? String(err)}`));
+  };
+
+  const validSmsRecipients = parsedSmsRecipients.filter(r => r.phone);
+
+  const handleSendSms = async () => {
+    if (validSmsRecipients.length === 0) return;
+    let sendAt = null;
+    if (smsWhen === 'later') {
+      if (!smsSendAt) { setSmsResult({ sent: [], failed: [{ phone: '', error: 'Pick a date and time to send.' }] }); return; }
+      sendAt = new Date(smsSendAt).toISOString(); // datetime-local is the admin's local time
+    }
+    setSmsSending(true);
+    setSmsResult(null);
+    try {
+      const res = await callSms({
+        action: 'send',
+        send_at: sendAt,
+        recipients: validSmsRecipients.map(r => ({ phone: r.phone, name: r.name, body: smsMessage(r.name, true) })),
+      });
+      const sent = (res.results ?? []).filter(r => r.ok).map(r => r.phone);
+      const failed = (res.results ?? []).filter(r => !r.ok);
+      setSmsResult({ sent, failed, scheduled: Boolean(sendAt) });
+      // Keep only the lines that failed (or had no number) so they can be fixed and retried
+      const failedPhones = new Set(failed.map(f => f.phone));
+      setSmsInput(parsedSmsRecipients.filter(r => !r.phone || failedPhones.has(r.phone)).map(r => r.line).join('\n'));
+      await fetchSmsLog();
+    } catch (err) {
+      setSmsResult({ sent: [], failed: [{ phone: '', error: err?.message ?? String(err) }] });
+    } finally {
+      setSmsSending(false);
+    }
+  };
+
+  const cancelSms = async (id) => {
+    try {
+      await callSms({ action: 'cancel', id });
+      await fetchSmsLog();
+    } catch (err) {
+      setError(`Could not cancel: ${err?.message ?? String(err)}`);
+    }
+  };
+
+  const copySms = async (recipient) => {
+    try {
+      await navigator.clipboard.writeText(smsMessage(recipient.name));
+      logSms(recipient, 'copied');
+    } catch {
+      setError('Could not copy to the clipboard — select the message text and copy it manually.');
     }
   };
 
@@ -610,6 +724,7 @@ export default function Admin() {
             onClick={() => {
               setActiveTab('invites');
               if (invites.length === 0) fetchInvites();
+              fetchSmsLog();
             }}
             style={{
               ...styles.tabButton,
@@ -1430,6 +1545,186 @@ export default function Admin() {
                 </div>
               )}
             </div>
+
+            <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 6 }}>
+              📱 Invite by text
+            </h3>
+            <div style={{ fontSize: 13, color: 'rgba(232,245,233,0.5)', marginBottom: 16, lineHeight: 1.5 }}>
+              The link opens VAiR&apos;s &quot;Request an invite&quot; form, which asks for their email; their request
+              then appears under Access Requests for you to approve.{' '}
+              {twilioReady
+                ? <>Use <b>Send</b> below to text everyone from VAiR&apos;s Twilio number, now or at a scheduled time.
+                    You can still send one yourself with <b>Text</b> (opens Messages on your phone) or <b>Copy</b>.</>
+                : <>Free: the text goes out from your own phone. On your phone, tap <b>Text</b> to open Messages with the
+                    number and message filled in, then hit Send. On a computer, tap <b>Copy</b> and paste it into your phone.
+                    {twilioReady === false && ' (Sending from VAiR’s own number turns on once the Twilio keys are added in Supabase.)'}</>}
+            </div>
+            <div style={{ ...styles.form, marginBottom: 28 }}>
+              <label style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13, color: 'rgba(232,245,233,0.7)' }}>
+                Names and phone numbers (one person per line; numbers without a + are treated as US)
+                <textarea
+                  value={smsInput}
+                  onChange={e => setSmsInput(e.target.value)}
+                  rows={4}
+                  placeholder={'Jane, 555-123-4567\nMark +44 7700 900123'}
+                  style={{ ...styles.input, fontSize: 14, fontFamily: 'inherit', resize: 'vertical' }}
+                />
+              </label>
+              {parsedSmsRecipients.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {parsedSmsRecipients.map((r, i) => (
+                    <div key={i} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: 8, padding: 12 }}>
+                      {r.phone ? (
+                        <>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
+                            <span style={{ fontWeight: 'bold', color: '#e8f5e9' }}>{r.name || 'No name'}</span>
+                            <span style={{ fontSize: 13, color: 'rgba(232,245,233,0.6)' }}>{r.phone}</span>
+                            <span style={{ flex: 1 }} />
+                            {smsDone[r.phone] && (
+                              <span style={{ fontSize: 12, color: '#5ecda4' }}>
+                                ✅ {smsDone[r.phone] === 'copied' ? 'Copied' : 'Opened in Messages'}
+                              </span>
+                            )}
+                            <a
+                              href={`sms:${r.phone}?&body=${encodeURIComponent(smsMessage(r.name))}`}
+                              onClick={() => logSms(r, 'texted')}
+                              style={{ ...styles.button, padding: '6px 16px', fontSize: 13, textDecoration: 'none' }}
+                            >
+                              📱 Text
+                            </a>
+                            <button
+                              onClick={() => copySms(r)}
+                              style={{ ...styles.button, padding: '6px 16px', fontSize: 13, background: 'transparent', border: '1px solid rgba(29,158,117,0.5)', color: '#5ecda4' }}
+                            >
+                              Copy
+                            </button>
+                          </div>
+                          <div style={{ fontSize: 13, color: 'rgba(232,245,233,0.7)', whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>
+                            {smsMessage(r.name, Boolean(twilioReady))}
+                          </div>
+                        </>
+                      ) : (
+                        <div style={{ fontSize: 13, color: '#ef5350' }}>
+                          ❌ Couldn&apos;t find a phone number in &quot;{r.line}&quot;. Use 10 digits for US numbers, or start with + and the country code.
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {twilioReady && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'rgba(232,245,233,0.7)' }}>
+                    <input type="radio" checked={smsWhen === 'now'} onChange={() => setSmsWhen('now')} /> Send now
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'rgba(232,245,233,0.7)' }}>
+                    <input type="radio" checked={smsWhen === 'later'} onChange={() => setSmsWhen('later')} /> Schedule for
+                  </label>
+                  {smsWhen === 'later' && (
+                    <input
+                      type="datetime-local"
+                      value={smsSendAt}
+                      onChange={e => setSmsSendAt(e.target.value)}
+                      style={{ ...styles.input, fontSize: 14, colorScheme: 'dark' }}
+                    />
+                  )}
+                  <button
+                    onClick={handleSendSms}
+                    disabled={smsSending || validSmsRecipients.length === 0}
+                    style={{
+                      ...styles.button,
+                      padding: '10px 24px',
+                      fontSize: 14,
+                      opacity: smsSending || validSmsRecipients.length === 0 ? 0.5 : 1,
+                      cursor: smsSending || validSmsRecipients.length === 0 ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {smsSending
+                      ? 'Sending…'
+                      : `${smsWhen === 'later' ? 'Schedule' : 'Send'} ${validSmsRecipients.length || ''} text${validSmsRecipients.length === 1 ? '' : 's'}`}
+                  </button>
+                  <span style={{ fontSize: 12, color: 'rgba(232,245,233,0.4)' }}>
+                    Up to 50 at a time · schedule 15 min to 35 days ahead (your local time)
+                  </span>
+                </div>
+              )}
+
+              {smsResult && (
+                <div>
+                  {smsResult.sent.length > 0 && (
+                    <div style={{ ...styles.note, background: 'rgba(29,158,117,0.1)', borderColor: 'rgba(29,158,117,0.3)', color: '#5ecda4', marginBottom: 8 }}>
+                      ✅ {smsResult.scheduled ? 'Scheduled for' : 'Sent to'} {smsResult.sent.join(', ')}
+                    </div>
+                  )}
+                  {smsResult.failed.map((f, i) => (
+                    <div key={i} style={{ ...styles.error, marginBottom: 8 }}>
+                      ❌ {f.phone ? `${f.phone}: ` : ''}{f.error}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {smsLog.length > 0 && (() => {
+              const statusLabel = (s) => {
+                if (s.via === 'manual') return { text: '📱 From your phone', color: 'rgba(232,245,233,0.7)' };
+                if (s.status === 'delivered' || s.status === 'read') return { text: '✅ Delivered', color: '#5ecda4' };
+                if (s.status === 'scheduled') return { text: `🕒 Scheduled ${s.send_at ? new Date(s.send_at).toLocaleString() : ''}`, color: '#f0c674' };
+                if (s.status === 'canceled') return { text: '🚫 Canceled', color: 'rgba(232,245,233,0.5)' };
+                if (s.status === 'failed' || s.status === 'undelivered') return { text: '❌ Not delivered', color: '#ef5350' };
+                return { text: '📤 Sending', color: '#5ecda4' };
+              };
+              return (
+                <>
+                  <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 12 }}>
+                    Text messages
+                    <button onClick={fetchSmsLog} style={{ marginLeft: 12, background: 'none', border: 'none', color: '#5ecda4', cursor: 'pointer', fontSize: 13 }}>
+                      ↻ Refresh
+                    </button>
+                  </h3>
+                  <div style={{ overflowX: 'auto', marginBottom: 28 }}>
+                    <table style={styles.table}>
+                      <thead>
+                        <tr>
+                          <th style={styles.th}>Name</th>
+                          <th style={styles.th}>Phone</th>
+                          <th style={styles.th}>Status</th>
+                          <th style={styles.th}>Created</th>
+                          <th style={styles.th}></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {smsLog.map(s => {
+                          const label = statusLabel(s);
+                          return (
+                            <tr key={s.id} style={styles.tr}>
+                              <td style={styles.td}>{s.recipient_name || '—'}</td>
+                              <td style={styles.td}>{s.phone}</td>
+                              <td style={{ ...styles.td, color: label.color }} title={s.body}>
+                                {label.text}
+                                {s.error && <div style={{ fontSize: 12, color: '#ef5350' }}>{s.error}</div>}
+                              </td>
+                              <td style={styles.td}>{new Date(s.created_at).toLocaleString()}</td>
+                              <td style={styles.td}>
+                                {s.via === 'twilio' && s.status === 'scheduled' && (
+                                  <button
+                                    onClick={() => cancelSms(s.id)}
+                                    style={{ background: 'none', border: '1px solid rgba(239,83,80,0.5)', borderRadius: 6, color: '#ef5350', fontSize: 12, padding: '4px 10px', cursor: 'pointer' }}
+                                  >
+                                    Cancel
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              );
+            })()}
 
             <h3 style={{ color: '#5ecda4', fontSize: 16, marginBottom: 12 }}>
               Sent invites

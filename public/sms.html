@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VAiR Text Messages</title>
+  <link rel="icon" href="/favicon.svg">
+  <style>
+    :root { --bg: #0a1628; --card: #0d2137; --text: #e8f5e9; --muted: rgba(232,245,233,0.7); --accent: #5ecda4; --line: rgba(29,158,117,0.3); }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+    h1 { color: var(--accent); font-size: 28px; margin: 0 0 4px; }
+    h2 { color: var(--accent); font-size: 19px; margin: 32px 0 8px; }
+    p, li { color: var(--muted); }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; margin: 12px 0; }
+    .sms { white-space: pre-wrap; color: var(--text); font-size: 15px; }
+    .label { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--accent); margin-bottom: 6px; }
+    a { color: var(--accent); }
+    code { background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 4px; color: var(--text); }
+  </style>
+</head>
+<body>
+<main>
+  <h1>VAiR text messages</h1>
+  <p>VAiR (vaireferee.com) is an AI assistant that answers soccer referees' questions about the IFAB Laws of the Game.
+     This page explains the text messages VAiR sends and how people agree to receive them.</p>
+
+  <h2>Who gets texts</h2>
+  <p>VAiR sends text messages only to people who asked to try VAiR during its beta test. Referees give their mobile
+     number directly to the VAiR team, in person or in a message, and agree at that time to receive a text inviting
+     them to the beta. VAiR never buys, rents or collects phone numbers from lists or third parties.</p>
+
+  <h2>How consent is given (verbal opt-in)</h2>
+  <p>Consent is given verbally, in person or on a call, or in writing in a direct message. Before taking a number, the
+     VAiR team asks this question, and texts only people who answer yes:</p>
+  <div class="card">
+    <div class="label">Consent script</div>
+    <div class="sms">"Can VAiR send you a text with a link to join the VAiR beta? It's at most 3 messages. Message and data rates may apply, and you can reply STOP at any time to opt out or HELP for help."</div>
+  </div>
+  <p>The VAiR team records each person's name, number and the date they agreed before sending anything. The first text
+     identifies VAiR and includes opt-out instructions.</p>
+
+  <h2>What we send</h2>
+  <ul>
+    <li>An invitation to request beta access, with a link to vaireferee.com. Usually one message, and no more than 3 per person.</li>
+    <li>No marketing from other companies, and phone numbers are never shared or sold. See our <a href="/privacy.html">privacy policy</a> and <a href="/terms.html">terms</a>.</li>
+  </ul>
+  <div class="card">
+    <div class="label">Sample message</div>
+    <div class="sms">VAiR: Hi Jane! You're invited to beta test VAiR, the AI assistant for soccer referees: instant Laws of the Game rulings and misconduct reports. Request access: https://vaireferee.com/?signup
+Reply STOP to opt out</div>
+  </div>
+
+  <h2>Opting in, getting help and opting out</h2>
+  <ul>
+    <li>Reply <code>START</code> to opt in (or back in) to VAiR texts.</li>
+    <li>Reply <code>HELP</code> for help.</li>
+    <li>Reply <code>STOP</code> at any time to stop all texts. You'll get one confirmation and nothing after that.</li>
+  </ul>
+  <div class="card">
+    <div class="label">Reply to START</div>
+    <div class="sms">VAiR: You're subscribed to VAiR beta invitations. Up to 3 msgs total. Msg &amp; data rates may apply. Reply HELP for help, STOP to opt out.</div>
+  </div>
+  <div class="card">
+    <div class="label">Reply to HELP</div>
+    <div class="sms">VAiR: Beta invitations for VAiR, the AI referee assistant at vaireferee.com. Questions? Email admin@vaireferee.com. Reply STOP to opt out.</div>
+  </div>
+  <div class="card">
+    <div class="label">Reply to STOP</div>
+    <div class="sms">VAiR: You're unsubscribed and won't receive any more texts. Reply START to resubscribe.</div>
+  </div>
+
+  <p>Message frequency varies (at most 3 messages). Message and data rates may apply. Carriers are not liable for
+     delayed or undelivered messages. Questions: <a href="mailto:admin@vaireferee.com">admin@vaireferee.com</a>.</p>
+</main>
+</body>
+</html>
