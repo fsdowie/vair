@@ -25,7 +25,7 @@ const LABEL_STYLE = {
 
 const REQUIRED_STAR = { color: "#ef9a9a", marginLeft: 3 };
 
-const CONTACT_EMAIL = "vaireferee@gmail.com";
+const CONTACT_EMAIL = "admin@vaireferee.com";
 
 const CLARIFYING = {
   suggestion: [
