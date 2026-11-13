@@ -19,9 +19,10 @@ const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
 // Trending questions for the AI Referee landing page.
-//   GET / POST {}                     → { questions: [{ question, answer, clicks }] }
+//   GET / POST { offset? }            → { questions: [{ question, answer, clicks }], has_more }
 //     Up to 10 distinct recent questions, most-clicked first (ties: most
-//     recent first). answer is the ruling VAiR gave last time, so the page
+//     recent first). offset pages further down the same list ("Show older
+//     questions" on the landing page). answer is the ruling VAiR gave last time, so the page
 //     can show it without asking the AI again (null if none was saved).
 //   POST { action: "click", question } → { ok: true }
 //     Records that the caller clicked a trending question; each person
@@ -97,13 +98,15 @@ Deno.serve(async (req) => {
       clicks.set(row.question_key, (clicks.get(row.question_key) ?? 0) + 1);
     }
 
-    const questions = [...candidates.entries()]
+    const offset = Math.max(0, Math.min(Number.isInteger(body.offset) ? body.offset : 0, CANDIDATE_POOL));
+    const ranked = [...candidates.entries()]
       .map(([key, c]) => ({ ...c, clicks: clicks.get(key) ?? 0 }))
-      .sort((a, b) => b.clicks - a.clicks || a.order - b.order)
-      .slice(0, TRENDING_COUNT)
+      .sort((a, b) => b.clicks - a.clicks || a.order - b.order);
+    const questions = ranked
+      .slice(offset, offset + TRENDING_COUNT)
       .map(({ question, answer, clicks }) => ({ question, answer, clicks }));
 
-    return json({ questions });
+    return json({ questions, has_more: ranked.length > offset + TRENDING_COUNT });
   } catch (error) {
     console.error('get-recent-questions error:', error);
     return json({ error: 'Internal server error' }, 500);

@@ -236,6 +236,9 @@ export default function RefereeLLM({ onNavigate } = {}) {
   const messagesEndRef = useRef(null);
   const [sampleQuestions, setSampleQuestions] = useState(() => getRandomQuestions());
   const [trendingQuestions, setTrendingQuestions] = useState(false);
+  const [trendingHasMore, setTrendingHasMore] = useState(false);
+  const [trendingLoadingMore, setTrendingLoadingMore] = useState(false);
+  const [trendingLoaded, setTrendingLoaded] = useState(0); // real (non-example) questions shown so far
 
   const [reportModal, setReportModal] = useState(null); // { question, answer } | null
   const [reportExplanation, setReportExplanation] = useState('');
@@ -357,9 +360,37 @@ export default function RefereeLLM({ onNavigate } = {}) {
           .slice(0, SUGGESTION_COUNT - real.length);
         setSampleQuestions([...real, ...filler]);
         setTrendingQuestions(true);
+        setTrendingLoaded(real.length);
+        setTrendingHasMore(Boolean(d.has_more));
       })
       .catch(() => {});
   }, [session]);
+
+  // "Show older questions": the next page of the same most-clicked-first list.
+  const loadOlderQuestions = async () => {
+    if (!session || trendingLoadingMore) return;
+    setTrendingLoadingMore(true);
+    try {
+      const r = await fetch(`${EDGE_BASE}/get-recent-questions`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ offset: trendingLoaded }),
+      });
+      const d = await r.json();
+      const more = (Array.isArray(d.questions) ? d.questions : []).filter(q => q && typeof q.question === 'string');
+      setSampleQuestions(prev => {
+        // Click counts can change between pages, so skip anything already shown
+        const seen = new Set(prev.map(q => q.question.trim().toLowerCase()));
+        return [...prev, ...more.filter(q => !seen.has(q.question.trim().toLowerCase()))];
+      });
+      setTrendingLoaded(n => n + more.length);
+      setTrendingHasMore(Boolean(d.has_more) && more.length > 0);
+    } catch {
+      // leave the button so they can try again
+    } finally {
+      setTrendingLoadingMore(false);
+    }
+  };
 
   const dismissNotification = async (id) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
@@ -590,6 +621,99 @@ export default function RefereeLLM({ onNavigate } = {}) {
       askQuestion(item.question);
     }
   };
+
+  // The question box: mic, text field and send button. Shown above the
+  // trending questions on the landing page, and pinned to the bottom once a
+  // conversation starts.
+  const inputRow = (
+      <div style={{
+        maxWidth: 700,
+        width: "100%",
+        margin: "0 auto",
+        display: "flex",
+        gap: 12,
+      }}>
+        <style>{`@keyframes mic-pulse{0%,100%{box-shadow:0 0 0 0 rgba(29,158,117,0.7)}50%{box-shadow:0 0 0 8px rgba(29,158,117,0)}}`}</style>
+        {/* Mic button */}
+        <button
+          disabled={!micSupported}
+          onMouseDown={startRecording}
+          onMouseUp={stopRecording}
+          onMouseLeave={stopRecording}
+          onTouchStart={e => { e.preventDefault(); startRecording(); }}
+          onTouchEnd={stopRecording}
+          title={micSupported ? (recording ? "Listening…" : "Hold to dictate") : "Speech recognition not supported in this browser"}
+          style={{
+            background: recording ? "rgba(29,158,117,0.15)" : "rgba(10,30,15,0.3)",
+            border: `1px solid ${recording ? "rgba(29,158,117,0.8)" : micSupported ? "rgba(29,158,117,0.3)" : "rgba(29,158,117,0.15)"}`,
+            borderRadius: 12,
+            color: micSupported ? (recording ? "#5ecda4" : "rgba(232,245,233,0.85)") : "rgba(232,245,233,0.25)",
+            fontSize: 20,
+            cursor: micSupported ? "pointer" : "not-allowed",
+            minWidth: 52,
+            alignSelf: "stretch",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "all 0.2s",
+            animation: recording ? "mic-pulse 1s ease-in-out infinite" : "none",
+            userSelect: "none",
+            WebkitUserSelect: "none",
+          }}
+        >
+          🎤
+        </button>
+        <textarea
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              sendMessage();
+            }
+          }}
+          placeholder="Ask about a refereeing decision... (Shift+Enter for new line)"
+          disabled={chatLoading}
+          style={{
+            flex: 1,
+            minHeight: 52,
+            maxHeight: 200,
+            padding: "14px 16px",
+            background: "rgba(10,30,15,0.3)",
+            border: "1px solid rgba(29,158,117,0.3)",
+            borderRadius: 12,
+            color: "#e8f5e9",
+            fontSize: 15,
+            fontFamily: "inherit",
+            resize: "none",
+            outline: "none",
+            lineHeight: 1.5,
+            transition: "border-color 0.2s",
+          }}
+          onFocus={e => e.target.style.borderColor = "rgba(29,158,117,0.7)"}
+          onBlur={e => e.target.style.borderColor = "rgba(29,158,117,0.3)"}
+        />
+        <button
+          onClick={() => sendMessage()}
+          disabled={chatLoading || !input.trim()}
+          style={{
+            background: chatLoading || !input.trim()
+              ? "rgba(29,158,117,0.2)"
+              : "linear-gradient(135deg, #0e7a58, #0a5c43)",
+            border: "1px solid rgba(29,158,117,0.4)",
+            borderRadius: 12,
+            padding: "0 20px",
+            color: chatLoading || !input.trim() ? "#1d9e75" : "#e8f5e9",
+            fontSize: 20,
+            cursor: chatLoading || !input.trim() ? "default" : "pointer",
+            transition: "all 0.2s",
+            minWidth: 52,
+          }}
+        >
+          {chatLoading ? "⏳" : "🟢"}
+        </button>
+      </div>
+  );
 
   if (inviteToken) {
     return (
@@ -1110,6 +1234,29 @@ export default function RefereeLLM({ onNavigate } = {}) {
               gap: 12,
               alignItems: "center",
             }}>
+              <div style={{ maxWidth: 600, width: "100%" }}>{inputRow}</div>
+              <div style={{
+                maxWidth: 600,
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                margin: "10px 0 0",
+                color: "rgba(232,245,233,0.45)",
+                fontSize: 12,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+              }}>
+                <div style={{ flex: 1, height: 1, background: "rgba(29,158,117,0.25)" }} />
+                or
+                <div style={{ flex: 1, height: 1, background: "rgba(29,158,117,0.25)" }} />
+              </div>
+              <div style={{ fontSize: 15, color: "#8fd9bb", textAlign: "center", marginBottom: 8 }}>
+                {trendingQuestions
+                  ? "🔥 Check the Trending Questions other referees are asking"
+                  : "💡 Try one of these example questions"}
+                <div style={{ fontSize: 22, marginTop: 4, animation: "hint-bounce 1.6s ease-in-out infinite" }}>↓</div>
+              </div>
               <div style={{ maxWidth: 600, width: "100%", textAlign: "left", marginBottom: 2 }}>
                 <div style={{
                   fontSize: 12,
@@ -1164,26 +1311,25 @@ export default function RefereeLLM({ onNavigate } = {}) {
                   )}
                 </button>
               ))}
-              <div style={{
-                maxWidth: 600,
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                margin: "10px 0 0",
-                color: "rgba(232,245,233,0.45)",
-                fontSize: 12,
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-              }}>
-                <div style={{ flex: 1, height: 1, background: "rgba(29,158,117,0.25)" }} />
-                or
-                <div style={{ flex: 1, height: 1, background: "rgba(29,158,117,0.25)" }} />
-              </div>
-              <div style={{ fontSize: 15, color: "#8fd9bb", textAlign: "center" }}>
-                ✍️ Describe your own situation in the box below
-                <div style={{ fontSize: 22, marginTop: 4, animation: "hint-bounce 1.6s ease-in-out infinite" }}>↓</div>
-              </div>
+              {trendingQuestions && (trendingHasMore || trendingLoadingMore) && (
+                <button
+                  onClick={loadOlderQuestions}
+                  disabled={trendingLoadingMore}
+                  style={{
+                    marginTop: 4,
+                    padding: "8px 18px",
+                    background: "none",
+                    border: "1px solid rgba(29,158,117,0.35)",
+                    borderRadius: 999,
+                    color: "#8fd9bb",
+                    fontSize: 13,
+                    cursor: trendingLoadingMore ? "default" : "pointer",
+                    opacity: trendingLoadingMore ? 0.6 : 1,
+                  }}
+                >
+                  {trendingLoadingMore ? "Loading…" : "↓ Show older questions"}
+                </button>
+              )}
             </div>
           </div>
           </div>
@@ -1269,102 +1415,19 @@ export default function RefereeLLM({ onNavigate } = {}) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
-      <div style={{
-        position: "sticky",
-        bottom: 0,
-        background: "rgba(10,22,40,0.95)",
-        backdropFilter: "blur(10px)",
-        borderTop: "1px solid rgba(29,158,117,0.2)",
-        padding: "16px 24px",
-      }}>
-        <style>{`@keyframes mic-pulse{0%,100%{box-shadow:0 0 0 0 rgba(29,158,117,0.7)}50%{box-shadow:0 0 0 8px rgba(29,158,117,0)}}`}</style>
+      {/* Input Area — on the landing page it sits above the trending questions instead */}
+      {messages.length > 0 && (
         <div style={{
-          maxWidth: 700,
-          margin: "0 auto",
-          display: "flex",
-          gap: 12,
+          position: "sticky",
+          bottom: 0,
+          background: "rgba(10,22,40,0.95)",
+          backdropFilter: "blur(10px)",
+          borderTop: "1px solid rgba(29,158,117,0.2)",
+          padding: "16px 24px",
         }}>
-          {/* Mic button */}
-          <button
-            disabled={!micSupported}
-            onMouseDown={startRecording}
-            onMouseUp={stopRecording}
-            onMouseLeave={stopRecording}
-            onTouchStart={e => { e.preventDefault(); startRecording(); }}
-            onTouchEnd={stopRecording}
-            title={micSupported ? (recording ? "Listening…" : "Hold to dictate") : "Speech recognition not supported in this browser"}
-            style={{
-              background: recording ? "rgba(29,158,117,0.15)" : "rgba(10,30,15,0.3)",
-              border: `1px solid ${recording ? "rgba(29,158,117,0.8)" : micSupported ? "rgba(29,158,117,0.3)" : "rgba(29,158,117,0.15)"}`,
-              borderRadius: 12,
-              color: micSupported ? (recording ? "#5ecda4" : "rgba(232,245,233,0.85)") : "rgba(232,245,233,0.25)",
-              fontSize: 20,
-              cursor: micSupported ? "pointer" : "not-allowed",
-              minWidth: 52,
-              alignSelf: "stretch",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "all 0.2s",
-              animation: recording ? "mic-pulse 1s ease-in-out infinite" : "none",
-              userSelect: "none",
-              WebkitUserSelect: "none",
-            }}
-          >
-            🎤
-          </button>
-          <textarea
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-              }
-            }}
-            placeholder="Ask about a refereeing decision... (Shift+Enter for new line)"
-            disabled={chatLoading}
-            style={{
-              flex: 1,
-              minHeight: 52,
-              maxHeight: 200,
-              padding: "14px 16px",
-              background: "rgba(10,30,15,0.3)",
-              border: "1px solid rgba(29,158,117,0.3)",
-              borderRadius: 12,
-              color: "#e8f5e9",
-              fontSize: 15,
-              fontFamily: "inherit",
-              resize: "none",
-              outline: "none",
-              lineHeight: 1.5,
-              transition: "border-color 0.2s",
-            }}
-            onFocus={e => e.target.style.borderColor = "rgba(29,158,117,0.7)"}
-            onBlur={e => e.target.style.borderColor = "rgba(29,158,117,0.3)"}
-          />
-          <button
-            onClick={() => sendMessage()}
-            disabled={chatLoading || !input.trim()}
-            style={{
-              background: chatLoading || !input.trim()
-                ? "rgba(29,158,117,0.2)"
-                : "linear-gradient(135deg, #0e7a58, #0a5c43)",
-              border: "1px solid rgba(29,158,117,0.4)",
-              borderRadius: 12,
-              padding: "0 20px",
-              color: chatLoading || !input.trim() ? "#1d9e75" : "#e8f5e9",
-              fontSize: 20,
-              cursor: chatLoading || !input.trim() ? "default" : "pointer",
-              transition: "all 0.2s",
-              minWidth: 52,
-            }}
-          >
-            {chatLoading ? "⏳" : "🟢"}
-          </button>
+          {inputRow}
         </div>
-      </div>
+      )}
 
       {/* Footer Credits */}
       <div style={{
