@@ -79,6 +79,7 @@ export default function Admin() {
   const [smsLog, setSmsLog] = useState([]);
   const [smsDone, setSmsDone] = useState({}); // phone -> 'texted' | 'copied' (this session)
   const [twilioReady, setTwilioReady] = useState(null); // null = unknown, true/false from send-sms config
+  const [twilioInfo, setTwilioInfo] = useState(null); // { twilio, ok, problem?, numbers?: { phone, verification }[] }
   const [smsWhen, setSmsWhen] = useState('now'); // 'now' | 'later'
   const [smsSendAt, setSmsSendAt] = useState(''); // datetime-local value
   const [smsSending, setSmsSending] = useState(false);
@@ -265,7 +266,8 @@ export default function Admin() {
     try {
       const [list, config] = await Promise.all([callSms({ action: 'list' }), callSms({ action: 'config' })]);
       setSmsLog(list.messages ?? []);
-      setTwilioReady(Boolean(config.twilio));
+      setTwilioInfo(config);
+      setTwilioReady(Boolean(config.twilio && config.ok));
     } catch (err) {
       setError(`Could not load text messages: ${err?.message ?? String(err)}`);
     }
@@ -1559,6 +1561,29 @@ export default function Admin() {
                     number and message filled in, then hit Send. On a computer, tap <b>Copy</b> and paste it into your phone.
                     {twilioReady === false && ' (Sending from VAiR’s own number turns on once the Twilio keys are added in Supabase.)'}</>}
             </div>
+            {twilioInfo?.twilio && (() => {
+              const VERIFY = {
+                TWILIO_APPROVED: { text: '✅ verified — ready to send', color: '#5ecda4' },
+                PENDING_REVIEW: { text: '🕒 verification pending review — texts to US numbers are blocked until approved', color: '#f0c674' },
+                IN_REVIEW: { text: '🕒 verification in review — texts to US numbers are blocked until approved', color: '#f0c674' },
+                TWILIO_REJECTED: { text: '❌ verification rejected — check the reason in the Twilio Console', color: '#ef5350' },
+              };
+              return (
+                <div style={{ ...styles.note, marginBottom: 16, fontSize: 13 }}>
+                  {twilioInfo.ok ? (
+                    <>
+                      <div style={{ color: '#5ecda4', marginBottom: 4 }}>✅ Twilio connected</div>
+                      {twilioInfo.numbers.map(n => {
+                        const v = VERIFY[n.verification] ?? { text: 'no toll-free verification found', color: 'rgba(232,245,233,0.6)' };
+                        return <div key={n.phone} style={{ color: v.color }}>{n.phone}: {v.text}</div>;
+                      })}
+                    </>
+                  ) : (
+                    <div style={{ color: '#ef5350' }}>❌ Twilio keys found but not working: {twilioInfo.problem}</div>
+                  )}
+                </div>
+              );
+            })()}
             <div style={{ ...styles.form, marginBottom: 28 }}>
               <label style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13, color: 'rgba(232,245,233,0.7)' }}>
                 Names and phone numbers (one person per line; numbers without a + are treated as US)

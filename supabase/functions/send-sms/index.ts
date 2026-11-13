@@ -71,7 +71,39 @@ Deno.serve(async (req) => {
     const body = await req.json();
 
     if (body.action === "config") {
-      return json({ twilio: twilioConfigured() });
+      if (!twilioConfigured()) return json({ twilio: false });
+      // Check the keys actually work: list the Messaging Service's numbers and
+      // each toll-free number's verification status.
+      const auth = { "Authorization": `Basic ${btoa(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`)}` };
+      try {
+        const res = await fetch(
+          `https://messaging.twilio.com/v1/Services/${TWILIO_MESSAGING_SERVICE_SID}/PhoneNumbers?PageSize=20`,
+          { headers: auth },
+        );
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 401) return json({ twilio: true, ok: false, problem: "Twilio rejected the Account SID / Auth Token — check TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN." });
+        if (res.status === 404) return json({ twilio: true, ok: false, problem: "Messaging Service not found — check TWILIO_MESSAGING_SERVICE_SID (it starts with MG)." });
+        if (!res.ok) return json({ twilio: true, ok: false, problem: data?.message ?? `Twilio HTTP ${res.status}` });
+
+        const numbers = await Promise.all((data.phone_numbers ?? []).map(async (n: { sid: string; phone_number: string }) => {
+          let verification: string | null = null;
+          try {
+            const v = await fetch(
+              `https://messaging.twilio.com/v1/Tollfree/Verifications?TollfreePhoneNumberSid=${n.sid}`,
+              { headers: auth },
+            );
+            const vd = await v.json().catch(() => ({}));
+            verification = vd?.verifications?.[0]?.status ?? null; // PENDING_REVIEW | IN_REVIEW | TWILIO_APPROVED | TWILIO_REJECTED
+          } catch { /* status is optional */ }
+          return { phone: n.phone_number, verification };
+        }));
+        if (numbers.length === 0) {
+          return json({ twilio: true, ok: false, problem: "Your Messaging Service has no phone number — add your toll-free number to its Sender Pool in Twilio." });
+        }
+        return json({ twilio: true, ok: true, numbers });
+      } catch (err) {
+        return json({ twilio: true, ok: false, problem: err instanceof Error ? err.message : String(err) });
+      }
     }
 
     if (body.action === "list") {
