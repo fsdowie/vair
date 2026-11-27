@@ -1581,6 +1581,28 @@ export default function Admin() {
                   ) : (
                     <div style={{ color: '#ef5350' }}>❌ Twilio keys found but not working: {twilioInfo.problem}</div>
                   )}
+                  {twilioInfo.diagnostics && (
+                    <details style={{ marginTop: 8 }}>
+                      <summary style={{ cursor: 'pointer', color: 'rgba(232,245,233,0.6)' }}>Twilio diagnostics</summary>
+                      <div style={{ marginTop: 6, color: 'rgba(232,245,233,0.8)' }}>
+                        <div>Account: {twilioInfo.diagnostics.account_type ?? '?'} ({twilioInfo.diagnostics.account_status ?? '?'})</div>
+                        <div style={{ marginTop: 4 }}>Toll-free verifications on the account: {twilioInfo.diagnostics.verifications_error
+                          ? `couldn't load (${twilioInfo.diagnostics.verifications_error})`
+                          : twilioInfo.diagnostics.verifications.length === 0 ? 'none' : ''}</div>
+                        {twilioInfo.diagnostics.verifications.map((v, i) => (
+                          <div key={i} style={{ paddingLeft: 12 }}>
+                            • {v.number}: {v.status} — created {v.created ? new Date(v.created).toLocaleString() : '?'}
+                            {v.rejection_reason ? ` — reason: ${v.rejection_reason}` : ''}
+                            {v.error_code ? ` (error ${v.error_code})` : ''}
+                          </div>
+                        ))}
+                        <div style={{ marginTop: 4 }}>Customer profiles (Trust Hub): {twilioInfo.diagnostics.customer_profiles.length === 0 ? 'none' : ''}</div>
+                        {twilioInfo.diagnostics.customer_profiles.map((p, i) => (
+                          <div key={i} style={{ paddingLeft: 12 }}>• {p.name}: {p.status}</div>
+                        ))}
+                      </div>
+                    </details>
+                  )}
                 </div>
               );
             })()}

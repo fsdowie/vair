@@ -97,10 +97,42 @@ Deno.serve(async (req) => {
           } catch { /* status is optional */ }
           return { phone: n.phone_number, verification };
         }));
+        // Diagnostics: every toll-free verification on the account (any number,
+        // any status), the account type (trial accounts can't verify) and the
+        // Trust Hub customer profiles.
+        const getJson = async (url: string) => {
+          try {
+            const r = await fetch(url, { headers: auth });
+            return r.ok ? await r.json() : { _error: `HTTP ${r.status}` };
+          } catch (e) { return { _error: e instanceof Error ? e.message : String(e) }; }
+        };
+        const [acct, allVer, profiles] = await Promise.all([
+          getJson(`https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}.json`),
+          getJson("https://messaging.twilio.com/v1/Tollfree/Verifications?PageSize=50"),
+          getJson("https://trusthub.twilio.com/v1/CustomerProfiles?PageSize=20"),
+        ]);
+        const sidToPhone = Object.fromEntries((data.phone_numbers ?? []).map((n: { sid: string; phone_number: string }) => [n.sid, n.phone_number]));
+        const diagnostics = {
+          account_type: acct?.type ?? null,
+          account_status: acct?.status ?? null,
+          verifications_error: allVer?._error ?? null,
+          verifications: (allVer?.verifications ?? []).map((v: Record<string, unknown>) => ({
+            number: sidToPhone[v.tollfree_phone_number_sid as string] ?? v.tollfree_phone_number_sid,
+            status: v.status,
+            created: v.date_created,
+            rejection_reason: v.rejection_reason ?? null,
+            error_code: v.error_code ?? null,
+            edit_allowed: v.edit_allowed ?? null,
+          })),
+          customer_profiles: (profiles?.results ?? []).map((p: Record<string, unknown>) => ({
+            name: p.friendly_name, status: p.status,
+          })),
+        };
+
         if (numbers.length === 0) {
-          return json({ twilio: true, ok: false, problem: "Your Messaging Service has no phone number — add your toll-free number to its Sender Pool in Twilio." });
+          return json({ twilio: true, ok: false, problem: "Your Messaging Service has no phone number — add your toll-free number to its Sender Pool in Twilio.", diagnostics });
         }
-        return json({ twilio: true, ok: true, numbers });
+        return json({ twilio: true, ok: true, numbers, diagnostics });
       } catch (err) {
         return json({ twilio: true, ok: false, problem: err instanceof Error ? err.message : String(err) });
       }
