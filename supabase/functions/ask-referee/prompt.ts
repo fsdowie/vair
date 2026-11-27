@@ -143,6 +143,29 @@ Only provide detailed explanations if user asks for more.
 
 For broad overview questions (e.g., "what are the differences between high school and IFAB?"), list only the 6-8 most important differences as one-line bullets, then offer more detail on any of them.`;
 
+// Where a cut-off answer's "(more)" link points: the rules the latest
+// question is about (falling back to the whole conversation), else the IFAB
+// Laws. Washington and college come before generic high school.
+const FULL_RULES_LINKS: Array<[RegExp[], string]> = [
+  [COLLEGE, 'https://ncaaorg.s3.amazonaws.com/championships/sports/soccer/rules/PRXSO_RulesBook.pdf'],
+  [[/\bwiaa\b/i, /\bwashington\b(?!\s+premier)/i],'https://www.mywiaa.wiaa.com/soccer-resources-welcome/'],
+  [HIGH_SCHOOL, 'https://www.nfhs.org/sports/soccer/rules'],
+  [[/\becnl\b/i, /elite clubs national/i], 'https://www.theecnl.com/'],
+  [[/\bea\b/i, /elite academy/i], 'https://eliteacademyleague.com/'],
+  [[/\bn1\b/i, /national\s*(1|one)\b/i, /\bwpl\b/i, /washington premier/i], 'https://national1league.org/'],
+  [[/\bmls\b/i, /academy division/i], 'https://www.mlssoccer.com/mlsnext/academy-division/'],
+];
+const IFAB_LAWS_LINK = 'https://www.theifab.com/laws/latest/';
+
+export function fullRulesLink(messages: Message[]) {
+  const users = messages.filter((m) => m.role === 'user');
+  for (const text of [userText(users.slice(-1)), userText(users)]) {
+    const hit = FULL_RULES_LINKS.find(([patterns]) => patterns.some((p) => p.test(text)));
+    if (hit) return hit[1];
+  }
+  return IFAB_LAWS_LINK;
+}
+
 const userText = (messages: Message[]) =>
   messages
     .filter((m) => m.role === 'user')

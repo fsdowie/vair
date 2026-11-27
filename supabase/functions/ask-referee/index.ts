@@ -1,5 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { buildSystem } from './prompt.ts';
+import { buildSystem, fullRulesLink } from './prompt.ts';
 
 const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY')!;
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -102,10 +102,9 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         model: MODEL,
-        // Rulings are kept short by the prompt; this is only a ceiling so
-        // broad questions (e.g. "how does high school differ from IFAB?")
-        // aren't cut off mid-sentence. It was 300, which truncated those.
-        max_tokens: 1024,
+        // Kept low to cap cost per question. Answers that hit it end with a
+        // "(more)" link to the full rules (see fullRulesLink in prompt.ts).
+        max_tokens: 300,
         // Cached in blocks (see prompt.ts): Laws 2026/27 always, other
         // rulebooks only when the conversation mentions them, corrections last.
         system: buildSystem(messages, corrections),
@@ -159,10 +158,12 @@ Deno.serve(async (req) => {
     // Find the text block by type rather than assuming index 0 — defensive
     // even with thinking disabled, in case other block types are ever added.
     let content = data.content.find((block) => block.type === 'text')?.text;
-    // If the answer still hit the ceiling, say so instead of ending mid-word.
+    // If the answer hit the ceiling, end it with a "(more)" link to the full
+    // rules instead of stopping mid-word. The web and mobile chats show
+    // "(more) <url>" as one "(more)" link.
     if (content && data.stop_reason === 'max_tokens') {
       console.warn('Answer hit max_tokens:', userQuestion);
-      content = content.trimEnd() + '…\n\n_(Answer cut short — ask a follow-up for the rest.)_';
+      content = content.trimEnd() + '… (more) ' + fullRulesLink(messages);
     }
     if (!content) {
       console.error('Anthropic response had no text block:', JSON.stringify(data));

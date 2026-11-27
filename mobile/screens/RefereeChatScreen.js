@@ -50,15 +50,19 @@ function MessageText({ text, style }) {
     if (typeof text !== 'string') return [text ?? ''];
     return text.split(/(https?:\/\/[^\s]+)/g);
   }, [text]);
+  // A cut-off answer ends "… (more) <url>" (see ask-referee): show that as
+  // one "(more)" link instead of the raw URL.
+  const isUrl = (p) => /^https?:\/\//.test(p ?? '');
+  const isMore = (i) => i > 0 && isUrl(parts[i]) && parts[i - 1].endsWith('(more) ');
   return (
     <Text style={style}>
       {parts.map((part, i) =>
-        /^https?:\/\//.test(part) ? (
+        isUrl(part) ? (
           <Text key={i} style={styles.link} onPress={() => Linking.openURL(part)}>
-            {part}
+            {isMore(i) ? '(more)' : part}
           </Text>
         ) : (
-          <Text key={i}>{part}</Text>
+          <Text key={i}>{isMore(i + 1) ? part.slice(0, -'(more) '.length) : part}</Text>
         )
       )}
     </Text>

@@ -180,7 +180,10 @@ export default function RefereeLLM({ onNavigate } = {}) {
     if (typeof text !== 'string') return '';
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = text.split(urlRegex);
-    
+    // A cut-off answer ends "… (more) <url>" (see ask-referee): show that as
+    // one "(more)" link instead of the raw URL.
+    const isMore = (i) => i > 0 && parts[i - 1].endsWith('(more) ');
+
     return parts.map((part, index) => {
       if (part.match(urlRegex)) {
         return (
@@ -189,16 +192,20 @@ export default function RefereeLLM({ onNavigate } = {}) {
             href={part}
             target="_blank"
             rel="noopener noreferrer"
+            title={isMore(index) ? `Read the full rules: ${part}` : undefined}
             style={{
               color: '#1d9e75',
               textDecoration: 'underline',
+              fontWeight: isMore(index) ? 600 : undefined,
             }}
           >
-            {part}
+            {isMore(index) ? '(more)' : part}
           </a>
         );
       }
-      return part;
+      return isMore(index + 1) && parts[index + 1]?.match(urlRegex)
+        ? part.slice(0, -'(more) '.length)
+        : part;
     });
   };
 
