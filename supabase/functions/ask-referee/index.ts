@@ -162,9 +162,7 @@ Deno.serve(async (req) => {
     // If the answer still hit the ceiling, say so instead of ending mid-word.
     if (content && data.stop_reason === 'max_tokens') {
       console.warn('Answer hit max_tokens:', userQuestion);
-      content = content.trimEnd() + '…
-
-_(Answer cut short — ask a follow-up for the rest.)_';
+      content = content.trimEnd() + '…\n\n_(Answer cut short — ask a follow-up for the rest.)_';
     }
     if (!content) {
       console.error('Anthropic response had no text block:', JSON.stringify(data));
