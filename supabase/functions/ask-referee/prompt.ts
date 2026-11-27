@@ -139,7 +139,9 @@ Law 17: https://www.theifab.com/laws/latest/the-corner-kick/
 
 For specific sections, add anchors (e.g., Law 4 safety: #safety, #colours, #jewellery, etc.)
 
-Only provide detailed explanations if user asks for more.`;
+Only provide detailed explanations if user asks for more.
+
+For broad overview questions (e.g., "what are the differences between high school and IFAB?"), list only the 6-8 most important differences as one-line bullets, then offer more detail on any of them.`;
 
 const userText = (messages: Message[]) =>
   messages

@@ -102,7 +102,10 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 300,
+        // Rulings are kept short by the prompt; this is only a ceiling so
+        // broad questions (e.g. "how does high school differ from IFAB?")
+        // aren't cut off mid-sentence. It was 300, which truncated those.
+        max_tokens: 1024,
         // Cached in blocks (see prompt.ts): Laws 2026/27 always, other
         // rulebooks only when the conversation mentions them, corrections last.
         system: buildSystem(messages, corrections),
@@ -111,7 +114,7 @@ Deno.serve(async (req) => {
         // omitted, which prepends a `thinking` content block before the
         // `text` block. This tool wants short, direct rulings, not extended
         // reasoning, so disable it explicitly — also avoids thinking tokens
-        // competing with the answer for the 300-token budget above.
+        // competing with the answer for the token budget above.
         thinking: { type: 'disabled' },
       }),
     });
@@ -155,7 +158,14 @@ Deno.serve(async (req) => {
     const data = await anthropicResponse.json();
     // Find the text block by type rather than assuming index 0 — defensive
     // even with thinking disabled, in case other block types are ever added.
-    const content = data.content.find((block) => block.type === 'text')?.text;
+    let content = data.content.find((block) => block.type === 'text')?.text;
+    // If the answer still hit the ceiling, say so instead of ending mid-word.
+    if (content && data.stop_reason === 'max_tokens') {
+      console.warn('Answer hit max_tokens:', userQuestion);
+      content = content.trimEnd() + '…
+
+_(Answer cut short — ask a follow-up for the rest.)_';
+    }
     if (!content) {
       console.error('Anthropic response had no text block:', JSON.stringify(data));
       return new Response(
