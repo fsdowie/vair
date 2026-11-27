@@ -1,0 +1,614 @@
+NFHS 2026-27 SOCCER GUIDE: A COMPARATIVE STUDY OF RULES AND LAWS (NCAA vs NFHS vs IFAB/USSF)
+Source: National Federation of State High School Associations (NFHS), "2026-27 Soccer Guide" (free PDF):
+https://assets.nfhs.org/storyblok/f/1022696/x/fe49ac77ea/2026-27-soccer-guide-final.pdf
+Transcribed from the three-column table: each topic lists what NCAA (college), NFHS (high school) and IFAB (Laws of the Game, as applied by U.S. Soccer) say. "Same as IFAB" / "Same as NCAA" are the guide's own wording.
+
+=== GENERAL ===
+
+Topic: Terminology (it is important to use the proper terminology, especially in writing game reports)
+- NCAA: Rules, Game, Ejection, Drop Ball, Overtime, Penalty, Coaching and Team Area, Terminated Game, Alternate Official.
+- NFHS: Rules, Game, Ejection, Drop Ball, Overtime, Penalty, Official and Team Area, Terminated Game, 4th Official.
+- IFAB: Laws, Match, Send Off, Dropped Ball, Extra Time, Sanction, Technical Area, Abandoned Match, 4th Official / Additional Assistant Referee (AAR), Video Assistant Referees (VAR).
+
+Topic: Interpretations
+- NCAA: The NCAA secretary/rules editor can be contacted for interpretations. The rule book has been rewritten with the A.R.s now incorporated into the text.
+- NFHS: Situations in the Rules book are interpretations approved by the NFHS Soccer Rules Committee. Member State Associations of the NFHS independently make decisions regarding compliance with or modifications of the playing rules for the student athletes in their respective states.
+- IFAB: Decisions of the Int'l. F.A. Board are official interpretations. Additional interpretations in the U.S. can be obtained initially through the U.S. Soccer Refereeing Department or the State Director of Instruction (SDI).
+
+=== FIELD OF PLAY (NCAA Rule 1 / NFHS Rule 1 / IFAB Law 1) ===
+
+Topic: 11-yard encroachment hash mark from corner
+- NCAA: Mandatory - correct before game; if not possible, begin game and file report. Only on goal line. No provision for touchline.
+- NFHS: Same as IFAB.
+- IFAB: Optional - both beyond goal line and beyond touchline.
+
+Topic: Penalty kick mark
+- NCAA: 2-foot line or 9-inch diameter spot.
+- NFHS: Same as NCAA.
+- IFAB: 9-inch diameter spot.
+
+Topic: Goal nets
+- NCAA: Mandatory.
+- NFHS: Mandatory and nets shall be attached to posts and crossbar and extend backward at the level of the crossbar for a distance of 24" from the crossbar.
+- IFAB: Nets may be attached to the goals and the ground behind the goal.
+
+Topic: Coaching and team area
+- NCAA: Coaching area 20 yards long and at least 5 feet deep and at least 5 feet from the touchline. Team area 20 yards long and situated behind the coaching area. If lines are not present, use cones to mark. Caution to coach who consistently fails to remain within team area. Ejection to coach who leaves team area to argue.
+- NFHS: Team areas extend from 10 yards on each side of the halfway line for 20 yards and shall be marked with solid line. If lines are not present, use cones to mark. Team areas should be on the same side of field; if not, team areas shall be positioned diagonally across from each other.
+- IFAB: Technical areas should only extend 1 yard on either side of the designated seating areas and up to a distance of 1 yard from the touchline.
+
+Topic: Coach communication
+- NCAA: No limit to the number of coaches conveying tactical instructions to players on the field. Coaches who are eligible to participate may communicate with each other electronically, either on-site or off-site.
+- NFHS: No limit to the number of coaches conveying tactical instructions to players on the field. Electronic communication devices are not permitted to communicate with players.
+- IFAB: Only one person at a time may convey tactical instructions to players. The use of any form of electronic communication by team officials is permitted where it directly relates to player welfare or safety or for tactical/coaching reasons, but only small, mobile, handheld equipment.
+
+Topic: Padded goal posts
+- NCAA: Not sanctioned.
+- NFHS: A white commercially made pad at least 72" in height and a max. of 1" thick may be placed on the vertical posts.
+- IFAB: Not sanctioned.
+
+Topic: Goal post placement
+- NCAA: Same as IFAB.
+- NFHS: Rear of each goal post shall be on the outer edge of the goal line.
+- IFAB: Goal lines must be the same width as the goal posts and crossbars.
+
+Topic: Field conditions for play to start and continue
+- NCAA: Same as IFAB.
+- NFHS: Prior to start of game, host institution representative determines; thereafter determination is made by referee.
+- IFAB: Determination made by referee.
+
+Topic: Games played indoors
+- NCAA: Game may be played indoors.
+- NFHS: No provision.
+- IFAB: Games may be played in indoor stadiums.
+
+Topic: Turf fields
+- NCAA: Permitted - no restrictions.
+- NFHS: Same as NCAA.
+- IFAB: Turf fields must meet the requirements of the FIFA Quality Programme for Football Turf.
+
+=== THE BALL (Rule 2 / Rule 2 / Law 2) ===
+
+Topic: Number of balls
+- NCAA: No fewer than 5 identical balls. Pressure of balls shall conform to manufacturer's recommendations. At least 4 ball persons, at least 10 yrs. of age, recommended to wear colored vests.
+- NFHS: 3 or more of similar quality. Must have NFHS logo displayed, supplied by the home team; if unavailable, referee can select from visitor. Inflate to manufacturer's specifications. At least 2 ball holders.
+- IFAB: 1 required, others may be used if available. For major international matches, must bear one of the marks of the FIFA Quality Programme for Footballs. Balls can be spaced around the field to speed up play during the game. Ball pressure: 8.5 - 15.6 psi.
+
+=== PLAYERS AND SUBSTITUTIONS (Rule 3 / Rule 3 / Law 3) ===
+
+Topic: Team roster
+- NCAA: Required to be presented to the referee, opposing coach, and scorekeeper 15 minutes prior to game. Starters must be designated. Game shall not begin until submitted.
+- NFHS: Required to be presented to the referee 5 minutes prior to game. Names may be added to roster after start of play. Player numbers required on roster.
+- IFAB: Only the players and substitutes named on the team list may take part in the match upon their arrival.
+
+Topic: When substitutions are allowed
+- NCAA: Either team may substitute: on a goal kick, after a goal, at the end of the period, when a player is removed for equipment change (other team may sub equal number), during injuries or cautions (only players involved - other team may sub like number), during a bleeding injury or blood on the uniform. *D1 Men only: any stoppage of play; 6 moments per game to make subs.
+- NFHS: Either team may substitute an unlimited number from the bench: between periods, after a goal, during an injury, or when the game is temporarily suspended. Either team may sub an unlimited number if the substitute has previously checked in before play was stopped: on a goal kick, during a caution (player must exit and their sub may come from the bench), during a disqualification, or when a player must leave because of equipment or disease concern. All subs must be beckoned onto the field except when subbing between periods.
+- IFAB: At any stoppage with permission of the referee. Free substitution is allowed, with substituted players re-entering, for youth, veterans, disability, and grassroots teams. Up to a maximum of five substitutes may be used (subject to competition rules). Each team has a maximum of three substitution opportunities, and may additionally make substitutions at half-time.
+
+Topic: Substitutions on a throw-in or corner kick
+- NCAA: Team in possession may sub. Other team may only sub if the team in possession is also subbing. Substitutes must have reported to scorer before play was stopped.*
+- NFHS: Team in possession may sub. Other team may only sub if the team in possession is also subbing. Substitutes must have checked in before play was stopped.
+- IFAB: See above.
+
+Topic: Ejected / sent-off goalkeeper
+- NCAA: Team plays short. Team may sub for the GK; no sub for other team.
+- NFHS: Team plays short. GK must be replaced by a field player, or an incoming substitute (can be from the bench) in which case a field player must also be removed. The other team may sub if previously checked in.
+- IFAB: Team plays short. Sub for the GK counts as one of the limited permitted substitutions and consumes one of the team's substitution opportunities; otherwise, only a field player must take over as goalkeeper.
+
+Topic: Injured players leaving the field
+- NCAA: Injured field players must leave the field if medical personnel are beckoned onto the field; does not include goalkeepers.
+- NFHS: Injured players must leave the field if a coach or appropriate health-care professional is beckoned onto the field; this includes goalkeepers.
+- IFAB: If play is stopped for a serious injury, the injured player must leave the field except when: a goalkeeper is injured, a goalkeeper and an outfield player are injured, two teammates are injured, a severe injury has occurred, injury was caused by opponent's physical misconduct, the injured player will take the penalty kick, if awarded.
+
+Topic: Concussion
+- NCAA: Players with signs of concussion may be subbed and can return on any stoppage or during the run of play if cleared by medical personnel.
+- NFHS: Player may re-enter if cleared by an appropriate health-care professional at the next dead ball. Re-entry shall occur from the official area after being beckoned.
+- IFAB: See above.
+
+Topic: Re-entry for an injured player who was not replaced by a substitute
+- NCAA: Player may re-enter at the next dead ball or during the run of play.
+- NFHS: Player may re-enter at the next dead ball. Re-entry shall occur from the official area after being beckoned.
+- IFAB: Player may only re-enter one minute after play has restarted. Re-entry while the ball is in play must be from the touchline; otherwise, from any boundary line.
+
+Topic: When a substitute becomes a player of record
+- NCAA: When beckoned on by the referee during the first 75 minutes of the game. During the last 15 minutes, when the referee signals the clock to stop if the game is tied or if the leading team substitutes.
+- NFHS: When beckoned onto the field by the referee. The substitute must enter from the official's area.
+- IFAB: When the substitute enters the field after receiving permission from the referee. The substitute must enter from the halfway line.
+
+Topic: Re-entry for substituted players
+- NCAA: During 1st half and in each overtime period - no reentry. One reentry in 2nd half except for D1 men. GK allowed one reentry in each period and each overtime. D1 Men only: no re-entry in same period for field players unless it fits in the category of injury exceptions. Must have an available moment to use for GK sub that does not fall under exceptions.
+- NFHS: Substituted players may re-enter the game an unlimited number of times.
+- IFAB: Substituted players may not re-enter the match. This may differ in local competitions and/or youth matches as determined by the local competition rules.
+
+Topic: Player being replaced
+- NCAA: Unless injured, must exit the field at the halfway line on the bench side of the field.
+- NFHS: Must exit on their team's bench side, if able.
+- IFAB: Must leave the field across the nearest point on the boundary line, unless instructed otherwise by the referee. Player being replaced must exit within 10 seconds.
+
+Topic: Changing of goalkeeper with field player
+- NCAA: During any stoppage with referee's permission. Verbal warning to both players at the next stoppage for violation.
+- NFHS: Whenever the clock is stopped, or a substitution takes place. The referee shall be notified. Both players verbally warned for any violation at the next stoppage.
+- IFAB: During any stoppage with referee's permission. Caution both players for violation when ball is out of play.
+
+Topic: Withdrawing a reported substitute
+- NCAA: Sub is not required to enter but is charged with a reentry.
+- NFHS: Once beckoned onto field by referee, the substitute must enter.
+- IFAB: Not allowed if exiting player takes more than 10 seconds to leave; sub cannot be canceled and must re-enter at the next stoppage no earlier than one minute after play restarts.
+
+Topic: Substitute enters without permission
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: Indirect free kick to opponents and caution.
+
+Topic: Re-entry for a player with equipment issue / change who was not replaced by a substitute
+- NCAA: May re-enter at the next stoppage.
+- NFHS: Re-entry shall occur from the official area after being beckoned and their equipment checked. For improper equipment, may return at the next stoppage. For illegal equipment, may return at the next legal substitution opportunity for their team.
+- IFAB: May re-enter during play with permission of the referee from any boundary line after their equipment is inspected.
+
+Topic: Substitutes during a penalty kick
+- NCAA: An incoming substitute cannot be the kicker on a penalty kick. No sub from the bench for GK during a penalty kick (unless injury or GK ejection).
+- NFHS: An incoming substitute cannot be the kicker on a penalty kick. GK may be substituted (if it's a legal substitution opportunity) before a penalty kick.
+- IFAB: An incoming substitute can take any restart, including a penalty kick. The GK may be substituted or changed before a penalty kick.
+
+Topic: Goal scored by attacking team with extra players on the field
+- NCAA: If identified before play restarts, the goal is disallowed and play restarts accordingly (goal kick or corner kick). If realized after play restarts, the goal stands. In either case, the extra player is removed and cautioned.
+- NFHS: If identified before play restarts, the goal is disallowed, and a goal kick is awarded to the defending team. If realized after play restarts, the goal stands. In either case, the extra player is removed and cautioned.
+- IFAB: If identified before play restarts, the goal is disallowed if the extra players interfered and a direct free kick is awarded to the defending team from the interference. If realized after play restarts, the goal stands. In either case, the extra player is removed and cautioned.
+
+=== PLAYER'S EQUIPMENT (Rule 4 / Rule 4 / Law 4) ===
+
+Topic: Casts, ankle braces, and other equipment
+- NCAA: Casts are permitted if they are completely covered in closed cell foam at least 1/2" thick and not considered dangerous by the referee.
+- NFHS: Hard casts or splints must be padded with closed cell foam at least 1/2" thick. Metal ankle braces must be worn inside socks; non-metal may be worn outside of sock. A captain armband, if worn, must be worn on the arm. Head covering allowed. Hearing aids legal.
+- IFAB: Referee's discretion - check for safety and require padding if cast is hard or dangerous.
+
+Topic: Molded face masks
+- NCAA: Facemasks permitted.
+- NFHS: Facemask, if worn, must be molded to the face with no protrusions; player must have a signed medical release.
+- IFAB: Soft facemasks permitted if referee deems them not dangerous.
+
+Topic: Head covers
+- NCAA: Headgear, headbands and hats (goalkeepers only) are permissible provided they are not considered dangerous to any player. This includes religious head coverings, soft knit caps for any player, hair control devices that are securely fastened and soft-billed baseball style caps for goalkeepers.
+- NFHS: Soft padded headbands allowed. Soft and yielding caps allowed by State Association adoption; if worn, caps shall be alike in color. Religious head coverings are permitted without requiring prior State Association approval and must be secured to the head and not be made of abrasive or hard materials.
+- IFAB: Goalkeepers' caps allowed if deemed safe by the referee. Head covers allowed if black or same color as jersey. May not be attached to jersey.
+
+Topic: Monitoring devices
+- NCAA: Players may wear a device to monitor data which can be used during the match. Data collection devices visible outside the uniform subject to referee inspection.
+- NFHS: Wearable technology is permitted if securely fastened and do not present a risk to the player, teammates, or opponents. May be worn on the shoes or on the body under the uniform. Cannot be worn on the arm.
+- IFAB: Monitoring devices (EPTS) allowed subject to the equipment being deemed not dangerous and meets the requirements under the FIFA Quality Programme for EPTS.
+
+Topic: Uniform numbers
+- NCAA: 8" number on back of jersey and 4" number on front of jersey, including goalkeepers.
+- NFHS: 6" number on back of jersey including GK, 4" number on front of jersey and/or on shorts.
+- IFAB: Nothing specified in Laws.
+
+Topic: Visible apparel / undergarments
+- NCAA: Visible apparel worn under shirt or shorts must be a solid color and recommended that it matches dominant color of the garment. Same color must be worn by all team members wearing undergarments.
+- NFHS: If worn under shorts or jersey, must be solid like color for team and similar length for individual. Can differ from uniform color.
+- IFAB: All visible undergarments (shirt or shorts) must be same main color as uniform shirt or shorts. Shirts must have sleeves.
+
+Topic: Jerseys tucked in
+- NCAA: Not specified.
+- NFHS: Not required.
+- IFAB: Not specified.
+
+Topic: Uniform colors
+- NCAA: Home team must ensure their uniforms (shirt and socks) contrast with those of the visitor.
+- NFHS: Home team must wear dark jerseys and socks. The visiting team must wear solid white jerseys.
+- IFAB: Nothing specified in Laws; no political, religious, or personal statements permitted.
+
+Topic: Socks
+- NCAA: All field players on a team must wear matching stockings. A player's socks must be of a same similar dominant color. Tape or material/stay/strap applied over the sock must be of a similar color to the part of the sock to which it is applied or covers.
+- NFHS: Home team must wear a single dominant color. Visiting team must wear solid white socks. A player's socks must be the same color. If tape is applied to a sock, it must be the same color as the sock when applied above the ankle.
+- IFAB: Tape or any material applied or worn externally must be the same color as that part of the sock it is applied to or covers.
+
+Topic: Goalkeeper's jersey and socks
+- NCAA: Jersey must differ from all field players and stockings must differ from opponent's field players.
+- NFHS: Must differ from all other players, but jersey can be same color as opponent's GK. Socks must differ from opponents'.
+- IFAB: Must differ from all players and officials. May be same color as opposing goalkeeper.
+
+Topic: Jewelry
+- NCAA: Jewelry not permitted except for "Medic Alert" bracelets or necklaces if taped to player's body. Sanction is clock to be stopped, player ordered off field (no sub) until next sub opportunity.
+- NFHS: Jewelry is not permitted, even if taped. Religious medals allowed if taped and worn under the uniform. Medical alert bracelets must be taped and may be visible.
+- IFAB: A player must not use equipment or wear anything that is dangerous. Accessories are permitted if not dangerous and securely covered. Dangerous items must be removed and not taped or covered.
+
+Topic: Audio/video recording devices
+- NCAA: Same as NFHS.
+- NFHS: Players may not wear audio or video devices on the field. Electronic communications devices with players on the field are prohibited.
+- IFAB: Players (including substitutes, substituted, and sent-off players) are strictly prohibited from wearing or using any form of electronic or communication equipment.
+
+Topic: Shinguards
+- NCAA: NOCSAE standard required.
+- NFHS: NOCSAE standard required and seal with height range must be stamped on the shinguard.
+- IFAB: Shin guards required - must be made of a suitable material to provide reasonable protection and covered by the socks.
+
+=== THE REFEREE (Rule 5 / Rule 5 / Law 5) ===
+
+Topic: System of officiating
+- NCAA: Diagonal System of Control (referee and 2 assistant referees) shall be used. If one official fails to appear, the dual system may be used only if it is impossible to secure a replacement official to operate the DSC.
+- NFHS: Diagonal System of Officiating (center referee and 2 assistant referees), Dual System of Officiating (2 referees), or Double Dual / Three Whistle System of Officiating (3 referees) authorized.
+- IFAB: The only permitted system is the Diagonal System of Control (referee and 2 assistant referees). Club linesmen may be used, if necessary, to only indicate the ball out of play. May use Additional Assistant Referees (AAR) and/or Video Assistant Referees (VAR).
+
+Topic: Power to suspend
+- NCAA: Referee has the authority to suspend the game because of the elements, spectator interference, grave disorders, lack of available coach or institutional representative after an ejection, or other causes. Referee does not have the power to disqualify a team in such instances.
+- NFHS: Referee has the authority to suspend or terminate the game whenever the elements, spectators, or other causes require, including any infringements of the rules.
+- IFAB: Referee has the authority to stop, suspend, or abandon (terminate) a match due to elements (e.g., weather or inadequate lighting), spectator behavior, or severe infringements of the Laws.
+
+Topic: Power to forfeit, terminate, or abandon
+- NCAA: Referee must terminate and award a 1-0 forfeit victory if a coach will not end discussion or leave the field, a team refuses to return to the field within 3 minutes, failure to submit roster prior to match, an ejected player illegally re-enters the game as a substitute, or a team has fewer than 7 eligible players to continue the game.
+- NFHS: Referee terminates the game when warranted, or the rules require, when: a team has fewer than 7 players (except for temporary minor injuries, equipment correction, or blood rules), if the only coach is ejected without a replacement, or if a team refuses to play.
+- IFAB: Referee does not have the power to declare a forfeit. If a team refuses to play, has too few players, or commits severe misconduct, the referee abandons the match and reports the details to competition organizers.
+
+Topic: Authority begins and ends
+- NCAA: Begins when referee arrives at site; referee must arrive at least 30 minutes prior to scheduled game time. Authority ends when officials leave the game site.
+- NFHS: Begins when referee enters field or surroundings; at least 15 minutes prior to start of the game. Authority ends when officials leave the field and its immediate surroundings.
+- IFAB: Begins when officials enter the field of play for the pre-match inspection until leaving the field of play after the match ends (including penalties).
+
+Topic: Referee uniform
+- NCAA: Officials must wear matching NCAA-approved jerseys that are different from both teams' field players. Cap permissible. Shoes are mainly black. Black shorts and black socks with no manufacturer's logo.
+- NFHS: Set by State Association, but usually the same shirt as USSF. In some states, black and white striped shirts are worn. Shirt must differ from field players, but not goalkeepers. Black shorts or long trousers. Black stockings with white stripes. Predominantly black shoes. Solid black cap may be worn.
+- IFAB: No specific mention. Under USSF, shirts are yellow, black, green, pink, red, or blue. Socks are black with white stripes. Caps not specified but generally permitted if conditions warrant in club matches. Not generally worn in top matches.
+
+Topic: Whistles and hand signals
+- NCAA: Whistle used for kickoff, penalty kicks, and to signal play stoppage. Other whistles discretionary. Signals are used for throw-in direction, indirect and direct free kicks, goal, corner and goal kicks, advantage with verbal "play on." Timeout signal is specified.
+- NFHS: Whistles same as NCAA, also used to signal restarts after substitutions, injuries, time stoppage, when a card is given, and (discretionary) if needed when ball goes out of play. Hand signals same as IFAB with additional signals for starting and stopping the clock.
+- IFAB: Whistle used for kick-off, penalty kick, restarts and stoppages, as necessary. Signals - same as NCAA except no signal for clock stoppage. If needed, one arm signal may be used for advantage call instead of two arms. Indirect signal need not be held after kick is taken if scoring would be improbable.
+
+Topic: Time keeping
+- NCAA: Home team clock is official; referee takes over on malfunction. Game ends when signal sounds or clock shows 0:00. Timer counts last 10 seconds down to zero. Last 5 minutes of game, referee has discretion to allow clock to run or stop when losing team player is carded.
+- NFHS: Home team timer is the official timer unless referee keeps time by agreement of the coaches or State Association. Timer signals the final 2 minutes of each period and counts down the last 10 seconds.
+- IFAB: Referee keeps official time and indicates how much additional time is to be added in half and match for time lost.
+
+Topic: Pre-game conference
+- NCAA: Nothing specified at coin toss.
+- NFHS: Meeting is held at least 5 minutes before kickoff. Head coach must attend with captains. Referee addresses pertinent rules and sportsmanship and asks each team's coach if their players are legally and properly equipped.
+- IFAB: Nothing specified in Laws.
+
+Topic: 2nd caution mechanics
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: Display the yellow card and then the red card sequentially.
+
+Topic: Post-game score verification
+- NCAA: All officials must approve box score. Jurisdiction over the score and statistics ends upon signing. Once score sheet is signed and released for publication, coaches, players, and other personnel bear the burden of errors. Protests may be filed only up to 48 hours post game.
+- NFHS: Head referee must verify score.
+- IFAB: A match report to the appropriate authorities is required.
+
+Topic: Ball strikes an official
+- NCAA: If ball goes into goal, possession changes, or a promising attack results, then drop ball to the team that last touched the ball before it hit the official. Otherwise play continues.
+- NFHS: Same as NCAA.
+- IFAB: Same as NCAA. Ball is dropped to the team that would have retained or gained possession, including from the restart if the ball would have gone out of play.
+
+=== THE A.R. & OTHER OFFICIALS (Rule 6 / Rule 6 / Law 6) ===
+
+Topic: Other game personnel
+- NCAA: The timekeeper and scorekeeper are required. A 4th Official may be used. A minimum of 4 ball persons over the age of 10 is recommended.
+- NFHS: A scorer and timer are preferably used, designated by the home school, but by agreement of coaches, both functions may be performed by the head referee. At least 2 ball holders are provided by the home team. A 4th Official may be used.
+- IFAB: A 4th official may be used. In some leagues, additional assistant referees are located beyond the goal lines. A reserve assistant referee may be appointed to the game. VMOs can be appointed if deemed necessary.
+
+Topic: Assistant referee signal for a foul by a defender inside their penalty area
+- NCAA: The assistant referee moves smartly to the corner.
+- NFHS: No signal specified; specified by the referee in the pre-game discussion.
+- IFAB: The assistant referee moves to the corner or indicates as instructed by the referee in the pre-game discussion.
+
+=== DURATION OF GAME (Rule 7 / Rule 7 / Law 7) ===
+
+Topic: Length of periods and halftime
+- NCAA: Two 45-minute halves. 15-minute halftime, except post-season by agreement, less by prior consent of coaches and officials.
+- NFHS: Two 40-minute periods or four 20-minute quarters. 10-minute halftime, unless otherwise agreed by coaches.
+- IFAB: Two 45-minute halves. Players are entitled to a halftime interval that must not exceed 15 minutes.
+
+Topic: Overtime (OT) and intervals
+- NCAA: No regular season overtime. Two 10-minute sudden victory overtimes in post season only. Between end of game and first OT period is 5 minutes. Between overtime periods is 2 minutes. For post-season tournaments, penalty shoot-out after the overtime periods.
+- NFHS: Overtime allowed by State Association, up to 20 minutes maximum. Post-season tie-breaking procedures are left to State Associations. Between end of game and first OT period is 5 minutes. Time between overtime periods is 2 minutes.
+- IFAB: The local rules of competition may allow for 2 full overtime periods not to exceed 15 minutes each as well as penalties (penalty shoot-out).
+
+Topic: Clock stops
+- NCAA: The clock stops after goals, on penalty kicks, cards, and at the discretion of the referee (injury, time wasting, etc.). The clock also stops for subs during last 15 minutes of 2nd half if the game is tied or leading team substitutes and all of overtime. Special TV timeouts. Water break allowed if WBGT temp is 86 degrees or higher.
+- NFHS: The clock stops after goals, on penalty kicks, yellow and red cards, injuries, and at the discretion of the referee. The clock also stops if the team in the lead substitutes within the final 5 minutes of regulation or overtime.
+- IFAB: Allowance for lost time in each half for all playing time lost in that half through: substitution, assessment and/or removal of injured players, wasting time, disciplinary sanctions, medical stoppages (drink & cooling breaks), VAR checks, goal celebrations, and other causes.
+
+Topic: Official game
+- NCAA: A suspended game of less than 70 minutes is declared "no contest." If at least 70 minutes have been played, the game is official. A suspended game may be resumed at a later date from the point of interruption.
+- NFHS: Official game if one half has been played unless otherwise set forth by State Association. If suspended during the first half, State Association determines if game is to be rescheduled from the beginning or from the point of suspension.
+- IFAB: An abandoned match is replayed unless the competition rules or organizers determine otherwise.
+
+=== START OF PLAY (Rule 8 / Rule 8 / Law 8) ===
+
+Topic: Coin toss winner's choices
+- NCAA: Choice of which goal to defend in the first half or to take the first kick-off.
+- NFHS: Choice of which goal to defend in the first half or to take the first kick-off.
+- IFAB: Choice of which goal to attack in the first half or to take the first kick-off.
+
+Topic: Kickoff
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: Ball may be kicked in any direction. Kicker may stand in opponent's half. Goal can be scored from kickoff, but only if kicked into opponent's goal.
+
+Topic: Drop ball
+- NCAA: Same as IFAB. All other players on both teams must be at least 5 yards away.
+- NFHS: Same as IFAB. All other players on both teams must be at least 4 yards away.
+- IFAB: Ball is dropped to a single player by the referee where play was stopped, except if inside the penalty area; in which case, the ball is dropped to the goalkeeper. The ball is in play when it hits the ground. A goal cannot be scored from a dropped ball until the ball touches at least 2 players. If the ball goes directly into the opponent's goal, a goal kick is awarded; if into the player's own goal, a corner kick is awarded. The ball is dropped for a single player; all other players on both teams must be at least 4 1/2 yards away.
+
+=== BALL IN AND OUT OF PLAY (Rule 9 / Rule 9 / Law 9) ===
+
+Topic: Restart after injury, inadvertent whistle, defective ball, etc.
+- NCAA: Drop ball.
+- NFHS: Drop ball.
+- IFAB: Dropped ball.
+
+Topic: Ball strikes overhead wire or tree extending into the field
+- NCAA: Drop ball from location of point of contact to the team who touched the ball last.
+- NFHS: Drop ball. Local ground rule may be established and discussed prior to game.
+- IFAB: Dropped ball for interference by outside agent: any animal, object or structure, as well as any person who is not a match official or on the team list (players, substitutes and team officials).
+
+=== OFFSIDE (Rule 11 / Rule 11 / Law 11) ===
+
+Topic: Offside (both NCAA and NFHS rules share the same interpretation and virtually the same language regarding offside as IFAB)
+- All three codes: It is not an offense to be in an offside position. A player is in an offside position if any part of the head, body, or feet is in the opponents' half (excluding the halfway line) and any part of the head, body, or feet is nearer to the opponents' goal line than both the ball and the second-last opponent. The hands and arms of all players, including the goalkeepers, are not considered. For the purposes of determining offside, the upper boundary of the arm is in line with the bottom of the armpit. A player is not in an offside position if level with the second-last opponent or last two opponents.
+- A player in an offside position at the moment the ball is played or touched by a team-mate is only penalized on becoming involved in active play by:
+  * Interfering with play by playing or touching a ball passed or touched by a team-mate,
+  * Interfering with an opponent by preventing an opponent from playing or being able to play the ball by clearly obstructing the opponent's line of vision or challenging an opponent for the ball or clearly attempting to play a ball which is close when this action impacts on an opponent or making an obvious action which clearly impacts on the ability of an opponent to play the ball, or
+  * Gaining an advantage by playing the ball or interfering with an opponent when it has: rebounded or been deflected off the goalpost, crossbar, match official or an opponent, or when it has been deliberately saved by any opponent.
+- A player in an offside position receiving the ball from an opponent who deliberately played the ball, including by deliberate handball, is not considered to have gained an advantage, unless it was a deliberate save by any opponent.
+- There is no offside offense if a player receives the ball directly from a goal kick, throw-in, or corner kick.
+- If an offside offense is penalized, the referee awards an indirect free kick where the offense occurred, including if it is in the player's own half of the field of play.
+- See footnotes for additional clarifications.
+
+=== FOULS AND MISCONDUCT (Rule 12 / Rule 12 / Law 12) ===
+
+Topic: Caution reasons / yellow cards (note: coaches and bench personnel are the same for all three codes)
+- NCAA: Entering or leaving field w/o referee permission; persistent infringement of rules; dissent; incidental profane language; unsporting conduct (includes taunting and excessive celebration); delays restart; encroachment of free kicks and corner kicks; coach may be cautioned for coaching outside of team area.
+- NFHS: Same as NCAA, plus:
+  * Confronting an official during an interval period without permission (except captains)
+  * Use of video or communication, etc. to assist in coaching
+  Unsporting conduct includes:
+  * Coaching outside team area
+  * Unnecessary delay (kicking/throwing the ball away)
+  * Holding
+  * Deliberate verbal tactics
+  * Stopping a promising attack (SPA)
+  * Faking an injury
+  * Simulating a foul
+  * Reckless play
+  * Illegal equipment
+  * Excessive, delayed, or prolonged celebration
+  * Downgraded DOGSO foul inside the penalty area
+  * Use of tobacco, alcohol, or a controlled or illicit substance
+  A cautioned player must leave the field. If not replaced, player may re-enter at next legal substitution opportunity for that team. The head coach is responsible for conduct of all bench personnel and may be warned, cautioned, or ejected in addition or on account of team area misconduct.
+- IFAB:
+  * Delaying the restart of play
+  * Dissent by word or action
+  * Entering, re-entering, or deliberately leaving the field of play without referee's permission
+  * Failing to respect the required distance when play is restarted with a dropped ball, corner kick, free kick, or throw-in
+  * Persistent offences
+  * Unsporting behavior (includes removing jersey when celebrating a goal, excessive celebration that causes safety or security concerns, some DOGSO offenses in penalty area when attempting to play the ball, reckless challenges, and simulating any action to deceive referee)
+  * Entering the referee review area (RRA)
+  * Excessively using the 'review' (TV screen) signal
+
+Topic: Ejection reasons / red cards (note: coaches and bench personnel may also be sanctioned for these reasons)
+- NCAA: Serious foul play; violent behavior; fighting; spits at anyone; denies an obvious goal-scoring opportunity (DOGSO); uses hostile or abusive language or harassment that refers to race, religion, sex, sexual orientation or national origin, or other threatening or obscene language, behavior or conduct; receives a second caution.
+- NFHS:
+  * Subsequent caution (cannot be replaced)
+  * DOGSO by: deliberate handball (except GK); DFK or IDFK foul outside the penalty area; IDFK inside the penalty area; DFK foul inside the penalty area while not attempting to play the ball (e.g., holding, pulling, pushing, no possibility to play the ball, etc.)
+  * Insulting, offensive or abusive language or gesture (including taunting)
+  * Serious foul play
+  * Spitting or biting
+  * Leaving the team area to enter the field during a fight
+  * Violent conduct
+- IFAB:
+  * DOGSO by committing a deliberate handball offense (except a goalkeeper within their penalty area)
+  * DOGSO by committing a non-deliberate handball offense outside their own penalty area
+  * DOGSO to an opponent whose overall movement is towards the offender's goal by an offense punishable by a free kick
+  * Serious foul play
+  * Spitting or biting
+  * Violent conduct
+  * Using offensive, insulting or abusive language and/or actions
+  * Receiving a second caution in the same match
+  * Entering the video operation room (VOR)
+
+Topic: Player ejected at halftime
+- NCAA: Same as IFAB.
+- NFHS: Team does not have to play shorthanded.
+- IFAB: Team plays short the rest of the match.
+
+Topic: Addressing referee between periods
+- NCAA: Only captain permitted unless others summoned by referee.
+- NFHS: Only team captain may address an official at halftime, unless beckoned by the referee.
+- IFAB: No provision.
+
+Topic: Goalkeeper possession with their hand/arm - limit
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: Corner kick if the goalkeeper controls the ball with their hand/arm for more than 8 seconds; the referee determines when the goalkeeper has control of the ball and when the 8-second count begins; the referee visually counts down the last five seconds.
+
+Topic: Goalkeeper restrictions on using their hand/arm inside their penalty area
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: An indirect free kick is awarded if the goalkeeper touches the ball with their hand/arm after releasing the ball and before it has touched another player. It is also an indirect free kick if the goalkeeper touches the ball with the hand/arm after it has been deliberately kicked to them by a teammate or when receiving it directly from a teammate's throw-in; unless the goalkeeper has clearly kicked or attempted to kick the ball to release it into play.
+
+Topic: Direct free kick fouls (see footnotes)
+- NCAA: Spitting, kicking or attempt to kick, striking or attempt, tripping or attempt, using blood to assault, jumping at, handling ball, holding, pushing, charging violently, violently fouling goalkeeper while in possession of ball in the penalty area, all against an opponent; accidental touching of ball with hand that goes into goal or leads directly to a scoring chance.
+- NFHS: Similar to NCAA: physical offenses committed against an opponent carelessly, recklessly, or with excessive force include charging, jumping at, kicking or attempting to kick, pushing, striking or attempting to strike, unfairly charging or tackling, and tripping or attempting to trip. Additional DFK fouls include handling, spitting or biting, and holding.
+- IFAB: Similar to NCAA: also specifies tackling an opponent in a manner deemed careless, reckless, or with excessive force. Impeding progress when there is contact, assault on official, teammate, or non-player. Biting anyone, or a sent-off player, substitute, or team official who enters field and interferes with play or an opponent. Throwing or kicking ball onto field to interfere.
+
+Topic: Indirect free kick fouls (see footnotes)
+- NCAA: Playing the ball a 2nd time before it is played or touched by another player at kickoff, throw-in, free kick, corner kick, goal kick or penalty kick; sub at improper time or without being beckoned by referee; persons other than players and ARs entering field with referee permission; improper coaching from the touchline after verbal warning; dissent; unsporting behavior (includes excessive celebration) or inappropriate language; dangerous play involving an opponent; offside; charging when ball is not within playing distance unless obstructed; interfering with goalkeeper before release of ball; illegal obstruction; leaving field without referee permission; goalkeeper receives ball in the hands deliberately kicked or thrown by teammate; goalkeeper handles ball after relinquishing possession; use of tobacco; when game is stopped for injury to goalkeeper when in possession of ball. Assaulting a game official, teammate, or non-player.
+- NFHS: Indirect free kick fouls include: interfering with the goalkeeper when releasing the ball, goalkeeper restrictions on repossession and handling, impeding, dangerous play, verbal offenses, and misconduct or play is stopped for other offenses.
+- IFAB: An indirect free kick is awarded if a player:
+  * Plays in a dangerous manner
+  * Impedes the progress of an opponent without any contact being made
+  * Is guilty of dissent; using offensive, insulting, or abusive language and/or actions; or other verbal offenses
+  * Prevents the goalkeeper from releasing the ball from the hands or kicks or attempts to kick the ball when the goalkeeper is in the process of releasing it
+  * Initiates a deliberate trick for the ball to be passed (including from a free kick or goal kick) to the goalkeeper with the head, chest, knee etc. to circumvent the Law, whether or not the goalkeeper touches the ball with the hands; the goalkeeper is penalized if responsible for initiating the deliberate trick
+  * Commits any other offence, not mentioned in the Laws, for which play is stopped to caution or send off a player
+  An offense committed outside the field with the ball in play against the own team: IDFK from the boundary line.
+
+=== PENALTY KICKS (Rule 14 / Rule 14 / Law 14) ===
+
+Topic: Ball placement
+- NCAA: On the 9" spot or 2-foot line.
+- NFHS: Same as NCAA.
+- IFAB: On the penalty mark.
+
+Topic: Goalkeeper position
+- NCAA: The goalkeeper must have one foot on or over the goal line.
+- NFHS: Same as IFAB.
+- IFAB: Keeper must have at least part of one foot touching, in line with, or behind the goal line.
+
+Topic: Kicker stutter stepping and their approach
+- NCAA: Stutter stepping is permitted; the kicker cannot stop completely during their approach to the ball.
+- NFHS: Same as NCAA.
+- IFAB: Stutter stepping is permitted; the kicker is allowed to stop completely and restart their approach to the ball.
+
+Topic: Feinting to kick the ball
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: Not permitted; the kicker is cautioned. Defending team is awarded an IDFK.
+
+Topic: Goalkeeper encroachment
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: If the ball enters the goal, a goal is awarded. If the ball misses the goal or rebounds from the crossbar or goalpost, the kick is only retaken if the goalkeeper's offense clearly impacted the kicker. If the ball is prevented from entering the goal by the goalkeeper, the kick is retaken. If the goalkeeper's offense results in the kick being retaken, the goalkeeper is warned for the first offense in the game and cautioned for any subsequent offense in the game.
+
+Topic: Defending team encroachment
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: If the ball enters the goal, then a goal is awarded. The penalty kick is only retaken if the ball rebounds off the goalpost, crossbar, or goalkeeper, and the defender who encroached touches the ball or challenges an attacker for the ball, and this prevents the opponents from scoring, attempting to score, or creating a goal-scoring opportunity.
+
+Topic: Attacking team encroachment
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: If the ball enters the goal, then a goal is awarded unless the encroaching player impacted the goalkeeper; in which case the kick is retaken. An indirect free kick is awarded to the defending team if the ball rebounds off the goalpost, crossbar, or goalkeeper, and the attacker who encroached touches the ball or challenges a defender for the ball and then scores, attempts to score, or creates a goal-scoring opportunity.
+
+Topic: Kicker kicks the ball backward
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: Indirect free kick to defending team from the penalty mark.
+
+Topic: Penalty kick completion
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: The penalty kick is completed when the ball stops moving, goes out of play, or the referee stops play for any offense.
+
+Topic: After ball is kicked, an unusual situation occurs before the kick is completed (e.g., outside agent interference or the ball becomes defective)
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: The penalty kick is retaken.
+
+Topic: Penalties (penalty shoot-out) to break a tie
+- NCAA: Reduce to equate does not apply (no player reduction if other team has fewer than 11). Coaches are not allowed in the center circle during kicks. 10 kickers to be designated from the roster to remain at center circle. Order can be changed if more kicks are required. Need not have been on field at end of match. Coin toss to determine goal to be used. Goalkeeper cannot be changed unless ejected or injured.
+- NFHS: Reduce to equate does not apply (no player reduction if other team has fewer than 11). Any player on the roster may take part. Coaches are not allowed in the center circle during kicks; coaches and non-kickers must remain in their respective team area. Coin toss determines which team kicks first. Coach selects the first 5 kickers; teams alternate kickers. If still tied, 5 different kickers are selected for sudden-victory kicks.
+- IFAB: If one team is playing shorthanded, the other team must reduce the number of kickers to equalize. Each team must have the same number of kickers. Only participating players are allowed on the field within the center circle. Only players on the field at the end of the match may take part. Coin toss determines which goal; another determines which team chooses to kick first or second. After all of the kicks are taken, the order of kickers can be changed.
+
+=== THROW-IN (Rule 15 / Rule 15 / Law 15) ===
+
+Topic: Position of opponents
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: Opponents must stand at least 2 yards from the point on the touchline from where the throw-in is to be taken. Defenders may not jump about or distract the thrower; in which case, the offender is cautioned.
+
+Topic: Ball does not enter the field
+- NCAA: The throw-in is awarded to the opposing team.
+- NFHS: Same as NCAA.
+- IFAB: The throw-in is retaken. The thrower cannot kneel or sit; the player must be standing and facing the field.
+
+Topic: Impaired player using only one hand
+- NCAA: No provision.
+- NFHS: Legal, a one-handed throw-in by a player with one hand is allowed in such cases.
+- IFAB: Same as NFHS.
+
+Topic: Time limit
+- NCAA: No provision.
+- NFHS: No provision.
+- IFAB: If the thrower delays the throw, the referee may whistle and begin a 5-second countdown; if not thrown by then, the opposing team is awarded the throw-in.
+
+=== GOAL KICK (Rule 16 / Rule 16 / Law 16) ===
+
+Topic: Ball in play
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: Ball is in play as soon as the ball is kicked and clearly moves. The ball does not need to leave the penalty area to be in play. This also applies for free kicks taken by the defending team inside their penalty area.
+
+Topic: Moving the ball after it is properly positioned
+- NCAA: No prohibition unless movement is for purposes of time wasting.
+- NFHS: Once spotted, the ball may not be moved to another part of the goal area; this is considered unnecessary delay.
+- IFAB: Permitted if within the time limit, see below.
+
+Topic: Time limit
+- NCAA: No provision.
+- NFHS: No provision.
+- IFAB: If the kicker delays the goal kick, the referee may whistle and begin a 5-second countdown; if not kicked by then, the opposing team is awarded a corner kick.
+
+=== MISCELLANEOUS ===
+
+Topic: Fouls indicated by the assistant referee
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: The assistant referee raises their flag and holds it vertically. Once eye contact is made with the referee, the flag is slightly waved until the referee stops play or waves the assistant referee's signal down.
+
+Topic: Coaching restrictions
+- NCAA: Coach cannot leave coaching and team area to give instruction. Cannot instruct if on the field during an injury. Coach may use an electronic tablet or a dry-erase board. Coach permitted to view from press box and can communicate with bench electronically but not with players.
+- NFHS: There are no restrictions. Coaches may give instructions to their team during an injury. Coach may use electronic equipment and tablets within the team area, but cannot use them to communicate with players during the game.
+- IFAB: Only one person at a time is allowed to convey tactical instructions from the technical area.
+
+Topic: Protests
+- NCAA: Allowed up to 48 hours after the end of the game/match. Limited to player identification, illegal participation, or violent behavior II or fighting ejections.
+- NFHS: Protests are not recognized.
+- IFAB: No provision; may be stipulated in local rules of competition.
+
+Topic: Outside agent interferes with the ball and it enters the goal
+- NCAA: No goal, award a drop ball to the goalkeeper.
+- NFHS: Same as NCAA.
+- IFAB: Referee may award the goal if the outside agent had no impact on the defenders.
+
+Topic: Ball in play on free kicks and kicking the ball
+- NCAA: Same as IFAB.
+- NFHS: Same as IFAB.
+- IFAB: The ball is in play when it is kicked and clearly moves. The ball is kicked when a player makes contact with it with the foot and/or the ankle. A free kick may be taken by lifting the ball with a foot or both feet simultaneously. The kicker may also roll the ball with their foot.
+
+Topic: Video review
+- NCAA: Equipment must be at field level or at the scorer's table. A call on the field can only be overturned if the evidence is indisputable. Reviewable situations: ball over goal line for a goal, identify players for discipline, determine if a fight or violent behavior occurred and to identify participants, timing issues, and determining location of foul committed by defending team near penalty area; penalty kicks (given or not given); straight red cards (given or not given); DOGSO/stopping a promising attack; should goal be disallowed for offside.
+- NFHS: No provision.
+- IFAB: May be used with Video Assistant Referees (VAR) with detailed protocols.
+
+Topic: Restart after delays
+- NCAA: No contest may be started or restarted more than 3 hours after the originally scheduled start time unless mutually agreed upon prior to the start of the game.
+- NFHS: No similar provision.
+- IFAB: No similar provision.
+
+=== FOOTNOTES ===
+
+Footnote: DOGSO
+IFAB Law 12 regarding DOGSO: In IFAB Laws of the Game, if the offense occurs inside the penalty area a penalty kick is awarded. A caution is awarded if the foul was an attempt to play the ball. It is still a penalty kick and a red card for a deliberate handball offence, holding, pushing, pulling, no possibility to play the ball, or violent conduct and serious foul challenges. If a direct free kick offense occurs outside of the penalty area, and denies an obvious goal, a red card is given. This is also in effect for NCAA and NFHS. Note that in NCAA, DOGSO outside of the penalty area must be a direct free kick foul, whereas in IFAB and NFHS it is any free kick offense (DFK or IDFK).
+
+Footnote: Free kicks
+In IFAB, NCAA and NFHS, the attacking team must be at least 1 yard or 1 meter away from the defensive wall until the ball is in play. "Wall" is defined as 3 or more defensive players. Attacking player cannot be in such a wall and if attacking player is less than 1 yard from wall, an IFK is given.
+
+Footnote: IFAB Offside Law 11 concerning interpretation of "INTERFERING" and "GAINING AN ADVANTAGE"
+"Interfering with an Opponent" means:
+* preventing an opponent from playing or being able to play the ball by clearly obstructing the opponent's line of vision or
+* challenging an opponent for the ball or
+* clearly attempting to play a ball which is close when this action impacts on an opponent or
+* making an obvious action which clearly impacts on the ability of an opponent to play the ball.
+"Gaining an Advantage" by being in an offside position means playing the ball or interfering with an opponent when it has (1) rebounded or been deflected to him/her off the goal post, crossbar, match official or an opponent; (2) been deliberately saved by an opponent.
+
+Footnote: IFAB Law 11 Offside - Deliberate Play and Deflection Explanation (same interpretation applies in NCAA and NFHS)
+A player in an offside position receiving the ball from an opponent who deliberately played* the ball, including by deliberate handball, is not considered to have gained an advantage, unless it was a deliberate save by any opponent.
+*'Deliberate play' (excluding deliberate handball) is when a player has control of the ball with the possibility of:
+* passing the ball to a team-mate;
+* gaining possession of the ball; or
+* clearing the ball (e.g. by kicking or heading it).
+If the pass, attempt to gain possession or clearance by the player in control of the ball is inaccurate or unsuccessful, this does not negate the fact that the player 'deliberately played' the ball.
+The following criteria should be used, as appropriate, as indicators that a player was in control of the ball and, as a result, can be considered to have 'deliberately played' the ball:
+* The ball travelled from distance and the player had a clear view of it
+* The ball was not moving quickly
+* The direction of the ball was not unexpected
+* The player had time to coordinate their body movement, i.e. it was not a case of instinctive stretching or jumping, or a movement that achieved limited contact/control
+* A ball moving on the ground is easier to play than a ball in the air
+A 'save' is when a player stops, or attempts to stop, a ball which is going into or very close to the goal with any part of the body except the hands/arms (unless the goalkeeper within the penalty area).
+In situations where:
+* A player moving from, or standing in, an offside position is in the way of an opponent and interferes with the movement of the opponent towards the ball, this is an offside offence if it impacts on the ability of the opponent to play or challenge for the ball; if the player moves into the way of an opponent and impedes the opponent's progress (e.g. blocks the opponent), the offence should be penalized under Law 12.
+* A player in an offside position is moving towards the ball with the intention of playing the ball and is fouled before playing or attempting to play the ball, or challenging an opponent for the ball, the foul is penalized as it has occurred before the offside offence.
+* An offence is committed against a player in an offside position who is already playing or attempting to play the ball, or challenging an opponent for the ball, the offside offence is penalized as it has occurred before the foul challenge.

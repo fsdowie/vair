@@ -3,6 +3,10 @@ import { ECNL_RULES } from './ecnl-rules.ts';
 import { EA_RULES } from './ea-rules.ts';
 import { N1_RULES } from './n1-rules.ts';
 import { MLS_NEXT_ACADEMY_RULES } from './mls-next-academy-rules.ts';
+import { NFHS_GUIDE } from './nfhs-guide.ts';
+import { NFHS_UNIFORMS } from './nfhs-uniforms.ts';
+import { WIAA_RULES } from './wiaa-rules.ts';
+import { NCAA_RULES } from './ncaa-rules.ts';
 import { LAWS_2026_27 } from './laws-2026-27.ts';
 import { LAWS_2025_26 } from './laws-2025-26.ts';
 
@@ -14,6 +18,11 @@ type Correction = { correction_text: string; version_label: string; notes: strin
 // questions only need the current Laws (~77K). Patterns are matched against
 // every user message, so follow-ups keep the rulebooks the conversation
 // started with (and keep hitting the same cache entry).
+const HIGH_SCHOOL = [/\bnfhs\b/i, /high[\s-]*schools?\b/i, /\bhs\b/i, /\bvarsity\b/i, /\bjv\b/i,
+  /\bwiaa\b/i, /\bwoa\b/i, /\bosaa\b/i, /\bidhsaa\b/i, /\bcif\b/i, /\buil\b/i, /\bghsa\b/i,
+  /\bfhsaa\b/i, /state association/i];
+const COLLEGE = [/\bncaa\b/i, /\bnaia\b/i, /\bcolleges?\b/i, /\bcollegiate\b/i, /\buniversity\b/i];
+
 const OPTIONAL_RULEBOOKS = [
   {
     patterns: [/2025\s*[/\-–]\s*(20)?26/, /\b25\s*[/\-–]\s*26\b/, /\b2025\b/,
@@ -49,6 +58,28 @@ ${N1_RULES}
 ${MLS_NEXT_ACADEMY_RULES}
 --- END MLS NEXT ACADEMY DIVISION RULES ---`,
   },
+  {
+    patterns: [...HIGH_SCHOOL, ...COLLEGE],
+    text: `--- NFHS 2026-27 SOCCER GUIDE: NCAA vs NFHS vs IFAB COMPARISON (high school / college; use only when asked) ---
+${NFHS_GUIDE}
+--- END NFHS 2026-27 SOCCER GUIDE ---`,
+  },
+  {
+    patterns: HIGH_SCHOOL,
+    text: `--- NFHS SOCCER UNIFORMS (high school, incl. Washington WIAA; use only when asked) ---
+${NFHS_UNIFORMS}
+--- END NFHS SOCCER UNIFORMS ---
+
+--- WIAA (WASHINGTON HIGH SCHOOL) SOCCER RULES 2026-27: IFAB LAWS + WIAA MODIFICATIONS (use only for Washington high school) ---
+${WIAA_RULES}
+--- END WIAA RULES ---`,
+  },
+  {
+    patterns: COLLEGE,
+    text: `--- NCAA MEN'S AND WOMEN'S SOCCER RULES BOOK 2026 & 2027 (college; use only when asked) ---
+${NCAA_RULES}
+--- END NCAA RULES ---`,
+  },
 ];
 
 // Never changes between requests, so it's cached once and shared by every
@@ -58,13 +89,22 @@ const BASE_PROMPT = `You are an expert football/soccer referee assistant with de
 SPECIAL INSTRUCTIONS:
 - If asked who built/created VAIR: Say "VAIR was created by Fede in collaboration with Mr. Claude"
 - IFAB Laws of the Game 2026/27 (the current, default ruleset, embedded in full below) are ALWAYS the default ruleset for all answers.
-- Other rulebooks (IFAB Laws 2025/26, ECNL, EA, National 1, MLS NEXT Academy Division) are added after the Laws only when the conversation mentions them.
+- Other rulebooks (IFAB Laws 2025/26, ECNL, EA, National 1, MLS NEXT Academy Division, high school NFHS/WIAA, college NCAA) are added after the Laws only when the conversation mentions them.
 - Only reference the IFAB Laws of the Game 2025/26 if the user explicitly asks about the previous season, a match played under 2025/26 rules, or what changed between the two seasons. If a rule changed between seasons, say so.
 - Only reference ECNL rules if the user explicitly asks about ECNL rules or an ECNL match.
 - Only reference EA rules if the user explicitly asks about EA rules or an EA match.
 - Only reference National 1 League (N1) rules if the user explicitly asks about National 1 / N1 rules or an N1 match. The WPL addendum at the end of the N1 rules applies only to N1 matches operated by the WPL (Washington).
 - Only reference MLS NEXT Academy Division rules if the user explicitly asks about MLS NEXT Academy / MLS NEXT Academy Division / MLS NEXT 2 rules or a match in that division. MLS NEXT 2 and MLS NEXT Academy are other names for the MLS NEXT Academy Division. These rules cover only the Academy Division, not the MLS NEXT Homegrown Division.
 - If an ECNL, EA, N1 or MLS NEXT Academy rule conflicts with IFAB, state the IFAB ruling first, then note "Note: this has been modified by [ECNL/EA/N1/MLS NEXT Academy] rules: [modification]".
+- HIGH SCHOOL questions (only when the user asks about high school / NFHS / a state high school association):
+  - Washington high school (WIAA) does NOT use NFHS rules: it plays the IFAB Laws of the Game 2026/27 with the WIAA modifications and NFHS uniform rules. Answer Washington questions from the IFAB Laws plus the WIAA rules block.
+  - Most other states (including Oregon OSAA and Idaho IDHSAA) play NFHS rules. If the user doesn't say which state and the NFHS and Washington answers differ, give the NFHS answer and then add "In Washington (WIAA): ..." with the difference.
+  - NFHS answers come from the NFHS 2026-27 Soccer Guide, a rule-by-rule comparison (not the full NFHS rulebook). Use the guide's NFHS column; where it says "Same as IFAB" apply the IFAB Laws. If the guide doesn't cover the situation, say so and refer the user to the NFHS Soccer Rules Book and their state association. Cite as "NFHS Rule [number] (per the NFHS 2026-27 Soccer Guide)" using only the rule number the guide gives; never invent NFHS sub-rule numbers.
+  - State associations can modify NFHS rules (overtime, post-season tie-breakers, when a suspended game is official, caps): when the answer depends on this, say it depends on the state association.
+  - For uniforms, the NFHS 2026-27 Soccer Guide takes precedence over the older NFHS uniform sheet where they differ.
+  - Link: NFHS rules https://www.nfhs.org/sports/soccer/rules ; WIAA https://www.mywiaa.wiaa.com/soccer-resources-welcome/
+- COLLEGE questions (only when the user asks about college / NCAA / NAIA): answer from the NCAA Rules Book 2026 & 2027 and cite the rule number (e.g., "NCAA Rule 3.4.3"). Rules often differ by division (Division I men vs Division I women vs Divisions II/III), so say which division the answer applies to. The NCAA Rules Book takes precedence over the NCAA column of the NFHS guide, which is out of date in places (e.g., substitutions). NAIA uses the NCAA rules. Link: https://ncaaorg.s3.amazonaws.com/championships/sports/soccer/rules/PRXSO_RulesBook.pdf
+- For high school or college answers, state the NFHS/WIAA/NCAA ruling (that is the game being played), and when it differs from IFAB add "Note: under IFAB Laws of the Game: [difference]" only if it helps.
 - Admin-verified corrections, when there are any, come last and take precedence over default answers.
 
 ${IFAB_UPDATES}

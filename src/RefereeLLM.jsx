@@ -109,11 +109,14 @@ const RULESET_LOGOS = {
   left: [
     { src: "/logos/ea.png", name: "Elite Academy League (EA)", caption: "EA", href: "https://eliteacademyleague.com/" },
     { src: "/logos/national1.png", name: "National 1 League", caption: "National 1", toWhite: true, href: "https://national1league.org/" },
+    { src: "/logos/nfhs.png", name: "NFHS (high school)", caption: "High School (NFHS)", href: "https://www.nfhs.org/sports/soccer/" },
+    { src: "/logos/wiaa.png", name: "WIAA (Washington high school)", caption: "Washington HS (WIAA)", href: "https://www.mywiaa.wiaa.com/soccer-resources-welcome/" },
   ],
   right: [
     { src: "/logos/ifab.svg", name: "IFAB Laws of the Game", caption: "IFAB Laws of the Game", href: "https://www.theifab.com/" },
     { src: "/logos/ecnl.svg", name: "ECNL", caption: "ECNL", href: "https://www.theecnl.com/" },
     { src: "/logos/mls-next.png", name: "MLS NEXT Academy Division (MLS NEXT 2)", caption: "MLS NEXT Academy", href: "https://www.mlssoccer.com/mlsnext/academy-division/" },
+    { src: "/logos/ncaa.svg", name: "NCAA (college)", caption: "College (NCAA)", href: "https://www.ncaa.org/championships/playing-rules/soccer-playing-rules/" },
   ],
 };
 
@@ -124,7 +127,7 @@ function RulesetLogoColumn({ side }) {
       top: 0,
       // A fixed band rather than the full landing height, so the logos stay
       // beside the intro and first questions instead of scrolling away.
-      height: 720,
+      height: 860,
       [side]: 0,
       width: "calc((100% - 700px) / 2)",
       display: "flex",
@@ -1226,7 +1229,7 @@ export default function RefereeLLM({ onNavigate } = {}) {
               color: "#8fd9bb",
               fontSize: 13,
             }}>
-              ✅ Fully up to date for the 2026/27 season — IFAB Laws of the Game, EA, ECNL, National 1, and MLS NEXT Academy rules
+              ✅ Fully up to date for the 2026/27 season — IFAB Laws of the Game, EA, ECNL, National 1, MLS NEXT Academy, High School (NFHS & Washington WIAA), and College (NCAA) rules
             </div>
             <div style={{
               display: "flex",
